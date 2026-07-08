@@ -1,7 +1,7 @@
 <template>
   <div>
     <component :is="currentPanel" v-if="currentPanel" />
-    <div v-else class="p-8 text-center text-gray-400">
+    <div v-else class="p-8 text-center text-[hsl(var(--text-tertiary))]">
       请在左侧选择要编辑的模块
     </div>
   </div>

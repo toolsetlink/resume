@@ -1,26 +1,26 @@
 <template>
   <section id="templates" class="py-24 sm:py-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <!-- 标题：苹果式居中、克制的字距 -->
+      
       <div class="mx-auto max-w-3xl text-center">
-        <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.03em] text-[hsl(var(--foreground))] sm:text-4xl">
+        <h2 class="text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.1] text-[hsl(var(--text-primary))] sm:text-4xl">
           {{ t('landing.templatePreview.title') }}
         </h2>
-        <p class="mx-auto mt-5 max-w-2xl text-[19px] leading-relaxed text-[hsl(var(--muted-foreground))]">
+        <p class="mx-auto mt-5 max-w-2xl text-[19px] leading-relaxed text-[hsl(var(--text-secondary))]">
           {{ t('landing.templatePreview.subtitle') }}
         </p>
       </div>
 
-      <!-- 模板切换 tab：苹果风格分段控件 -->
+      
       <div class="mt-12 flex flex-wrap justify-center gap-2">
         <button
           v-for="entry in templates"
           :key="entry.config.id"
-          class="rounded-full px-5 py-2 text-[14px] font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+          class="rounded-md px-5 py-2 text-[14px] font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
           :class="
             activeId === entry.config.id
-              ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-md'
-              : 'border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:border-[hsl(var(--border))]'
+              ? 'bg-[hsl(var(--brand))] text-[hsl(var(--text-inverse))] shadow-md'
+              : 'border border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))] text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))] hover:border-[hsl(var(--border-default))]'
           "
           :style="activeId === entry.config.id ? { boxShadow: 'var(--shadow-sm)' } : {}"
           @click="activeId = entry.config.id"
@@ -29,17 +29,13 @@
         </button>
       </div>
 
-      <!-- 预览区：苹果式浮动展示 -->
+      <!-- 预览区 -->
       <div class="mt-12 flex flex-col items-center gap-8">
         <div ref="previewWrapperRef" class="relative w-full max-w-[820px]">
-          <!-- 装饰光晕：苹果式柔和模糊 -->
+          <!-- 模板预览卡片 -->
           <div
-            class="absolute -inset-8 -z-10 rounded-[40px] bg-gradient-to-tr from-[hsl(var(--primary))]/12 via-transparent to-[hsl(var(--primary))]/6 blur-[80px]"
-          />
-          <!-- 模板预览卡片：A4 比例，缩放居中 -->
-          <div
-            class="overflow-hidden rounded-[20px] border border-[hsl(var(--border))]/60 bg-white"
-            :style="{ height: previewHeight + 'px', boxShadow: 'var(--shadow-xl)' }"
+            class="overflow-hidden rounded-[12px] border border-[hsl(var(--border-default))]/60 bg-white"
+            :style="{ height: previewHeight + 'px', boxShadow: 'var(--shadow-lg)' }"
           >
             <div
               class="template-scaling-inner"
@@ -50,16 +46,28 @@
           </div>
         </div>
 
-        <!-- 使用此模板按钮：苹果风格胶囊形 -->
+        
         <t-button
           theme="primary"
           size="large"
-          class="!h-12 !rounded-full !px-8 !text-[15px] !font-medium !shadow-md transition-all duration-300 hover:!scale-[1.03] hover:!shadow-lg active:!scale-[0.98]"
+          class="!h-12 !px-8 !text-[15px] !font-medium transition-all duration-200 hover:!scale-[1.02] active:!scale-[0.98]"
           @click="goCreate"
         >
           {{ t('landing.templatePreview.useThis') }}
           <ArrowRight class="ml-1.5 h-[18px] w-[18px]" />
         </t-button>
+
+        <!-- 模板详情页链接（SEO 内部链接） -->
+        <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2">
+          <NuxtLink
+            v-for="entry in templates"
+            :key="entry.config.id"
+            :to="localePath('/templates/' + getTemplateSlug(entry.config.id))"
+            class="text-[13px] text-[hsl(var(--text-secondary))] underline underline-offset-2 decoration-[hsl(var(--border-default))] transition-colors hover:text-[hsl(var(--brand))]"
+          >
+            {{ t('landing.templatePreview.learnMore', { name: entry.config.name }) }}
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </section>
@@ -67,6 +75,7 @@
 
 <script setup lang="ts">
 import { ArrowRight } from 'lucide-vue-next'
+import { getTemplateSlug } from '~/components/templates/registry'
 import type { ResumeData } from '#shared/types/resume'
 import {
   initialResumeState,

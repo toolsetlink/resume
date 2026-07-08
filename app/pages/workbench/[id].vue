@@ -1,5 +1,5 @@
 <template>
-  <div class="workbench-page h-screen flex flex-col overflow-hidden bg-[hsl(var(--background))]">
+  <div class="workbench-page h-screen flex flex-col overflow-hidden bg-[hsl(var(--bg-base))]">
     <!-- 顶部工具栏 -->
     <WorkbenchHeader
       :resume-id="resumeId"
@@ -17,7 +17,7 @@
       <Splitpanes class="default-theme h-full" @resize="onResize">
         <!-- 左侧编辑区 -->
         <Pane :size="sidebarVisible ? 40 : 0" :min-size="20" :max-size="60">
-          <div class="h-full overflow-y-auto bg-[hsl(var(--card))]">
+          <div class="h-full overflow-y-auto bg-[hsl(var(--bg-card))]">
             <!-- 模块折叠面板（导航 + 开关 + 内容编辑一体化） -->
             <SectionAccordion />
           </div>
@@ -25,7 +25,7 @@
 
         <!-- 右侧预览区 -->
         <Pane :size="sidebarVisible ? 60 : 100">
-          <div class="h-full overflow-auto bg-gray-100 p-6 dark:bg-gray-900">
+          <div class="h-full overflow-auto bg-[hsl(var(--bg-canvas))] p-6">
             <!-- A4 预览页：作为 PDF 导出捕获目标，数据未就绪时显示 loading -->
             <div
               v-if="resumeData"
@@ -38,7 +38,7 @@
             </div>
             <div
               v-else
-              class="mx-auto bg-white shadow-lg flex items-center justify-center text-gray-400"
+              class="mx-auto bg-white shadow-lg flex items-center justify-center text-[hsl(var(--text-tertiary))]"
               style="width: 794px; min-height: 1123px;"
             >
               {{ t('common.loading') }}

@@ -33,6 +33,59 @@
     "currentTemplate": "Current",
     "switchSuccess": "Template switched"
   },
+  "templatesPage": {
+    "useThis": "Create Resume with This Template",
+    "otherTemplates": "Other Templates",
+    "notFound": "Template not found",
+    "professional": {
+      "seoTitle": "Professional Resume Template - Clean & Classic",
+      "seoDescription": "Free professional resume template with clean modern design. Perfect for finance, law, manufacturing, and traditional industries. Supports all modules and PDF export.",
+      "title": "Professional Resume Template",
+      "description": "Classic single-column layout with dark gray color scheme. Clean hierarchy of information. Ideal for traditional industries and formal job applications.",
+      "f1Title": "Classic Layout",
+      "f1Desc": "Top-to-bottom flow makes it easy for HR to scan quickly. Works well for traditional resume content.",
+      "f2Title": "Professional Color Scheme",
+      "f2Desc": "Steady dark gray palette conveys a professional, serious image suitable for formal job applications.",
+      "f3Title": "Highly Adaptable",
+      "f3Desc": "Covers all modules including experience, projects, skills, and education. Works great across all industries."
+    },
+    "modern": {
+      "seoTitle": "Modern Resume Template - Dual Column for Tech",
+      "seoDescription": "Free modern resume template with dual-column layout and dark navy color scheme. Ideal for frontend, backend, PM, and tech roles.",
+      "title": "Modern Minimalist Resume Template",
+      "description": "Dual-column layout with dark navy blue palette. Clean and modern. Perfect for internet and tech company positions.",
+      "f1Title": "Efficient Dual Column",
+      "f1Desc": "Personal info on the left, detailed experience on the right. Maximizes page real estate for quick scanning.",
+      "f2Title": "Tech-Inspired Colors",
+      "f2Desc": "Dark navy with gray accents creates a professional, rational tech aesthetic that matches the IT industry.",
+      "f3Title": "Tech Role Optimized",
+      "f3Desc": "Optimized for programmers, PMs, and designers. Skills section is prominent, highlighting your expertise at a glance."
+    },
+    "elegant": {
+      "seoTitle": "Elegant Resume Template - Refined Center Layout",
+      "seoDescription": "Free elegant resume template with centered layout, serif typography, and generous whitespace. Great for management, design, and creative roles.",
+      "title": "Elegant Classic Resume Template",
+      "description": "Centered single-column layout with serif fonts and ample whitespace. For job seekers who value refined presentation.",
+      "f1Title": "Refined Centered Layout",
+      "f1Desc": "Center-aligned content with generous whitespace creates an elegant, airy visual that stands out.",
+      "f2Title": "Serif Typography",
+      "f2Desc": "Serif font styling conveys classic, professional, and thoughtful visual language for a quality feel.",
+      "f3Title": "Reading Experience",
+      "f3Desc": "Increased line spacing and module gaps reduce visual pressure, letting HR read your story comfortably."
+    },
+    "creative": {
+      "seoTitle": "Creative Resume Template - Bold & Unique, for Creatives",
+      "seoDescription": "Free creative resume template with purple-pink gradient header banner and dual-column layout. Perfect for designers, artists, and social media professionals.",
+      "title": "Creative Resume Template",
+      "description": "Colorful top banner with dual-column layout. Purple-pink gradient. Bold and distinctive for creative roles.",
+      "f1Title": "Colorful Banner",
+      "f1Desc": "Purple-pink gradient banner at the top grabs attention instantly, showcasing your creativity and personality.",
+      "f2Title": "Dynamic Dual Column",
+      "f2Desc": "Flexible dual-column structure highlights portfolio pieces and project showcases for portfolio-driven roles.",
+      "f3Title": "Stand Out",
+      "f3Desc": "Break free from traditional black-and-white resumes. Use color and design language to tell your personal brand story."
+    }
+  },
   "workbench": {
     "collapseSidebar": "Collapse Sidebar"
   },
@@ -93,22 +146,6 @@
       "link": "Link"
     }
   },
-  "ai": {
-    "polish": "AI Polish",
-    "grammarCheck": "Grammar Check",
-    "import": "AI Import",
-    "config": "AI Configuration",
-    "selectProvider": "Select Provider",
-    "apiKey": "API Key",
-    "modelId": "Model ID",
-    "endpoint": "API Endpoint",
-    "providers": {
-      "doubao": "Doubao",
-      "deepseek": "DeepSeek",
-      "openai": "OpenAI Compatible",
-      "gemini": "Google Gemini"
-    }
-  },
   "settings": {
     "theme": "Theme",
     "light": "Light",
@@ -117,6 +154,11 @@
     "language": "Language",
     "font": "Font",
     "themeColor": "Theme Color"
+  },
+  "error": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist or has been removed. Please check the URL.",
+    "backHome": "Back to Home"
   },
   "landing": {
     "nav": {
@@ -128,7 +170,7 @@
     "hero": {
       "badge": "Privacy-first · Local storage",
       "title": "Craft a professional resume, land your offer",
-      "subtitle": "ZiYou Resume is a free, privacy-first online resume editor. Multiple templates, AI polishing, grammar check, and PDF export — everything you need for your job hunt.",
+      "subtitle": "ZiYou Resume is a free, privacy-first online resume editor. Multiple templates and PDF export — everything you need for your job hunt.",
       "cta": {
         "create": "Create Now",
         "templates": "View Templates"
@@ -144,7 +186,8 @@
     "templatePreview": {
       "title": "Curated Resume Templates",
       "subtitle": "4 carefully designed professional templates, switch and preview in one click",
-      "useThis": "Use This Template"
+      "useThis": "Use This Template",
+      "learnMore": "Learn about {name}"
     },
     "features": {
       "title": "Core features built for job seekers",
@@ -153,14 +196,6 @@
         "templates": {
           "title": "Multiple Templates",
           "desc": "4 carefully designed professional templates covering different industries and roles, switchable in one click."
-        },
-        "ai": {
-          "title": "AI Polishing",
-          "desc": "Supports Doubao, DeepSeek, OpenAI, and Gemini. Let AI refine your wording and expression."
-        },
-        "grammar": {
-          "title": "Grammar Check",
-          "desc": "Real-time detection of spelling and grammar errors, ensuring every submission is professional."
         },
         "pdf": {
           "title": "PDF Export",
@@ -175,6 +210,12 @@
           "desc": "Data is stored in your browser locally. No account needed, your privacy never leaves your device."
         }
       }
+    },
+    "trust": {
+      "free": "100% free, no paid features",
+      "privacy": "Local storage, no server upload",
+      "ai": "AI-assisted writing & polishing",
+      "export": "Watermark-free PDF export"
     },
     "cta": {
       "title": "Ready to get started?",
@@ -192,10 +233,6 @@
           "q": "Will my resume data be uploaded to a server?",
           "a": "No. All resume data is stored in your browser's local storage. Unless you actively export it, the data never leaves your device."
         },
-        "ai": {
-          "q": "What do I need to configure to use AI polishing?",
-          "a": "You need to fill in an API Key from any AI provider (such as Doubao, DeepSeek, OpenAI, or Gemini) in settings. Requests go directly from your browser to the provider, without passing through our server."
-        },
         "export": {
           "q": "Will the exported PDF have a watermark?",
           "a": "No. The exported PDF is completely watermark-free, with layout identical to what you see in the editor preview."
@@ -203,7 +240,7 @@
       }
     },
     "footer": {
-      "copyright": "© 2025 ZiYou Resume. All rights reserved.",
+      "copyright": "© 2026 ZiYou Resume. All rights reserved.",
       "links": {
         "github": "GitHub",
         "privacy": "Privacy",

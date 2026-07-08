@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror p.is-editor-empty:first-child::before) {
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--text-secondary));
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -90,7 +90,7 @@ onBeforeUnmount(() => {
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror a) {
-  color: hsl(var(--primary));
+  color: hsl(var(--brand));
   text-decoration: underline;
 }
 </style>

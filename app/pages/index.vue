@@ -1,10 +1,12 @@
 <template>
-  <div class="landing-page min-h-screen bg-[hsl(var(--background))]">
+  <div class="landing-page min-h-screen bg-[hsl(var(--bg-base))]">
+    <JsonLd />
     <LandingHeader />
     <main>
       <HeroSection />
       <TemplatePreviewSection />
       <FeaturesSection />
+      <TrustSection />
       <CTASection />
       <FAQSection />
     </main>
@@ -19,7 +21,7 @@ const { t, locale } = useI18n()
 const route = useRoute()
 
 // 站点地址常量
-const SITE_URL = 'https://ziyou-resume.example.com'
+const SITE_URL = 'https://resume.toolsetlink.com'
 
 // 当前页面完整 URL
 const fullUrl = computed(() => `${SITE_URL}${route.fullPath}`)

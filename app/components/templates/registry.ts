@@ -41,3 +41,25 @@ export function getTemplateComponent(layout: string): Component | null {
 export function getTemplateConfig(id: string): ResumeTemplate | null {
   return TEMPLATE_REGISTRY.find((e) => e.config.id === id)?.config ?? null
 }
+
+// 模板 ID → SEO URL slug 映射
+export const TEMPLATE_SLUG_MAP: Record<string, string> = {
+  professional: 'professional-resume',
+  modern: 'modern-resume',
+  elegant: 'elegant-resume',
+  creative: 'creative-resume',
+}
+
+// 根据模板 ID 获取 SEO slug
+export function getTemplateSlug(id: string): string {
+  return TEMPLATE_SLUG_MAP[id] ?? id
+}
+
+// 根据 SEO slug 获取模板 ID
+export function getTemplateIdBySlug(slug: string): string | null {
+  return (
+    Object.entries(TEMPLATE_SLUG_MAP).find(
+      ([, v]) => v === slug
+    )?.[0] ?? null
+  )
+}

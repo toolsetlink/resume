@@ -73,16 +73,7 @@ describe('STORAGE_KEYS', () => {
     expect(STORAGE_KEYS.RESUME).toBe('resume-storage')
   })
 
-  it('AI_CONFIG === "ai-config-storage"', () => {
-    expect(STORAGE_KEYS.AI_CONFIG).toBe('ai-config-storage')
-  })
-
-  it('所有值均为非空字符串', () => {
+  it('值为非空字符串', () => {
     expect(STORAGE_KEYS.RESUME.length).toBeGreaterThan(0)
-    expect(STORAGE_KEYS.AI_CONFIG.length).toBeGreaterThan(0)
-  })
-
-  it('两个 key 值不重复', () => {
-    expect(STORAGE_KEYS.RESUME).not.toBe(STORAGE_KEYS.AI_CONFIG)
   })
 })

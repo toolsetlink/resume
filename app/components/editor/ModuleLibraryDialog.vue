@@ -12,12 +12,12 @@
       <div
         v-for="section in availableSections"
         :key="section.id"
-        class="flex items-center gap-3 p-3 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--card))] hover:bg-[hsl(var(--muted))] transition-colors"
+        class="flex items-center gap-3 p-3 rounded-md border border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))] hover:bg-[hsl(var(--bg-subtle))] transition-colors"
       >
         <span class="text-xl flex-shrink-0">{{ section.icon }}</span>
         <div class="flex-1 min-w-0">
           <div class="text-sm font-medium">{{ section.title }}</div>
-          <div class="text-xs text-gray-500 truncate">{{ getDescription(section.id) }}</div>
+          <div class="text-xs text-[hsl(var(--text-secondary))] truncate">{{ getDescription(section.id) }}</div>
         </div>
         <t-button
           theme="primary"
@@ -33,7 +33,7 @@
       <!-- 空状态：所有模块均已启用 -->
       <div
         v-if="availableSections.length === 0"
-        class="flex flex-col items-center justify-center py-10 text-gray-400"
+        class="flex flex-col items-center justify-center py-10 text-[hsl(var(--text-tertiary))]"
       >
         <CheckCircle2 class="w-10 h-10 mb-2 text-green-400" />
         <p class="text-sm">{{ t('editor.allEnabled') }}</p>

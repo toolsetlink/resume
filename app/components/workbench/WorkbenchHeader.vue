@@ -1,6 +1,6 @@
 <template>
   <header
-    class="workbench-header flex items-center justify-between gap-4 px-4 py-2 border-b border-[hsl(var(--border))] bg-[hsl(var(--card))]"
+    class="workbench-header flex items-center justify-between gap-4 px-4 py-2 border-b border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))]"
   >
     <!-- 左侧：返回 + 标题 -->
     <div class="flex items-center gap-2 flex-1 min-w-0">
@@ -42,7 +42,7 @@
 
     <!-- 右侧：导出 + 保存状态 -->
     <div class="flex items-center gap-2 flex-1 justify-end">
-      <span class="text-xs text-gray-400">
+      <span class="text-xs text-[hsl(var(--text-tertiary))]">
         <template v-if="isSaving">{{ t('common.loading') }}</template>
         <template v-else-if="lastSavedAt">{{ savedText }}</template>
       </span>

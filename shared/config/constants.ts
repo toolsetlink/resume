@@ -15,5 +15,4 @@ export const DEFAULT_FIELD_ORDER: BasicFieldType[] = [
 // 本地存储 keys
 export const STORAGE_KEYS = {
   RESUME: 'resume-storage',
-  AI_CONFIG: 'ai-config-storage',
 } as const

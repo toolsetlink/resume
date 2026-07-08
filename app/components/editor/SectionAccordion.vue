@@ -3,7 +3,7 @@
     <!-- 顶部：标题 + 添加模块按钮 + 引导提示 -->
     <div class="px-4 pt-4 pb-2">
       <div class="flex items-center justify-between">
-        <h2 class="text-sm font-medium text-gray-600">{{ t('editor.modules') }}</h2>
+        <h2 class="text-sm font-medium text-[hsl(var(--text-secondary))]">{{ t('editor.modules') }}</h2>
         <t-button theme="primary" variant="text" size="small" @click="libraryVisible = true">
           <Plus class="w-4 h-4 mr-1" />
           {{ t('editor.addModule') }}
@@ -13,9 +13,9 @@
       <!-- 首次使用引导提示条 -->
       <div
         v-if="showGuide"
-        class="mt-2 flex items-center gap-2 px-3 py-2 rounded-md bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.2)] text-xs text-gray-600"
+        class="mt-2 flex items-center gap-2 px-3 py-2 rounded-md bg-[hsl(var(--brand)/0.08)] border border-[hsl(var(--brand)/0.2)] text-xs text-[hsl(var(--text-secondary))]"
       >
-        <Lightbulb class="w-4 h-4 text-[hsl(var(--primary))] flex-shrink-0" />
+        <Lightbulb class="w-4 h-4 text-[hsl(var(--brand))] flex-shrink-0" />
         <span class="flex-1">{{ t('editor.guideTip') }}</span>
         <t-button variant="text" size="small" @click="dismissGuide">
           {{ t('editor.gotIt') }}
@@ -34,23 +34,23 @@
       <template #item="{ element, index }">
         <div
           :ref="(el) => setSectionRef(el as HTMLElement | null, element.id)"
-          class="section-card rounded border bg-[hsl(var(--card))]"
+          class="section-card rounded border bg-[hsl(var(--bg-card))]"
           :class="{ 'highlight-flash': flashId === element.id }"
         >
           <!-- 标题行：拖拽柄 + 图标 + 标题 + 已隐藏标签 + 上移 + 下移 + 开关 + 展开箭头 -->
           <div
-            class="section-drag-handle flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[hsl(var(--muted))]"
+            class="section-drag-handle flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[hsl(var(--bg-subtle))]"
             @click="toggleExpand(element.id)"
           >
             <t-tooltip :content="t('editor.dragToSort')" placement="top">
-              <GripVertical class="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <GripVertical class="w-4 h-4 text-[hsl(var(--text-tertiary))] flex-shrink-0" />
             </t-tooltip>
             <span class="text-base">{{ element.icon }}</span>
             <div class="flex-1 flex items-center gap-2 min-w-0">
               <span class="text-sm font-medium truncate">{{ element.title }}</span>
               <span
                 v-if="!element.enabled"
-                class="text-[10px] px-1.5 py-0.5 rounded bg-gray-200 text-gray-500 flex-shrink-0"
+                class="text-[10px] px-1.5 py-0.5 rounded bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-secondary))] flex-shrink-0"
               >
                 {{ t('editor.hidden') }}
               </span>
@@ -101,7 +101,7 @@
             <div class="overflow-hidden">
               <div class="border-t px-3 py-3">
                 <component :is="getPanel(element.id)" v-if="getPanel(element.id)" />
-                <div v-else class="text-center text-gray-400 py-4">该模块暂无可编辑内容</div>
+                <div v-else class="text-center text-[hsl(var(--text-tertiary))] py-4">该模块暂无可编辑内容</div>
               </div>
             </div>
           </div>

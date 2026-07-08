@@ -23,7 +23,7 @@
       </template>
     </draggable>
 
-    <div v-if="list.length === 0" class="text-center py-8 text-gray-400 border border-dashed rounded">
+    <div v-if="list.length === 0" class="text-center py-8 text-[hsl(var(--text-tertiary))] border border-dashed rounded">
       暂无项目经历，点击右上角添加
     </div>
   </div>

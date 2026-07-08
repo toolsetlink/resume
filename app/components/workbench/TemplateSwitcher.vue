@@ -13,7 +13,7 @@
         class="template-card border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-md"
         :class="{
           'border-primary ring-2 ring-primary/30': isSelected(tpl.config.id),
-          'border-[hsl(var(--border))]': !isSelected(tpl.config.id),
+          'border-[hsl(var(--border-default))]': !isSelected(tpl.config.id),
         }"
         @click="emit('select', tpl.config.id)"
       >
@@ -31,7 +31,7 @@
               {{ t('common.confirm') }}
             </t-tag>
           </div>
-          <p class="text-xs text-gray-500 line-clamp-2">{{ tpl.config.description }}</p>
+          <p class="text-xs text-[hsl(var(--text-secondary))] line-clamp-2">{{ tpl.config.description }}</p>
         </div>
       </div>
     </div>
@@ -74,7 +74,7 @@ const getPreviewData = (templateId: string): ResumeData => ({
 
 <style scoped>
 .template-card {
-  background-color: hsl(var(--card));
+  background-color: hsl(var(--bg-card));
 }
 .line-clamp-2 {
   display: -webkit-box;

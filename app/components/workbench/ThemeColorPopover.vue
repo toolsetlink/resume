@@ -14,7 +14,7 @@
           v-for="color in THEME_COLORS"
           :key="color"
           type="button"
-          class="w-10 h-10 rounded border border-gray-200 cursor-pointer transition-transform hover:scale-110"
+          class="w-10 h-10 rounded border border-[hsl(var(--border-default))] cursor-pointer transition-transform hover:scale-110"
           :class="{ 'ring-2 ring-offset-1 ring-blue-500': isSelected(color) }"
           :style="{ backgroundColor: color }"
           :title="color"
@@ -24,7 +24,7 @@
       <!-- 自定义颜色 -->
       <t-divider />
       <div class="mt-3 space-y-2">
-        <div class="text-xs text-gray-500">{{ t('settings.themeColor') }}</div>
+        <div class="text-xs text-[hsl(var(--text-secondary))]">{{ t('settings.themeColor') }}</div>
         <div class="flex items-center gap-2">
           <t-color-picker v-model="customColor" @change="handleCustomChange" />
           <t-button size="small" @click="emit('select', customColor)">

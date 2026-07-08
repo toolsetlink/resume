@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-1 p-2 border-b border-[hsl(var(--border))] flex-wrap">
+  <div class="flex items-center gap-1 p-2 border-b border-[hsl(var(--border-default))] flex-wrap">
     <!-- 文字格式 -->
     <t-tooltip content="加粗 (Ctrl+B)">
       <t-button variant="text" :class="{ 'is-active': editor?.isActive('bold') }" @click="editor?.chain().focus().toggleBold().run()">
@@ -139,7 +139,7 @@ const handleLinkConfirm = () => {
 
 <style scoped>
 .is-active {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background-color: hsl(var(--bg-subtle));
+  color: hsl(var(--text-primary));
 }
 </style>

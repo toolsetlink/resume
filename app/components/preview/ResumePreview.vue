@@ -6,7 +6,7 @@
       :data="resumeData"
       :template="templateConfig"
     />
-    <div v-else class="flex items-center justify-center h-64 text-gray-400">
+    <div v-else class="flex items-center justify-center h-64 text-[hsl(var(--text-tertiary))]">
       请选择模板
     </div>
   </div>

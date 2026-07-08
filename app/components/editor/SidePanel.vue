@@ -1,7 +1,7 @@
 <template>
   <div class="w-full flex flex-col">
     <div class="px-4 pt-4 pb-2">
-      <h2 class="text-sm font-medium text-gray-600">模块</h2>
+      <h2 class="text-sm font-medium text-[hsl(var(--text-secondary))]">模块</h2>
     </div>
 
     <draggable
@@ -13,8 +13,8 @@
     >
       <template #item="{ element }">
         <div
-          class="flex items-center gap-2 px-2 py-2 rounded cursor-pointer hover:bg-[hsl(var(--muted))]"
-          :class="{ 'bg-[hsl(var(--accent))]': isActive(element.id) }"
+          class="flex items-center gap-2 px-2 py-2 rounded cursor-pointer hover:bg-[hsl(var(--bg-subtle))]"
+          :class="{ 'bg-[hsl(var(--bg-subtle))]': isActive(element.id) }"
           @click="selectSection(element.id)"
         >
           <span class="text-base">{{ element.icon }}</span>

@@ -1,8 +1,8 @@
 <template>
-  <div class="border border-[hsl(var(--border))] rounded-md mb-2">
+  <div class="border border-[hsl(var(--border-default))] rounded-md mb-2">
     <!-- 折叠头 -->
-    <div class="flex items-center gap-2 p-3 bg-[hsl(var(--muted))]">
-      <button class="drag-handle cursor-move text-gray-400 hover:text-gray-600" title="拖动排序">
+    <div class="flex items-center gap-2 p-3 bg-[hsl(var(--bg-subtle))]">
+      <button class="drag-handle cursor-move text-[hsl(var(--text-tertiary))] hover:text-[hsl(var(--text-secondary))]" title="拖动排序">
         <GripVertical class="w-4 h-4" />
       </button>
       <t-button variant="text" size="small" @click="collapsed = !collapsed">
@@ -11,9 +11,9 @@
       </t-button>
       <div class="flex-1 truncate">
         <span class="font-medium">{{ local.name || '未填写项目名' }}</span>
-        <span v-if="local.role" class="text-gray-500 ml-2">· {{ local.role }}</span>
+        <span v-if="local.role" class="text-[hsl(var(--text-secondary))] ml-2">· {{ local.role }}</span>
       </div>
-      <span v-if="status === 'saving'" class="text-xs text-gray-400 ml-2">保存中...</span>
+      <span v-if="status === 'saving'" class="text-xs text-[hsl(var(--text-tertiary))] ml-2">保存中...</span>
       <span v-else-if="status === 'saved'" class="text-xs text-green-500 ml-2">已保存</span>
       <t-tooltip content="可见性">
         <t-switch v-model="local.visible" size="small" @change="commit" />

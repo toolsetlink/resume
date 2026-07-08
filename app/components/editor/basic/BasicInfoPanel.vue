@@ -14,9 +14,9 @@
     <div class="space-y-2">
       <h3 class="text-base font-medium">照片</h3>
       <div class="flex items-center gap-4">
-        <div class="w-24 h-32 border rounded overflow-hidden bg-gray-50 flex items-center justify-center">
+        <div class="w-24 h-32 border rounded overflow-hidden bg-[hsl(var(--bg-base))] flex items-center justify-center">
           <img v-if="photo" :src="photo" class="w-full h-full object-cover" />
-          <span v-else class="text-xs text-gray-400">无照片</span>
+          <span v-else class="text-xs text-[hsl(var(--text-tertiary))]">无照片</span>
         </div>
         <div class="flex flex-col gap-2">
           <t-upload :show-upload-progress="false" :auto-upload="false" @select-change="handlePhotoSelect">

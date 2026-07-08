@@ -1,202 +1,235 @@
 @import "tailwindcss";
 
-/* 自由简历 - 苹果设计风格主题系统（Apple Design Language）
-   色值参考 Apple Human Interface Guidelines 与 apple.com 视觉系统 */
+/* ========================================
+   自由简历 — 设计系统 Token
+   基于 Tool-First 工具质感 + Paper-First 纸张质感混合方案
+   ======================================== */
+
 :root {
-  /* 背景与前景：纯净的灰白与近黑 */
-  --background: 240 20% 99%;          /* #fbfbfd Apple off-white */
-  --foreground: 240 10% 9%;          /* #1d1d1f Apple near-black */
-  --card: 0 0% 100%;                 /* #ffffff */
-  --card-foreground: 240 10% 9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 9%;
-  /* 主色：Apple Blue #0071e3 */
-  --primary: 211 100% 45%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 14% 96%;
-  --secondary-foreground: 240 10% 9%;
-  --muted: 240 14% 96%;
-  --muted-foreground: 240 4% 46%;   /* #6e6e73 */
-  --accent: 240 14% 96%;
-  --accent-foreground: 240 10% 9%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 240 9% 85%;              /* #d2d2d7 */
-  --input: 240 9% 85%;
-  --ring: 211 100% 45%;
-  --radius: 0.75rem;                 /* 12px Apple 卡片圆角 */
+  /* --- 背景层 --- */
+  --bg-base: 225 20% 97%;          /* #F5F6FA — 极浅冷灰 */
+  --bg-card: 0 0% 100%;            /* #FFFFFF — 卡片白 */
+  --bg-subtle: 225 14% 95%;        /* #EEEFF2 — 浅灰背景（悬停/条项） */
+  --bg-canvas: 40 18% 96%;         /* #F5F2ED — 纸张底色（预览区） */
+  --bg-canvas-paper: 0 0% 100%;    /* #FFFFFF — 纸上纯白（A4 区域） */
 
-  /* 苹果风格阴影分层系统 */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8px 24px -6px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 16px 48px -12px rgba(0, 0, 0, 0.10), 0 4px 12px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 32px 80px -20px rgba(0, 0, 0, 0.14), 0 8px 24px rgba(0, 0, 0, 0.06);
+  /* --- 文字层级 --- */
+  --text-primary: 225 14% 18%;     /* #282A2E — 正文深灰 */
+  --text-secondary: 225 10% 46%;   /* #6A6D74 — 辅助文字 */
+  --text-tertiary: 225 8% 62%;     /* #9699A0 — 占位/禁用 */
+  --text-inverse: 0 0% 100%;       /* #FFFFFF — 反色 */
 
-  /* 苹果风格缓动曲线 */
-  --ease-apple: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* --- 边框 --- */
+  --border-default: 225 14% 90%;   /* #E1E3E8 */
+  --border-hover: 225 12% 82%;     /* #CBCED4 */
+
+  /* --- 品牌色: Indigo --- */
+  --brand: 235 70% 50%;            /* #2D3FE0 */
+  --brand-hover: 235 65% 44%;      /* #2332C4 */
+  --brand-light: 235 60% 96%;      /* #EEF0FF */
+
+  /* --- 语义色 --- */
+  --accent: 15 75% 50%;            /* #D95C2B — 暖橙点缀 */
+  --success: 160 55% 40%;          /* #2E9E6E */
+  --warning: 35 85% 50%;           /* #E88B1E */
+  --danger: 0 65% 50%;             /* #D13030 */
+
+  /* --- 圆角 --- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /* --- 阴影 --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.10);
+
+  /* --- 过渡 --- */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ======== 暗色模式 ======== */
+.dark {
+  --bg-base: 225 16% 8%;           /* #0F1012 */
+  --bg-card: 225 14% 12%;          /* #18191D */
+  --bg-subtle: 225 14% 16%;        /* #212226 */
+  --bg-canvas: 40 10% 12%;         /* #1F1D19 */
+  --bg-canvas-paper: 0 0% 100%;    /* 保持白纸 */
+
+  --text-primary: 225 14% 92%;     /* #E6E8ED */
+  --text-secondary: 225 10% 60%;   /* #91959C */
+  --text-tertiary: 225 8% 40%;     /* #5E6066 */
+  --text-inverse: 0 0% 100%;
+
+  --border-default: 225 12% 22%;   /* #303238 */
+  --border-hover: 225 10% 32%;     /* #484A50 */
+
+  --brand: 235 65% 60%;            /* #5A6BFF */
+  --brand-hover: 235 60% 52%;      /* #3D4EE0 */
+  --brand-light: 235 40% 18%;      /* #1E1F3A */
+}
+
+/* ======== TDesign 主题覆盖（使用自定义品牌色） ======== */
+:root {
+  --td-brand-color-1: hsl(235 70% 94%);
+  --td-brand-color-2: hsl(235 70% 84%);
+  --td-brand-color-3: hsl(235 70% 70%);
+  --td-brand-color-4: hsl(235 70% 58%);
+  --td-brand-color-5: hsl(235 70% 50%);
+  --td-brand-color-6: hsl(235 65% 44%);
+  --td-brand-color-7: hsl(235 60% 38%);
+  --td-brand-color-8: hsl(235 55% 30%);
+  --td-brand-color: var(--td-brand-color-5);
+  --td-bg-color-page: hsl(var(--bg-base));
+  --td-bg-color-container: hsl(var(--bg-card));
+  --td-text-color-primary: hsl(var(--text-primary));
+  --td-text-color-secondary: hsl(var(--text-secondary));
+  --td-radius-small: var(--radius-sm);
+  --td-radius-default: var(--radius-md);
+  --td-radius-medium: var(--radius-lg);
+  --td-radius-large: var(--radius-xl);
 }
 
 .dark {
-  --background: 0 0% 0%;              /* #000000 Apple 纯黑 */
-  --foreground: 240 14% 97%;         /* #f5f5f7 */
-  --card: 240 6% 12%;               /* #1d1d1f */
-  --card-foreground: 240 14% 97%;
-  --popover: 240 6% 12%;
-  --popover-foreground: 240 14% 97%;
-  --primary: 211 100% 55%;          /* 暗色提亮 */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 4% 16%;
-  --secondary-foreground: 240 14% 97%;
-  --muted: 240 4% 16%;
-  --muted-foreground: 240 5% 64%;   /* #86868b */
-  --accent: 240 4% 16%;
-  --accent-foreground: 240 14% 97%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 240 14% 97%;
-  --border: 240 4% 20%;             /* #424245 */
-  --input: 240 4% 20%;
-  --ring: 211 100% 55%;
+  --td-brand-color-1: hsl(235 40% 18%);
+  --td-brand-color-5: hsl(235 65% 60%);
+  --td-brand-color-6: hsl(235 60% 52%);
+  --td-brand-color: var(--td-brand-color-5);
+  --td-bg-color-page: hsl(var(--bg-base));
+  --td-bg-color-container: hsl(var(--bg-card));
+  --td-text-color-primary: hsl(var(--text-primary));
+  --td-text-color-secondary: hsl(var(--text-secondary));
 }
 
+/* ======== 全局重置 ======== */
 * {
-  border-color: hsl(var(--border));
+  border-color: hsl(var(--border-default));
 }
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  /* 苹果风格字体栈：SF Pro 优先，系统字体回退 */
-  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background-color: hsl(var(--bg-base));
+  color: hsl(var(--text-primary));
+  font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "kern" 1, "liga" 1;
   text-rendering: optimizeLegibility;
 }
 
-/* 苹果风格排版基础：负字距优化大字号可读性 */
+/* ======== 排版 ======== */
 h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.022em;
-  font-feature-settings: "kern" 1, "liga" 1, "ss01" 1;
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 
-/* 落地页入场动画（苹果式流畅缓动） */
-@keyframes landing-fade-in {
+/* ======== 动效 ======== */
+@keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.98);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes landing-fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(32px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes landing-card-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.fade-in-up {
+  animation: fade-in-up 0.5s var(--ease-default) both;
 }
 
-@keyframes apple-fade-scale {
-  from {
-    opacity: 0;
-    transform: scale(1.02);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.fade-in {
+  animation: fade-in 0.4s var(--ease-default) both;
 }
 
-.landing-fade-in {
-  animation: landing-fade-in 0.8s var(--ease-apple) both;
-}
-
-.landing-fade-in-up {
-  animation: landing-fade-in-up 0.9s var(--ease-apple) 0.15s both;
-}
-
-.landing-card {
-  animation: landing-card-in 0.7s var(--ease-apple) both;
-}
-
-/* 尊重 prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .landing-fade-in,
-  .landing-fade-in-up,
-  .landing-card {
+  .fade-in-up,
+  .fade-in {
     animation: none;
   }
 }
 
-/* 苹果风格滚动条：精致克制 */
+/* ======== 滚动条 ======== */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 10px;
+  background-color: hsl(var(--text-tertiary) / 0.3);
+  border-radius: var(--radius-full);
   border: 2px solid transparent;
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--muted-foreground) / 0.5);
+  background-color: hsl(var(--text-secondary) / 0.5);
   background-clip: content-box;
 }
 
-/* 苹果风格选区颜色 */
+/* ======== 选区 ======== */
 ::selection {
-  background-color: hsl(var(--primary) / 0.2);
-  color: hsl(var(--foreground));
+  background-color: hsl(var(--brand) / 0.2);
+  color: hsl(var(--text-primary));
 }
 
-/* 模块卡片高亮闪烁动画（启用模块后反馈） */
+/* ======== 模块卡片闪烁动画 ======== */
 @keyframes highlight-flash {
   0% {
-    background-color: hsl(var(--primary) / 0.15);
-    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.4);
+    background-color: hsl(var(--brand) / 0.15);
+    box-shadow: 0 0 0 2px hsl(var(--brand) / 0.4);
   }
   100% {
-    background-color: hsl(var(--card));
+    background-color: hsl(var(--bg-card));
     box-shadow: 0 0 0 0 transparent;
   }
 }
 
 .highlight-flash {
-  animation: highlight-flash 0.6s var(--ease-apple);
+  animation: highlight-flash 0.6s var(--ease-default);
 }
 
-/* 尊重 prefers-reduced-motion：禁用闪烁动画 */
 @media (prefers-reduced-motion: reduce) {
   .highlight-flash {
     animation: none;
   }
 }
 
-/* PDF 导出分页规则：避免在 section/卡片/列表项内部断页
-   配合 html2pdf.js 的 pagebreak.css 模式生效 */
+/* ======== Splitpanes 分割条 ======== */
+.splitpanes__splitter {
+  background-color: hsl(var(--border-default));
+  position: relative;
+}
+.splitpanes--vertical > .splitpanes__splitter {
+  width: 1px;
+  min-width: 1px;
+}
+.splitpanes--horizontal > .splitpanes__splitter {
+  height: 1px;
+  min-height: 1px;
+}
+.splitpanes__splitter:hover {
+  background-color: hsl(var(--brand));
+}
+.splitpanes__splitter::before {
+  display: none;
+}
+.splitpanes.default-theme .splitpanes__splitter {
+  background-color: hsl(var(--border-default));
+}
+.splitpanes.default-theme .splitpanes__splitter:hover {
+  background-color: hsl(var(--brand));
+}
+
+/* ======== PDF 导出分页规则 ======== */
 @media print {
   .experience-item,
   .education-item,

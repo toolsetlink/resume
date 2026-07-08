@@ -9,7 +9,7 @@
     </div>
 
     <!-- 当前激活简历提示 -->
-    <div v-if="activeResume" class="mb-4 text-sm text-gray-500">
+    <div v-if="activeResume" class="mb-4 text-sm text-[hsl(var(--text-secondary))]">
       {{ t('templates.currentTemplate') }}：
       <t-tag theme="primary" variant="light" size="small">
         {{ currentTemplateName }}
@@ -24,7 +24,7 @@
         class="template-card border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-md"
         :class="{
           'border-primary ring-2 ring-primary/30': isSelected(tpl.config.id),
-          'border-[hsl(var(--border))]': !isSelected(tpl.config.id),
+          'border-[hsl(var(--border-default))]': !isSelected(tpl.config.id),
         }"
         @click="selectTemplate(tpl.config.id)"
       >
@@ -32,7 +32,7 @@
         <div
           class="aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-200 flex items-center justify-center"
         >
-          <div class="text-gray-400 text-sm text-center">
+          <div class="text-[hsl(var(--text-tertiary))] text-sm text-center">
             <LayoutTemplate class="w-8 h-8 mx-auto mb-2" />
             {{ tpl.config.name }}
           </div>
@@ -45,20 +45,20 @@
               {{ t('templates.currentTemplate') }}
             </t-tag>
           </div>
-          <p class="text-xs text-gray-500 line-clamp-2 mb-2">
+          <p class="text-xs text-[hsl(var(--text-secondary))] line-clamp-2 mb-2">
             {{ tpl.config.description }}
           </p>
           <div class="flex items-center gap-1">
             <span
-              class="inline-block w-3 h-3 rounded-full border border-gray-200"
+              class="inline-block w-3 h-3 rounded-full border border-[hsl(var(--border-default))]"
               :style="{ backgroundColor: tpl.config.colorScheme.primary }"
             />
             <span
-              class="inline-block w-3 h-3 rounded-full border border-gray-200"
+              class="inline-block w-3 h-3 rounded-full border border-[hsl(var(--border-default))]"
               :style="{ backgroundColor: tpl.config.colorScheme.secondary }"
             />
             <span
-              class="inline-block w-3 h-3 rounded-full border border-gray-200"
+              class="inline-block w-3 h-3 rounded-full border border-[hsl(var(--border-default))]"
               :style="{ backgroundColor: tpl.config.colorScheme.text }"
             />
           </div>
@@ -67,7 +67,7 @@
     </div>
 
     <!-- 无激活简历时的提示 -->
-    <div v-if="!activeResume" class="text-center py-12 text-gray-400">
+    <div v-if="!activeResume" class="text-center py-12 text-[hsl(var(--text-tertiary))]">
       <LayoutTemplate class="w-10 h-10 mx-auto mb-3" />
       <p>{{ t('resume.empty') }}</p>
     </div>
@@ -131,7 +131,7 @@ useHead({ title: `${t('nav.templates')} - 自由简历` })
 
 <style scoped>
 .template-card {
-  background-color: hsl(var(--card));
+  background-color: hsl(var(--bg-card));
 }
 .line-clamp-2 {
   display: -webkit-box;

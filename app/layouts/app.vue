@@ -1,5 +1,5 @@
 <template>
-  <div class="app-layout min-h-screen bg-[hsl(var(--background))]">
+  <div class="app-layout min-h-screen bg-[hsl(var(--bg-base))]">
     <slot />
   </div>
 </template>
