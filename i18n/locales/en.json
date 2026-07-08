@@ -1,0 +1,214 @@
+{
+  "common": {
+    "appName": "ZiYou Resume",
+    "tagline": "Privacy-first online resume editor",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "create": "Create",
+    "duplicate": "Duplicate",
+    "import": "Import",
+    "export": "Export",
+    "preview": "Preview",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "settings": "Settings"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "My Resumes",
+    "templates": "Templates",
+    "settings": "Settings",
+    "workbench": "Workbench"
+  },
+  "templates": {
+    "selectTemplate": "Select Template",
+    "currentTemplate": "Current",
+    "switchSuccess": "Template switched"
+  },
+  "workbench": {
+    "collapseSidebar": "Collapse Sidebar"
+  },
+  "resume": {
+    "create": "Create Resume",
+    "delete": "Delete Resume",
+    "duplicate": "Duplicate Resume",
+    "empty": "No resumes yet, click to create your first one",
+    "sections": {
+      "basic": "Profile",
+      "skills": "Skills",
+      "experience": "Experience",
+      "projects": "Projects",
+      "education": "Education",
+      "certificates": "Certificates",
+      "selfEvaluation": "Self Evaluation",
+      "custom": "Custom"
+    }
+  },
+  "editor": {
+    "modules": "Modules",
+    "addModule": "Add Module",
+    "moduleLibrary": "Module Library",
+    "enable": "Enable",
+    "enabled": "Enabled",
+    "allEnabled": "All modules are enabled",
+    "moveUp": "Move Up",
+    "moveDown": "Move Down",
+    "dragToSort": "Drag to sort",
+    "toggleVisibility": "Show/Hide module",
+    "hidden": "Hidden",
+    "gotIt": "Got it",
+    "guideTip": "Drag module cards to reorder, click a card to expand and edit",
+    "basicInfo": {
+      "name": "Name",
+      "title": "Title",
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "birthDate": "Birth Date",
+      "age": "Age",
+      "website": "Personal Website",
+      "status": "Employment Status",
+      "photo": "Photo"
+    },
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strike": "Strikethrough",
+      "color": "Color",
+      "highlight": "Highlight",
+      "alignLeft": "Align Left",
+      "alignCenter": "Align Center",
+      "alignRight": "Align Right",
+      "bulletList": "Bullet List",
+      "orderedList": "Ordered List",
+      "link": "Link"
+    }
+  },
+  "ai": {
+    "polish": "AI Polish",
+    "grammarCheck": "Grammar Check",
+    "import": "AI Import",
+    "config": "AI Configuration",
+    "selectProvider": "Select Provider",
+    "apiKey": "API Key",
+    "modelId": "Model ID",
+    "endpoint": "API Endpoint",
+    "providers": {
+      "doubao": "Doubao",
+      "deepseek": "DeepSeek",
+      "openai": "OpenAI Compatible",
+      "gemini": "Google Gemini"
+    }
+  },
+  "settings": {
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language",
+    "font": "Font",
+    "themeColor": "Theme Color"
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "templates": "Templates",
+      "faq": "FAQ",
+      "start": "Get Started"
+    },
+    "hero": {
+      "badge": "Privacy-first · Local storage",
+      "title": "Craft a professional resume, land your offer",
+      "subtitle": "ZiYou Resume is a free, privacy-first online resume editor. Multiple templates, AI polishing, grammar check, and PDF export — everything you need for your job hunt.",
+      "cta": {
+        "create": "Create Now",
+        "templates": "View Templates"
+      },
+      "preview": {
+        "name": "John Doe",
+        "title": "Senior Frontend Engineer",
+        "section1": "Experience",
+        "section2": "Projects",
+        "section3": "Skills"
+      }
+    },
+    "templatePreview": {
+      "title": "Curated Resume Templates",
+      "subtitle": "4 carefully designed professional templates, switch and preview in one click",
+      "useThis": "Use This Template"
+    },
+    "features": {
+      "title": "Core features built for job seekers",
+      "subtitle": "From templates to export, every detail is designed to boost your interview pass rate",
+      "items": {
+        "templates": {
+          "title": "Multiple Templates",
+          "desc": "4 carefully designed professional templates covering different industries and roles, switchable in one click."
+        },
+        "ai": {
+          "title": "AI Polishing",
+          "desc": "Supports Doubao, DeepSeek, OpenAI, and Gemini. Let AI refine your wording and expression."
+        },
+        "grammar": {
+          "title": "Grammar Check",
+          "desc": "Real-time detection of spelling and grammar errors, ensuring every submission is professional."
+        },
+        "pdf": {
+          "title": "PDF Export",
+          "desc": "One-click export of high-definition PDF, preserving original layout and fonts for consistent HR-side rendering."
+        },
+        "preview": {
+          "title": "Real-time Preview",
+          "desc": "What-you-see-is-what-you-get editing experience, with every change instantly reflected in the resume preview."
+        },
+        "sync": {
+          "title": "Local Storage",
+          "desc": "Data is stored in your browser locally. No account needed, your privacy never leaves your device."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Free, no registration. Build your professional resume in minutes.",
+      "button": "Get Started"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": {
+        "free": {
+          "q": "Is ZiYou Resume free?",
+          "a": "Yes. ZiYou Resume is completely free, with no paid features or subscriptions. All features are available directly."
+        },
+        "privacy": {
+          "q": "Will my resume data be uploaded to a server?",
+          "a": "No. All resume data is stored in your browser's local storage. Unless you actively export it, the data never leaves your device."
+        },
+        "ai": {
+          "q": "What do I need to configure to use AI polishing?",
+          "a": "You need to fill in an API Key from any AI provider (such as Doubao, DeepSeek, OpenAI, or Gemini) in settings. Requests go directly from your browser to the provider, without passing through our server."
+        },
+        "export": {
+          "q": "Will the exported PDF have a watermark?",
+          "a": "No. The exported PDF is completely watermark-free, with layout identical to what you see in the editor preview."
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2025 ZiYou Resume. All rights reserved.",
+      "links": {
+        "github": "GitHub",
+        "privacy": "Privacy",
+        "terms": "Terms"
+      }
+    }
+  }
+}
