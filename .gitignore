@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Nuxt (legacy build artifacts)
+.nuxt/
+.output/
+dist/
+
+# test artifacts
+test-results/
+playwright-report/
+
+# IDE
+.idea/
+*.iml
