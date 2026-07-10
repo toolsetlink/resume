@@ -1,0 +1,290 @@
+// 初始简历数据 - 自由简历项目
+import { DEFAULT_FIELD_ORDER } from './constants'
+import {
+  DEFAULT_PHOTO_CONFIG,
+  type GlobalSettings,
+  type MenuSection,
+  type ResumeData,
+} from '@/shared/types/resume'
+
+// 初始全局设置
+export const initialGlobalSettings: GlobalSettings = {
+  baseFontSize: 16,
+  pagePadding: 32,
+  paragraphSpacing: 12,
+  lineHeight: 1.5,
+  sectionSpacing: 10,
+  headerSize: 18,
+  subheaderSize: 16,
+  useIconMode: true,
+  themeColor: '#000000',
+  centerSubtitle: true,
+}
+
+// 中文初始简历数据（示例）
+export const initialResumeState = {
+  title: '新建简历',
+  basic: {
+    name: '李明',
+    title: '高级前端工程师',
+    employementStatus: '在职',
+    email: 'liming@example.com',
+    phone: '13800138000',
+    location: '北京市海淀区',
+    birthDate: '1995-03',
+    age: '28',
+    fieldOrder: DEFAULT_FIELD_ORDER,
+    icons: {
+      email: 'Mail',
+      phone: 'Phone',
+      birthDate: 'CalendarRange',
+      employementStatus: 'Briefcase',
+      location: 'MapPin',
+    },
+    photoConfig: DEFAULT_PHOTO_CONFIG,
+    customFields: [
+      {
+        id: 'personal',
+        label: '个人网站',
+        value: 'https://liming.dev',
+        icon: 'Globe',
+      },
+    ],
+    photo: '',
+  },
+  education: [
+    {
+      id: '1',
+      school: '清华大学',
+      major: '计算机科学与技术',
+      degree: '本科',
+      startDate: '2013-09',
+      endDate: '2017-06',
+      visible: true,
+      gpa: '',
+      description:
+        '<ul><li>主修课程：数据结构、算法设计、操作系统、计算机网络</li><li>专业排名前 10%</li></ul>',
+    },
+  ],
+  skillContent:
+    '<ul><li>前端框架：Vue、React，熟悉 Nuxt、Next.js</li><li>开发语言：TypeScript、JavaScript(ES6+)</li><li>UI 样式：Tailwind CSS、Sass</li><li>工程化：Vite、Webpack、ESLint</li></ul>',
+  skills: [
+    {
+      id: 's1',
+      name: '前端框架',
+      level: 0,
+      details: '<ul><li>Vue、React，熟悉 Nuxt、Next.js</li></ul>',
+      visible: true,
+    },
+    {
+      id: 's2',
+      name: '开发语言',
+      level: 0,
+      details: '<ul><li>TypeScript、JavaScript(ES6+)</li></ul>',
+      visible: true,
+    },
+    {
+      id: 's3',
+      name: 'UI 样式',
+      level: 0,
+      details: '<ul><li>Tailwind CSS、Sass</li></ul>',
+      visible: true,
+    },
+    {
+      id: 's4',
+      name: '工程化',
+      level: 0,
+      details: '<ul><li>Vite、Webpack、ESLint</li></ul>',
+      visible: true,
+    },
+  ],
+  selfEvaluationContent: '',
+  certificatesContent: '',
+  experience: [
+    {
+      id: '1',
+      company: '某科技公司',
+      position: '前端工程师',
+      date: '2017.07 - 至今',
+      visible: true,
+      details:
+        '<ul><li>负责公司核心产品的前端开发</li><li>优化性能，首屏加载提升 40%</li></ul>',
+    },
+  ],
+  draggingProjectId: null,
+  projects: [
+    {
+      id: 'p1',
+      name: '企业中台系统',
+      role: '前端负责人',
+      date: '2020.06 - 2023.12',
+      description:
+        '<ul><li>基于 Vue 3 + TypeScript 开发</li><li>组件库设计，复用率提升 60%</li></ul>',
+      visible: true,
+    },
+  ],
+  menuSections: [
+    { id: 'basic', title: '基本信息', icon: '👤', enabled: true, order: 0 },
+    { id: 'skills', title: '专业技能', icon: '⚡', enabled: true, order: 1 },
+    { id: 'experience', title: '工作经验', icon: '💼', enabled: true, order: 2 },
+    { id: 'projects', title: '项目经历', icon: '🚀', enabled: true, order: 3 },
+    { id: 'education', title: '教育经历', icon: '🎓', enabled: true, order: 4 },
+  ],
+  certificates: [],
+  customData: {},
+  activeSection: 'basic',
+  globalSettings: initialGlobalSettings,
+}
+
+// 英文初始简历数据
+export const initialResumeStateEn = {
+  ...initialResumeState,
+  title: 'New Resume',
+  basic: {
+    ...initialResumeState.basic,
+    name: 'John Smith',
+    title: 'Senior Frontend Engineer',
+    employementStatus: 'Available',
+    email: 'john.smith@example.com',
+    phone: '555-123-4567',
+    location: 'San Francisco, CA',
+    birthDate: '',
+    age: '',
+    customFields: [],
+  },
+  education: [
+    {
+      id: '1',
+      school: 'Stanford University',
+      major: 'Computer Science',
+      degree: 'Bachelor',
+      startDate: '2013-09',
+      endDate: '2017-06',
+      visible: true,
+      gpa: '',
+      description:
+        '<ul><li>Core courses: Data Structures, Algorithms, Operating Systems</li><li>Top 10% of class</li></ul>',
+    },
+  ],
+  experience: [
+    {
+      id: '1',
+      company: 'Tech Company',
+      position: 'Frontend Engineer',
+      date: '2017.07 - Present',
+      visible: true,
+      details:
+        '<ul><li>Lead frontend development for core products</li><li>Improved performance, reduced first-screen load by 40%</li></ul>',
+    },
+  ],
+  projects: [
+    {
+      id: 'p1',
+      name: 'Enterprise Platform',
+      role: 'Frontend Lead',
+      date: '2020.06 - 2023.12',
+      description:
+        '<ul><li>Built with Vue 3 + TypeScript</li><li>Component library design, reuse rate up 60%</li></ul>',
+      visible: true,
+    },
+  ],
+  menuSections: [
+    { id: 'basic', title: 'Profile', icon: '👤', enabled: true, order: 0 },
+    { id: 'skills', title: 'Skills', icon: '⚡', enabled: true, order: 1 },
+    { id: 'experience', title: 'Experience', icon: '💼', enabled: true, order: 2 },
+    { id: 'projects', title: 'Projects', icon: '🚀', enabled: true, order: 3 },
+    { id: 'education', title: 'Education', icon: '🎓', enabled: true, order: 4 },
+  ],
+  skills: [
+    {
+      id: 's1',
+      name: 'Frontend Frameworks',
+      level: 0,
+      details: '<ul><li>Vue, React, familiar with Nuxt, Next.js</li></ul>',
+      visible: true,
+    },
+    {
+      id: 's2',
+      name: 'Languages',
+      level: 0,
+      details: '<ul><li>TypeScript, JavaScript (ES6+)</li></ul>',
+      visible: true,
+    },
+    {
+      id: 's3',
+      name: 'Styling',
+      level: 0,
+      details: '<ul><li>Tailwind CSS, Sass</li></ul>',
+      visible: true,
+    },
+    {
+      id: 's4',
+      name: 'Tooling',
+      level: 0,
+      details: '<ul><li>Vite, Webpack, ESLint</li></ul>',
+      visible: true,
+    },
+  ],
+}
+
+// 基本信息菜单模块（向后兼容保留）
+const BASIC_MENU_SECTION: MenuSection = {
+  id: 'basic',
+  title: '基本信息',
+  icon: '👤',
+  enabled: true,
+  order: 0,
+}
+
+// 空白简历默认模块列表（全部 8 个模块，前 5 个默认开启，后 3 个默认关闭）
+export const DEFAULT_MENU_SECTIONS: MenuSection[] = [
+  { id: 'basic', title: '基本信息', icon: '👤', enabled: true, order: 0 },
+  { id: 'skills', title: '专业技能', icon: '⚡', enabled: true, order: 1 },
+  { id: 'experience', title: '工作经验', icon: '💼', enabled: true, order: 2 },
+  { id: 'projects', title: '项目经历', icon: '🚀', enabled: true, order: 3 },
+  { id: 'education', title: '教育经历', icon: '🎓', enabled: true, order: 4 },
+  { id: 'certificates', title: '证书', icon: '📜', enabled: false, order: 5 },
+  { id: 'selfEvaluation', title: '自我评价', icon: '✍️', enabled: false, order: 6 },
+  { id: 'custom', title: '自定义', icon: '⚙️', enabled: false, order: 7 },
+]
+
+// 空白简历（用于新建）
+export const blankResumeState = {
+  ...initialResumeState,
+  title: '新建简历',
+  basic: {
+    ...initialResumeState.basic,
+    name: '',
+    title: '',
+    email: '',
+    phone: '',
+    location: '',
+    birthDate: '',
+    employementStatus: '',
+    photo: '',
+    customFields: [],
+  },
+  education: [],
+  skillContent: '',
+  skills: [],
+  selfEvaluationContent: '',
+  certificatesContent: '',
+  experience: [],
+  projects: [],
+  certificates: [],
+  menuSections: DEFAULT_MENU_SECTIONS,
+}
+
+// 创建新简历的工厂函数
+export function createNewResume(title: string = '新建简历'): ResumeData {
+  const now = new Date().toISOString()
+  // blankResumeState 中已包含 title 字段，这里显式覆盖
+  return {
+    ...blankResumeState,
+    id: crypto.randomUUID(),
+    title,
+    createdAt: now,
+    updatedAt: now,
+    templateId: null,
+  }
+}
