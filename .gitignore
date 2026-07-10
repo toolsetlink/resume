@@ -52,3 +52,5 @@ playwright-report/
 # IDE
 .idea/
 *.iml
+dist/
+deploy.log
