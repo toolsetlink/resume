@@ -1,22 +1,45 @@
 #!/bin/bash
 set -e
 
+# 日志文件（早期定义，让 .env 缺失错误也能落盘）
+LOG_FILE="${LOG_FILE:-deploy.log}"
+
 # ============================================
 # 一键部署脚本 — 自由简历
 # 用法: bash deploy.sh
 # 前置条件: 安装 sshpass (brew install sshpass)
-# 首次使用: 修改下方服务器配置
+# 配置:
+#   - 复制 .env.example → .env，填好 SERVER_* 值
+#   - .env 已 .gitignore，不会入 git
+#   - 注意：原版硬编码的 SERVER_PASS 在老 commit 历史里，建议同时改真实服务器密码
 # ============================================
 
-# --- 服务器配置 ---
-SERVER_IP="82.156.105.87"
-SERVER_USER="root"
-SERVER_PASS="Sj13051570639"
-SERVER_PATH="/www/wwwroot/resume.toolsetlink.com"
+# 加载 .env（存在则 source，不存在报错并提示复制 .env.example）
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+else
+  echo "[$(date '+%H:%M:%S')] 错误: 缺少 .env — 复制 .env.example → .env 并填值" | tee -a "$LOG_FILE"
+  exit 1
+fi
 
-# --- 构建配置 ---
-BUILD_DIR=".output/public"
-LOG_FILE="deploy.log"
+# --- 服务器配置（必填项） ---
+: "${SERVER_IP:?SERVER_IP 未设置}"
+: "${SERVER_USER:?SERVER_USER 未设置}"
+: "${SERVER_PASS:?SERVER_PASS 未设置}"
+: "${SERVER_PATH:?SERVER_PATH 未设置}"
+
+# --- 构建配置（按 NEXT_DEPLOY_MODE 切换输出目录） ---
+# - server: Next.js 默认 next build，server bundle 到 .next/（需 Node 进程跑 next start）
+# - export: next.config.ts 设 output: 'export'，静态产物到 out/（纯静态，可直接 nginx 跑）
+NEXT_DEPLOY_MODE="${NEXT_DEPLOY_MODE:-server}"
+case "$NEXT_DEPLOY_MODE" in
+  server)  BUILD_DIR=".next"          ; BUILD_CMD="pnpm build" ;;
+  export)  BUILD_DIR="out"            ; BUILD_CMD="pnpm build" ;;
+  *)       echo "[$(date '+%H:%M:%S')] 错误: NEXT_DEPLOY_MODE=$NEXT_DEPLOY_MODE 不支持（只支持 server / export）"; exit 1 ;;
+esac
 
 log() {
   local msg="[$(date '+%H:%M:%S')] $1"
@@ -29,7 +52,6 @@ if ! command -v sshpass &>/dev/null; then
   log "错误: 请先安装 sshpass → brew install sshpass"
   exit 1
 fi
-
 if ! command -v rsync &>/dev/null; then
   log "错误: 未安装 rsync"
   exit 1
@@ -42,14 +64,14 @@ sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=accept-new -o ConnectTime
   exit 1
 }
 
-# 3. 构建静态站点
-log "构建项目..."
-pnpm generate
+# 3. 构建
+log "构建项目 (mode=$NEXT_DEPLOY_MODE, cmd=$BUILD_CMD)..."
+$BUILD_CMD
 log "构建完成"
 
 # 4. 校验构建产物
 if [ ! -d "$BUILD_DIR" ]; then
-  log "错误: 构建产物目录 $BUILD_DIR 不存在"
+  log "错误: 构建产物目录 $BUILD_DIR 不存在（确认 NEXT_DEPLOY_MODE 与 next.config.ts 一致）"
   exit 1
 fi
 
