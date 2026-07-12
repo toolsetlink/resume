@@ -22,7 +22,7 @@ export function ProfessionalTemplate({ data, template }: ProfessionalTemplatePro
   }), [template, data.globalSettings])
 
   return (
-    <div className="flex flex-col w-full min-h-full" style={{ ...containerStyle, fontFamily: "'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" }}>
+    <div className="flex flex-col w-full min-h-full" data-template={template.id} style={{ ...containerStyle, fontFamily: "'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" }}>
       {sections}
     </div>
   )

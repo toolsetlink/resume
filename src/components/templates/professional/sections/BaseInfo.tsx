@@ -61,7 +61,7 @@ export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
   [basic.customFields])
 
   return (
-    <div className={`flex gap-5 items-start mb-4 ${layoutClass}`} style={{ color: template.colorScheme.text, fontSize: baseFontSize, lineHeight: String(globalSettings?.lineHeight || 1.6) }}>
+    <div className={`flex gap-5 items-start mb-4 ${layoutClass} ${template.id}-base-info`} data-template={template.id} style={{ color: template.colorScheme.text, fontSize: baseFontSize, lineHeight: String(globalSettings?.lineHeight || 1.6) }}>
       {showPhoto && (
         <div className="flex-shrink-0 overflow-hidden bg-[#f3f4f6]" style={photoWrapperStyle}>
           {basic.photo ? (
@@ -76,7 +76,7 @@ export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
 
       <div>
         {basic.name && (
-          <h1 style={{ fontSize: headerSize + 8, fontWeight: 700, color: themeColor, marginBottom: 4 }}>
+          <h1 className="name" style={{ fontSize: headerSize + 8, fontWeight: 700, color: themeColor, marginBottom: 4 }}>
             {basic.name}
           </h1>
         )}
