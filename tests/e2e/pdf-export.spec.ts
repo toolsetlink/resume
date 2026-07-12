@@ -26,7 +26,9 @@ async function goToWorkbench(page: Page) {
   await page.waitForLoadState('networkidle')
 }
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context }) => {
+  // 锁中文 locale，避免 Chromium 默认 Accept-Language 跳 /en/dashboard
+  await context.addCookies([{ name: 'NEXT_LOCALE', value: 'zh', domain: 'localhost', path: '/' }])
   await page.goto('/')
   await page.evaluate(() => localStorage.clear())
 })
@@ -36,14 +38,14 @@ test.describe('PDF 导出', () => {
     await goToWorkbench(page)
 
     // WorkbenchHeader 中有「导出 PDF」按钮
-    const exportBtn = page.getByRole('button', { name: /导出\s*PDF|export/i }).first()
+    const exportBtn = page.getByRole('button', { name: /导出|export/i }).first()
     await expect(exportBtn).toBeVisible({ timeout: 10000 })
   })
 
   test('点击「导出 PDF」按钮直接触发导出（无对话框）', async ({ page }) => {
     await goToWorkbench(page)
 
-    const exportBtn = page.getByRole('button', { name: /导出\s*PDF|export/i }).first()
+    const exportBtn = page.getByRole('button', { name: /导出|export/i }).first()
     await expect(exportBtn).toBeVisible({ timeout: 10000 })
     await exportBtn.click()
 

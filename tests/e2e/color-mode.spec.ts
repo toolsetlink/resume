@@ -34,7 +34,7 @@ test.describe('暗色模式切换与持久化', () => {
     await context.clearCookies()
     await context.addCookies([
       {
-        name: 'i18n_redirected',
+        name: 'NEXT_LOCALE',
         value: 'zh',
         domain: 'localhost',
         path: '/',
@@ -74,7 +74,7 @@ test.describe('暗色模式切换与持久化', () => {
     //   1) 语言切换（Languages 图标）
     //   2) 暗色切换（Sun/Moon 图标，toggleColorMode）
     // 暗色切换按钮是第二个 variant=text 按钮
-    const themeToggle = page.locator('header .t-button').nth(1)
+    const themeToggle = page.locator('header .ant-btn').nth(1)
     await expect(themeToggle).toBeVisible()
 
     // 点击切换到 dark
@@ -115,7 +115,7 @@ test.describe('暗色模式切换与持久化', () => {
     await page.waitForLoadState('networkidle')
 
     // 通过 UI 切换到 dark
-    const themeToggle = page.locator('header .t-button').nth(1)
+    const themeToggle = page.locator('header .ant-btn').nth(1)
     await expect(themeToggle).toBeVisible()
     await themeToggle.click()
 
@@ -140,7 +140,7 @@ test.describe('暗色模式切换与持久化', () => {
     await page.waitForLoadState('networkidle')
 
     // 先切换到 dark
-    const themeToggle = page.locator('header .t-button').nth(1)
+    const themeToggle = page.locator('header .ant-btn').nth(1)
     await expect(themeToggle).toBeVisible()
     await themeToggle.click()
     await expect.poll(async () => await getHtmlClass(page), { timeout: 5000 }).toContain('dark')

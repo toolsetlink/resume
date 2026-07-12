@@ -24,7 +24,7 @@ test.describe('i18n 切换与持久化', () => {
     // （Playwright Chromium 默认 Accept-Language=en-US，否则会触发重定向）
     await context.addCookies([
       {
-        name: 'i18n_redirected',
+        name: 'NEXT_LOCALE',
         value: 'zh',
         domain: 'localhost',
         path: '/',
@@ -103,7 +103,7 @@ test.describe('i18n 切换与持久化', () => {
     await page.waitForLoadState('networkidle')
 
     const cookies = await page.context().cookies()
-    const i18nCookie = cookies.find(c => c.name === 'i18n_redirected')
+    const i18nCookie = cookies.find(c => c.name === 'NEXT_LOCALE')
     expect(i18nCookie).toBeTruthy()
     expect(i18nCookie?.value).toBe('en')
   })
@@ -116,7 +116,7 @@ test.describe('i18n 切换与持久化', () => {
 
     // 验证 cookie 已设置
     const cookiesBefore = await page.context().cookies()
-    const i18nCookieBefore = cookiesBefore.find(c => c.name === 'i18n_redirected')
+    const i18nCookieBefore = cookiesBefore.find(c => c.name === 'NEXT_LOCALE')
     expect(i18nCookieBefore?.value).toBe('en')
 
     // 刷新页面
@@ -138,16 +138,16 @@ test.describe('i18n 切换与持久化', () => {
     // 落地页 header 有语言切换 t-dropdown（含 Languages 图标按钮）
     // 点击语言切换按钮展开下拉，再点击 "English" 选项
     // 找到 dropdown 触发按钮：header 中第一个 variant=text 的 t-button 是语言切换
-    const langToggle = page.locator('header .t-button').first()
+    const langToggle = page.locator('header .ant-btn').first()
     await expect(langToggle).toBeVisible()
 
     // 点击展开下拉
     await langToggle.click()
 
     // 下拉菜单中点击 English 选项
-    // t-dropdown-menu 渲染 .t-dropdown__menu，item 渲染 .t-dropdown__item
+    // t-dropdown-menu 渲染 .t-dropdown__menu，item 渲染 [role="menuitem"]
     // 英文选项文案为 "English"（locales 中 en.name="English"）
-    const englishItem = page.locator('.t-dropdown__item').filter({ hasText: 'English' }).first()
+    const englishItem = page.locator('[role="menuitem"]').filter({ hasText: 'English' }).first()
     await expect(englishItem).toBeVisible({ timeout: 5000 })
     await englishItem.click()
 
@@ -161,7 +161,7 @@ test.describe('i18n 切换与持久化', () => {
 
     // 验证 cookie 被更新
     const cookies = await page.context().cookies()
-    const i18nCookie = cookies.find(c => c.name === 'i18n_redirected')
+    const i18nCookie = cookies.find(c => c.name === 'NEXT_LOCALE')
     expect(i18nCookie?.value).toBe('en')
   })
 
@@ -172,12 +172,12 @@ test.describe('i18n 切换与持久化', () => {
     expect(page.url()).toBe(`${BASE}/en`)
 
     // 点击语言切换按钮展开下拉
-    const langToggle = page.locator('header .t-button').first()
+    const langToggle = page.locator('header .ant-btn').first()
     await expect(langToggle).toBeVisible()
     await langToggle.click()
 
     // 点击 "中文" 选项切换回中文
-    const chineseItem = page.locator('.t-dropdown__item').filter({ hasText: '中文' }).first()
+    const chineseItem = page.locator('[role="menuitem"]').filter({ hasText: '中文' }).first()
     await expect(chineseItem).toBeVisible({ timeout: 5000 })
     await chineseItem.click()
 
@@ -191,7 +191,7 @@ test.describe('i18n 切换与持久化', () => {
 
     // 验证 cookie 被更新回 zh
     const cookies = await page.context().cookies()
-    const i18nCookie = cookies.find(c => c.name === 'i18n_redirected')
+    const i18nCookie = cookies.find(c => c.name === 'NEXT_LOCALE')
     expect(i18nCookie?.value).toBe('zh')
   })
 })

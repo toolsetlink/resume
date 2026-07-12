@@ -1,11 +1,10 @@
 // 简历 CRUD 完整流程 E2E 测试 - 自由简历项目
 import { test, expect } from '@playwright/test'
 
-// 获取 dashboard 中简历卡片的数量（t-card 渲染的简历列表）
+// 获取 dashboard 中简历卡片的数量
+// 每行简历有 1 个「删除」按钮（隐藏但 DOM 存在），用按钮数量计数
 async function getResumeCount(page: import('@playwright/test').Page): Promise<number> {
-  // t-card 的 title slot 渲染为 .t-card__title
-  const cards = page.locator('.t-card:has(.t-card__title)')
-  return await cards.count()
+  return await page.getByRole('button', { name: /删除|delete/i }).count()
 }
 
 // 等待 dashboard 列表稳定
@@ -16,7 +15,9 @@ async function waitForDashboardReady(page: import('@playwright/test').Page) {
 }
 
 test.describe('简历 CRUD', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // 锁中文 locale，避免 Chromium 默认 Accept-Language 跳 /en/dashboard
+    await context.addCookies([{ name: 'NEXT_LOCALE', value: 'zh', domain: 'localhost', path: '/' }])
     // 先访问根路径（i18n 默认中文，不会带前缀），确保浏览器上下文已就绪
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
@@ -117,8 +118,10 @@ test.describe('简历 CRUD', () => {
       return data ? JSON.parse(data) : null
     })
     expect(resumes).toBeTruthy()
-    // pinia-plugin-persistedstate 默认把 state 整体存为一个对象，resumes 在 state 下
-    const list = (resumes as { resumes?: unknown[] }).resumes
+    // zustand/middleware persist 把 state 整体存为 {state: {...}, version}
+    // 兼容两种格式（有无 state 包装层）
+    const stateRoot = (resumes as { state?: unknown }).state ?? resumes
+    const list = (stateRoot as { resumes?: unknown[] }).resumes
     expect(Array.isArray(list)).toBeTruthy()
     expect((list as unknown[]).length).toBe(afterCount)
   })
