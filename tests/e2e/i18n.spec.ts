@@ -50,7 +50,7 @@ test.describe('i18n 切换与持久化', () => {
     const bodyText = (await page.locator('body').textContent()) ?? ''
     expect(bodyText).toMatch(/自由简历|打造专业简历|隐私优先/)
 
-    // html lang 属性：若 @nuxtjs/i18n 设置了 <html lang="zh-CN"> 则校验为 zh 开头
+    // html lang 属性：若设置了 <html lang="zh-CN"> 则校验为 zh 开头（dev 环境下 lang 属性可能延迟注入，宽容断言）
     // （dev 环境下 lang 属性可能延迟设置或未注入，这里做宽容断言）
     const htmlLang = await page.locator('html').getAttribute('lang')
     if (htmlLang !== null) {
@@ -145,7 +145,7 @@ test.describe('i18n 切换与持久化', () => {
     await langToggle.click()
 
     // 下拉菜单中点击 English 选项
-    // t-dropdown-menu 渲染 .t-dropdown__menu，item 渲染 [role="menuitem"]
+    // Ant Dropdown 菜单项 role="menuitem"
     // 英文选项文案为 "English"（locales 中 en.name="English"）
     const englishItem = page.locator('[role="menuitem"]').filter({ hasText: 'English' }).first()
     await expect(englishItem).toBeVisible({ timeout: 5000 })

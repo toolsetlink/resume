@@ -54,7 +54,7 @@ test.describe('暗色模式切换与持久化', () => {
     const htmlClass = await getHtmlClass(page)
     expect(htmlClass).not.toContain('dark')
 
-    // localStorage 默认无值或为 'light'（@nuxtjs/color-mode preference='light'）
+    // localStorage 默认无值或为 'light'（项目默认值）
     const theme = await getThemeStorage(page)
     // colorMode.preference='light'，首次访问会写入 'light'（也可能为 null，宽容断言）
     if (theme !== null) {
@@ -80,7 +80,7 @@ test.describe('暗色模式切换与持久化', () => {
     // 点击切换到 dark
     await themeToggle.click()
 
-    // 验证 <html> 添加 dark class（@nuxtjs/color-mode 通过 classSuffix='' 加 'dark' class）
+    // 验证 <html> 添加 dark class（ThemeProvider 应用）
     // color-mode 切换可能有微小延迟，使用 expect 断言自动重试
     await expect.poll(async () => await getHtmlClass(page), { timeout: 5000 }).toContain('dark')
 
