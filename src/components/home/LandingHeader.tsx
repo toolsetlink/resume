@@ -6,7 +6,7 @@ import type { MenuProps } from 'antd'
 import { FileText, Languages, Sun, Moon, Menu, X } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useRouter, usePathname, Link } from '@/i18n/navigation'
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/theme/ThemeProvider'
 
 export function LandingHeader() {
   const t = useTranslations()

@@ -2,7 +2,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
-import { ThemeProvider as NextThemeProvider } from 'next-themes'
+import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
@@ -38,12 +38,13 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <NextThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          storageKey="ziyou-resume-theme"
-        >
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('ziyou-resume-theme');if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();",
+          }}
+        />
+        <ThemeProvider>
           <AntdRegistry>
             <ConfigProvider>
               <NextIntlClientProvider locale={locale} messages={messages}>
@@ -51,7 +52,7 @@ export default async function LocaleLayout({
               </NextIntlClientProvider>
             </ConfigProvider>
           </AntdRegistry>
-        </NextThemeProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
