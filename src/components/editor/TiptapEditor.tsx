@@ -3,13 +3,11 @@
 import { useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder'
 import { TextStyle } from '@tiptap/extension-text-style'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
-import Link from '@tiptap/extension-link'
 
 interface TiptapEditorProps {
   value: string
@@ -19,14 +17,13 @@ interface TiptapEditorProps {
 
 export function TiptapEditor({ value, onChange, placeholder = '请输入内容...' }: TiptapEditorProps) {
   const editor = useEditor({
+    immediatelyRender: true,
     content: value,
     extensions: [
-      StarterKit,
-      Underline,
+      StarterKit.configure({ link: { openOnClick: false } }),
       TextStyle,
       Color,
       Highlight,
-      Link.configure({ openOnClick: false }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Placeholder.configure({ placeholder }),
     ],
@@ -40,12 +37,6 @@ export function TiptapEditor({ value, onChange, placeholder = '请输入内容..
       editor.commands.setContent(value, { emitUpdate: false })
     }
   }, [value, editor])
-
-  useEffect(() => {
-    return () => {
-      editor?.destroy()
-    }
-  }, [])
 
   return (
     <div className="tiptap-editor-wrapper">
