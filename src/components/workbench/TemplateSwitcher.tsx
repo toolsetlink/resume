@@ -22,7 +22,7 @@ export function TemplateSwitcher({ open, onOpenChange }: TemplateSwitcherProps) 
   }
 
   return (
-    <Drawer title={t('templates.selectTemplate')} open={open} onClose={() => onOpenChange(false)} width={480}>
+    <Drawer title={t('templates.selectTemplate')} open={open} onClose={() => onOpenChange(false)} size={480}>
       <div className="grid grid-cols-2 gap-3">
         {TEMPLATE_REGISTRY.map(entry => (
           <div key={entry.config.id} className={`rounded-lg border p-4 cursor-pointer transition-all hover:shadow-md ${activeResume?.templateId === entry.config.id ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand-light))]' : 'border-[hsl(var(--border-default))]'}`} onClick={() => handleSelect(entry.config.id)}>

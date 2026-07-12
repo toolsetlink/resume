@@ -1,13 +1,14 @@
 'use client'
 
 import { Button, Tooltip } from 'antd'
-import { PanelLeft, FileDown, LayoutTemplate, Palette, Settings } from 'lucide-react'
+import { ArrowLeft, PanelLeft, FileDown, LayoutTemplate, Palette, Settings } from 'lucide-react'
 
 interface WorkbenchHeaderProps {
   resumeId: string
   isSaving: boolean
   lastSavedAt: Date | null
   isExporting: boolean
+  onBack: () => void
   onToggleSidebar: () => void
   onExportPdf: () => void
   onOpenTemplateSwitcher: () => void
@@ -15,10 +16,14 @@ interface WorkbenchHeaderProps {
   onOpenGlobalSettings: () => void
 }
 
-export function WorkbenchHeader({ resumeId, isSaving, lastSavedAt, isExporting, onToggleSidebar, onExportPdf, onOpenTemplateSwitcher, onOpenThemeColor, onOpenGlobalSettings }: WorkbenchHeaderProps) {
+export function WorkbenchHeader({ resumeId, isSaving, lastSavedAt, isExporting, onBack, onToggleSidebar, onExportPdf, onOpenTemplateSwitcher, onOpenThemeColor, onOpenGlobalSettings }: WorkbenchHeaderProps) {
   return (
     <header className="flex items-center justify-between h-12 px-4 border-b border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))]">
       <div className="flex items-center gap-2">
+        <Tooltip title="返回简历列表">
+          <Button type="text" size="small" onClick={onBack} icon={<ArrowLeft className="w-4 h-4" />} aria-label="返回简历列表" />
+        </Tooltip>
+        <div className="w-px h-4 bg-[hsl(var(--border-default))]" />
         <Tooltip title="切换侧栏"><Button type="text" size="small" onClick={onToggleSidebar} icon={<PanelLeft className="w-4 h-4" />} /></Tooltip>
         <span className="text-sm font-medium text-[hsl(var(--text-primary))]">自由简历</span>
         {isSaving && <span className="text-xs text-[hsl(var(--text-tertiary))]">保存中...</span>}

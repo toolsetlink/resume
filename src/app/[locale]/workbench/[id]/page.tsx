@@ -7,7 +7,7 @@ import 'allotment/dist/style.css'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
-import { ResumePreview } from '@/components/preview/ResumePreview'
+import { PaginatedResumePreview } from '@/components/preview/PaginatedResumePreview'
 import { SectionAccordion } from '@/components/editor/SectionAccordion'
 import { WorkbenchHeader } from '@/components/workbench/WorkbenchHeader'
 import { TemplateSwitcher } from '@/components/workbench/TemplateSwitcher'
@@ -64,6 +64,7 @@ export default function WorkbenchPage({ params }: { params: Promise<{ id: string
         isSaving={isSaving}
         lastSavedAt={lastSavedAt}
         isExporting={isExporting}
+        onBack={() => router.push('/dashboard')}
         onToggleSidebar={() => setSidebarVisible(v => !v)}
         onExportPdf={handleExportPdf}
         onOpenTemplateSwitcher={() => setTemplateSwitcherVisible(true)}
@@ -72,17 +73,15 @@ export default function WorkbenchPage({ params }: { params: Promise<{ id: string
       />
       <div className="flex-1 overflow-hidden">
         <Allotment>
-          <Allotment.Pane preferredSize={sidebarVisible ? '40%' : '0%'} minSize={sidebarVisible ? 20 : 0} maxSize={60}>
+          <Allotment.Pane preferredSize="40%" minSize={280} maxSize={560} visible={sidebarVisible}>
             <div className="h-full overflow-y-auto bg-[hsl(var(--bg-card))]">
               <SectionAccordion />
             </div>
           </Allotment.Pane>
           <Allotment.Pane>
-            <div className="h-full overflow-auto bg-[hsl(var(--bg-canvas))] p-6">
+            <div className="h-full overflow-auto bg-[hsl(var(--bg-canvas))] px-6 pt-6 pb-12">
               {activeResume ? (
-                <div id="resume-preview" className="mx-auto bg-white shadow-lg" style={{ width: 794, minHeight: 1123 }}>
-                  <ResumePreview resumeData={activeResume} />
-                </div>
+                <PaginatedResumePreview resumeData={activeResume} />
               ) : (
                 <div className="mx-auto bg-white shadow-lg flex items-center justify-center text-[hsl(var(--text-tertiary))]" style={{ width: 794, minHeight: 1123 }}>
                   {t('common.loading')}
@@ -95,7 +94,7 @@ export default function WorkbenchPage({ params }: { params: Promise<{ id: string
 
       <TemplateSwitcher open={templateSwitcherVisible} onOpenChange={setTemplateSwitcherVisible} />
       <ThemeColorPopover open={themeColorVisible} onOpenChange={setThemeColorVisible} />
-      <Drawer title="全局设置" open={globalSettingsVisible} onClose={() => setGlobalSettingsVisible(false)} width={400}>
+      <Drawer title="全局设置" open={globalSettingsVisible} onClose={() => setGlobalSettingsVisible(false)} size={400}>
         {globalSettingsVisible && <GlobalSettingsPanel resumeId={resumeId} />}
       </Drawer>
     </div>
