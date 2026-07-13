@@ -37,7 +37,7 @@ fi
 NEXT_DEPLOY_MODE="${NEXT_DEPLOY_MODE:-server}"
 case "$NEXT_DEPLOY_MODE" in
   server)  BUILD_DIR=".next"          ; BUILD_CMD="pnpm build" ;;
-  export)  BUILD_DIR="out"            ; BUILD_CMD="pnpm build" ;;
+  export)  BUILD_DIR="out"            ; BUILD_CMD="rm -rf out && pnpm build" ;;
   *)       echo "[$(date '+%H:%M:%S')] 错误: NEXT_DEPLOY_MODE=$NEXT_DEPLOY_MODE 不支持（只支持 server / export）"; exit 1 ;;
 esac
 
@@ -66,7 +66,9 @@ sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=accept-new -o ConnectTime
 
 # 3. 构建
 log "构建项目 (mode=$NEXT_DEPLOY_MODE, cmd=$BUILD_CMD)..."
-$BUILD_CMD
+# 复合命令（带 &&/||/重定向）需要走 eval 或 bash -c，
+# 因为变量作为简单命令展开时，&& 不会被解析为控制符。
+eval "$BUILD_CMD"
 log "构建完成"
 
 # 4. 校验构建产物
@@ -82,17 +84,16 @@ sshpass -p "$SERVER_PASS" ssh "$SERVER_USER@$SERVER_IP" "mkdir -p $SERVER_PATH"
 # 6a. 修补 static export 缺省路径：把每个 <locale>/<page>.html 复制成 <locale>/<page>/index.html，
 #     让 nginx 在访问 /zh/dashboard/ 这类尾斜杠路径时能正确 serve 而不是返回 directory index 403。
 # next-intl + next build (output: 'export') 不会自动产出这些副本，但 nginx 默认会重定向到带斜杠。
-log "补 locale index.html（解决 nginx directory index 403）"
-# (a) 顶层 <locale>.html → <locale>/index.html（例如 en.html → en/index.html）
+log "补 locale index.html 与默认 locale 顶层 alias（解决 nginx directory index 403 + 顶层 /dashboard/ 等）"
+# (a) 顶层 <locale>.html → <locale>/index.html（例如 zh.html → zh/index.html, en.html → en/index.html）
 for html in "$BUILD_DIR"/*.html; do
   [ -f "$html" ] || continue
   base="$(basename "$html" .html)"
-  # 只对 zh/en 这种 locale 短名生效（避免污染其他页面）
   case "$base" in zh|en) ;; *) continue ;; esac
   mkdir -p "$BUILD_DIR/$base"
   cp "$html" "$BUILD_DIR/$base/index.html"
 done
-# (b) <locale>/<name>.html → <locale>/<name>/index.html
+# (b) <locale>/<name>.html → <locale>/<name>/index.html（让 /zh/dashboard/、/en/workbench/ 不 403）
 for locale_dir in "$BUILD_DIR"/zh "$BUILD_DIR"/en; do
   [ -d "$locale_dir" ] || continue
   find "$locale_dir" -maxdepth 1 -name '*.html' -type f -print0 | while IFS= read -r -d "" f; do
@@ -101,6 +102,54 @@ for locale_dir in "$BUILD_DIR"/zh "$BUILD_DIR"/en; do
     cp "$f" "$locale_dir/$base/index.html"
   done
 done
+# (c) 默认 locale (zh) 的别名：<page>.html 和 <page>/index.html 也复制到顶层
+#     让 /dashboard/、/workbench/、/dashboard/templates/ 这类不带 locale 前缀的 URL 能命中
+#     （localePrefix: 'as-needed' 下默认 locale 不带前缀）
+zh_dir="$BUILD_DIR/zh"
+if [ -d "$zh_dir" ]; then
+  find "$zh_dir" -maxdepth 1 -name '*.html' -type f -print0 | while IFS= read -r -d "" f; do
+    base="$(basename "$f" .html)"
+    # 跳过 _next 等内部页
+    case "$base" in index|404|_not-found) continue ;; esac
+    cp "$f" "$BUILD_DIR/$base.html"
+    mkdir -p "$BUILD_DIR/$base"
+    cp "$f" "$BUILD_DIR/$base/index.html"
+  done
+  # 递归处理多级：dashboard/templates 这类
+  # 注意：cd 到 zh_dir 后，相对路径 src 是 ./X/Y.html，
+  # 但 dst 也写相对路径会变成 zh/X/Y.html（多嵌一层 zh）。
+  # 用绝对路径：先 cd 把 src 转绝对，再切回 $BUILD_DIR 写 dst。
+  while IFS= read -r src_rel; do
+    [ -z "$src_rel" ] && continue
+    src_abs="$zh_dir/${src_rel#./}"
+    rel="$(basename "$(dirname "$src_abs")")"
+    base="$(basename "$src_abs" .html)"
+    # 根级别名（default locale）: /dashboard/templates/index.html
+    mkdir -p "$BUILD_DIR/$rel/$base"
+    cp "$src_abs" "$BUILD_DIR/$rel/$base/index.html"
+    # 保留 zh/ 路径下的 index.html，让 /zh/dashboard/templates/ 也 200
+    # 注意 src_abs 已经包含 zh/ 前缀；下面是让它在 zh/ 下也补一份 index.html
+    rel_from_zh="$(echo "$src_abs" | sed "s|^$zh_dir/||")"
+    rel_dir="$(dirname "$rel_from_zh" | sed 's|/[^/]*$||')"
+    base_name="$(basename "$src_abs" .html)"
+    mkdir -p "$zh_dir/$rel_dir/$base_name"
+    cp "$src_abs" "$zh_dir/$rel_dir/$base_name/index.html"
+  done < <(cd "$zh_dir" && find . -mindepth 2 -name '*.html' -type f)
+
+  # en/ 同样
+  en_dir="$BUILD_DIR/en"
+  if [ -d "$en_dir" ]; then
+    while IFS= read -r src_rel; do
+      [ -z "$src_rel" ] && continue
+      src_abs="$en_dir/${src_rel#./}"
+      rel_from_en="$(echo "$src_abs" | sed "s|^$en_dir/||")"
+      rel_dir="$(dirname "$rel_from_en")"
+      base_name="$(basename "$src_abs" .html)"
+      mkdir -p "$en_dir/$rel_dir/$base_name"
+      cp "$src_abs" "$en_dir/$rel_dir/$base_name/index.html"
+    done < <(cd "$en_dir" && find . -mindepth 2 -name '*.html' -type f)
+  fi
+fi
 
 # 6. Rsync 增量同步到服务器
 log "同步文件到服务器 ${SERVER_IP}..."
