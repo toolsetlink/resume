@@ -6,7 +6,7 @@ import { Plus, FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import dayjs from 'dayjs'
 import messages from '@/messages/zh.json'
-import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
+import { useResumeStore } from '@/stores/resume-store'
 import { LandingHeader } from '@/components/home/LandingHeader'
 
 const t = messages
@@ -19,6 +19,8 @@ export default function DashboardPage() {
   const duplicateResume = useResumeStore(s => s.duplicateResume)
   const initialize = useResumeStore(s => s.initialize)
 
+  // 挂载时从 localStorage 恢复数据，只跑一次。
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { initialize() }, [])
 
   const formatDate = (date: string) => dayjs(date).format('YYYY-MM-DD HH:mm')

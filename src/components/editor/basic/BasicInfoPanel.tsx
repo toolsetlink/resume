@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Form, Input, InputNumber, Select, Radio, Button, Upload, message } from 'antd'
+import { Form, Input, InputNumber, Select, Radio, Button, Upload } from 'antd'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
 import type { PhotoConfig } from '@/shared/types/resume'
 import { DEFAULT_PHOTO_CONFIG } from '@/shared/types/resume'
@@ -27,7 +27,9 @@ export function BasicInfoPanel() {
       setPhotoConfig(b.photoConfig || DEFAULT_PHOTO_CONFIG)
       setLayout(b.layout || 'left')
     }
-  }, [activeResume, activeResumeId, form])
+    // form 是 Form.useForm() 的稳定引用，photoConfig 不参与判断（只在 ref 命中分支里被读）。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeResume, activeResumeId])
 
   const commit = useCallback(() => {
     if (!activeResumeId) return
@@ -84,6 +86,7 @@ export function BasicInfoPanel() {
         <div className="flex items-center gap-4">
           <div className="w-24 h-32 border rounded overflow-hidden bg-[hsl(var(--bg-base))] flex items-center justify-center">
             {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element -- 用户上传的 base64 头像，next/image 在静态导出 + unoptimized 模式下没收益
               <img
                 src={photo}
                 className="w-full h-full object-cover"

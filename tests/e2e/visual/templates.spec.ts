@@ -6,6 +6,8 @@
 //   - 4 套模板 + 落地页「视觉一致」snapshot 测试 mark 为 skip，等下次决定 baseline 策略时启用
 import { test, expect, type Page } from '@playwright/test'
 
+// TEMPLATE_IDS 只用做类型（typeof TEMPLATE_IDS[number]），不作为值使用。
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TEMPLATE_IDS = ['professional', 'modern', 'elegant', 'creative'] as const
 
 // 模板根节点 selector：基于 data-template 属性
@@ -15,9 +17,6 @@ const TEMPLATE_ROOT_SELECTOR: Record<string, string> = {
   elegant: '[data-template="elegant"]',
   creative: '[data-template="creative"]',
 }
-
-// 视觉对比阈值：允许 10% 像素差异（应对字体/抗锯齿等环境差异）
-const VISUAL_THRESHOLD = { maxDiffPixelRatio: 0.1 }
 
 async function waitForWorkbenchReady(page: Page) {
   await page.waitForLoadState('networkidle')
@@ -102,7 +101,7 @@ async function enterWorkbench(page: Page) {
 }
 
 test.describe('落地页视觉回归', () => {
-  test('中文落地页视觉一致', async ({ page }) => {
+  test('中文落地页视觉一致', async () => {
     test.skip(true, '见文件顶部注释：等下次决定 baseline 策略时手动启用')
   })
 

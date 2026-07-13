@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Button, Input, Modal, message } from 'antd'
+import { useState, useCallback, useMemo } from 'react'
+import { Button, Input, Modal } from 'antd'
 import { Plus, FolderPlus, Trash2 } from 'lucide-react'
 import { v4 as uuidv4 } from 'uuid'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
@@ -19,7 +19,12 @@ export function CustomPanel() {
     new Set()
   )
 
-  const customData = activeResume?.customData || {}
+  // 把 customData 用 useMemo 包住，让下面 5 个 useCallback 的依赖引用稳定。
+  // 否则每次渲染 `activeResume?.customData || {}` 都会返回新对象，导致 callbacks 重建。
+  const customData = useMemo(
+    () => activeResume?.customData || {},
+    [activeResume?.customData]
+  )
   const sectionIds = Object.keys(customData)
 
   const toggleSection = useCallback((sectionId: string) => {
@@ -54,7 +59,8 @@ export function CustomPanel() {
   const handleDeleteSection = useCallback(
     (sectionId: string) => {
       if (!activeResumeId) return
-      const { [sectionId]: _, ...remaining } = customData
+      const remaining = { ...customData }
+      delete remaining[sectionId]
       importResume(activeResumeId, { customData: remaining })
     },
     [activeResumeId, customData, importResume]
@@ -110,15 +116,6 @@ export function CustomPanel() {
       importResume(activeResumeId, { customData: newCustomData })
     },
     [activeResumeId, customData, importResume]
-  )
-
-  const handleRenameSection = useCallback(
-    (sectionId: string, oldTitle: string) => {
-      // Find the first item's title to use as the section name
-      // We use a separate title tracking approach since section names are keyed by UUID
-      message.info('重命名功能: 请修改该分区下条目的标题')
-    },
-    []
   )
 
   return (

@@ -115,6 +115,10 @@ export function SectionAccordion() {
     moveMenuSection(activeResumeId, sectionId, direction)
   }, [activeResumeId, moveMenuSection])
 
+  // SortableCard 透传 Switch.onChange(checked) 进来，第二个参数是新的 enabled 值。
+  // 这里走 toggleMenuSection 是按 store 里的当前值取反，没有用 enabled 入参——保留
+  // 现状避免双源切换，参数留着是为了接 SortableCard 的接口形状。
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleToggle = useCallback((sectionId: string, enabled: boolean) => {
     if (!activeResumeId) return
     toggleMenuSection(activeResumeId, sectionId)

@@ -17,9 +17,7 @@ import {
   Quote,
   Undo2,
   Redo2,
-  Link,
   Highlighter,
-  Palette,
 } from 'lucide-react'
 
 interface EditorToolbarProps {

@@ -14,6 +14,8 @@ export default function DashboardTemplatesPage() {
   const setTemplateId = useResumeStore(s => s.setTemplateId)
   const initialize = useResumeStore(s => s.initialize)
 
+  // 挂载时从 localStorage 恢复数据，只跑一次。
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { initialize() }, [])
 
   const handleSelect = (templateId: string) => {

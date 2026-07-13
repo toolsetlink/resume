@@ -35,17 +35,21 @@ export default function WorkbenchClient() {
   const [themeColorVisible, setThemeColorVisible] = useState(false)
   const [globalSettingsVisible, setGlobalSettingsVisible] = useState(false)
 
+  // 挂载时从 localStorage 恢复数据，只跑一次。
   useEffect(() => {
     initialize()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // resumeId 变化时切换 active resume 并校验存在性。
+  // setActiveResume/router 在 zustand/Next 中都是稳定引用，加进 deps 不会触发额外渲染。
   useEffect(() => {
     if (resumeId) {
       setActiveResume(resumeId)
       const resume = useResumeStore.getState().resumes.find(r => r.id === resumeId)
       if (!resume) router.replace('/dashboard')
     }
-  }, [resumeId])
+  }, [resumeId, setActiveResume, router])
 
   const handleExportPdf = async () => {
     try {

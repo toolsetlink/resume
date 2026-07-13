@@ -15,7 +15,6 @@ import { test, expect } from '@playwright/test'
 //   - LandingHeader 有主题切换按钮（Sun/Moon 图标，toggleColorMode）
 // ============================================================
 
-const BASE = 'http://localhost:3000'
 const STORAGE_KEY = 'ziyou-resume-theme'
 
 // 读取 localStorage 中 ziyou-resume-theme 的值

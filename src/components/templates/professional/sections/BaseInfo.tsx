@@ -65,6 +65,7 @@ export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
       {showPhoto && (
         <div className="flex-shrink-0 overflow-hidden bg-[#f3f4f6]" style={photoWrapperStyle}>
           {basic.photo ? (
+            // eslint-disable-next-line @next/next/no-img-element -- 用户上传的 base64 头像，静态导出 + unoptimized 模式下 next/image 没收益
             <img src={basic.photo} style={photoStyle} className="object-cover block" alt="avatar" />
           ) : (
             <div className="flex items-center justify-center bg-[#e5e7eb] text-[#9ca3af] text-[28px] font-semibold" style={photoStyle}>
