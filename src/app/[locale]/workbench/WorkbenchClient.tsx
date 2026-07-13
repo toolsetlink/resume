@@ -6,6 +6,7 @@ import { Allotment } from 'allotment'
 import 'allotment/dist/style.css'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
 import { PaginatedResumePreview } from '@/components/preview/PaginatedResumePreview'
 import { SectionAccordion } from '@/components/editor/SectionAccordion'
@@ -16,16 +17,13 @@ import { GlobalSettingsPanel } from '@/components/workbench/GlobalSettingsPanel'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { usePdfExport } from '@/hooks/usePdfExport'
 
-export default function WorkbenchPage({ params }: { params: Promise<{ id: string }> }) {
+export default function WorkbenchClient() {
   const t = useTranslations()
   const router = useRouter()
-  const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null)
+  const searchParams = useSearchParams()
+  // 静态导出 (output: 'export') 不支持动态路由段，改用 ?id= 查询参数
+  const resumeId = searchParams.get('id') ?? ''
 
-  useEffect(() => {
-    params.then(setResolvedParams)
-  }, [params])
-
-  const resumeId = resolvedParams?.id
   const activeResume = useResumeStore(selectActiveResume)
   const initialize = useResumeStore(s => s.initialize)
   const setActiveResume = useResumeStore(s => s.setActiveResume)

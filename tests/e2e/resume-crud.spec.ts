@@ -38,8 +38,8 @@ test.describe('简历 CRUD', () => {
     await createBtn.first().click()
 
     // 验证跳转到工作台
-    await page.waitForURL(/\/workbench\/.+/, { timeout: 15000 })
-    expect(page.url()).toMatch(/\/workbench\/.+/)
+    await page.waitForURL(/\/workbench\?id=/, { timeout: 15000 })
+    expect(page.url()).toMatch(/\/workbench\?id=/)
   })
 
   test('创建简历后返回 dashboard 新简历出现在列表', async ({ page }) => {
@@ -51,7 +51,7 @@ test.describe('简历 CRUD', () => {
     // 点击创建简历
     const createBtn = page.getByRole('button', { name: /创建简历|create/i })
     await createBtn.first().click()
-    await page.waitForURL(/\/workbench\/.+/, { timeout: 15000 })
+    await page.waitForURL(/\/workbench\?id=/, { timeout: 15000 })
 
     // 等待工作台渲染
     await page.waitForSelector('#resume-preview', { timeout: 15000 })
@@ -133,7 +133,7 @@ test.describe('简历 CRUD', () => {
     // 1. 创建一份新简历
     const createBtn = page.getByRole('button', { name: /创建简历|create/i })
     await createBtn.first().click()
-    await page.waitForURL(/\/workbench\/.+/, { timeout: 15000 })
+    await page.waitForURL(/\/workbench\?id=/, { timeout: 15000 })
     await page.waitForSelector('#resume-preview', { timeout: 15000 })
 
     // 2. 返回 dashboard

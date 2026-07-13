@@ -59,7 +59,7 @@ fi
 
 # 2. 首次连接自动信任主机指纹
 log "检查服务器连通性..."
-sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 "$SERVER_USER@$SERVER_IP" "echo OK" > /dev/null 2>&1 || {
+sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15 "$SERVER_USER@$SERVER_IP" "echo OK" > /dev/null 2>&1 || {
   log "错误: 无法连接 $SERVER_IP，请检查网络和配置"
   exit 1
 }
@@ -78,6 +78,29 @@ fi
 # 5. 确保服务器目标目录存在
 log "准备服务器目录..."
 sshpass -p "$SERVER_PASS" ssh "$SERVER_USER@$SERVER_IP" "mkdir -p $SERVER_PATH"
+
+# 6a. 修补 static export 缺省路径：把每个 <locale>/<page>.html 复制成 <locale>/<page>/index.html，
+#     让 nginx 在访问 /zh/dashboard/ 这类尾斜杠路径时能正确 serve 而不是返回 directory index 403。
+# next-intl + next build (output: 'export') 不会自动产出这些副本，但 nginx 默认会重定向到带斜杠。
+log "补 locale index.html（解决 nginx directory index 403）"
+# (a) 顶层 <locale>.html → <locale>/index.html（例如 en.html → en/index.html）
+for html in "$BUILD_DIR"/*.html; do
+  [ -f "$html" ] || continue
+  base="$(basename "$html" .html)"
+  # 只对 zh/en 这种 locale 短名生效（避免污染其他页面）
+  case "$base" in zh|en) ;; *) continue ;; esac
+  mkdir -p "$BUILD_DIR/$base"
+  cp "$html" "$BUILD_DIR/$base/index.html"
+done
+# (b) <locale>/<name>.html → <locale>/<name>/index.html
+for locale_dir in "$BUILD_DIR"/zh "$BUILD_DIR"/en; do
+  [ -d "$locale_dir" ] || continue
+  find "$locale_dir" -maxdepth 1 -name '*.html' -type f -print0 | while IFS= read -r -d "" f; do
+    base="$(basename "$f" .html)"
+    mkdir -p "$locale_dir/$base"
+    cp "$f" "$locale_dir/$base/index.html"
+  done
+done
 
 # 6. Rsync 增量同步到服务器
 log "同步文件到服务器 ${SERVER_IP}..."

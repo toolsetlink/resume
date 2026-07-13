@@ -22,7 +22,7 @@ async function goToWorkbench(page: Page) {
   if (await createBtn.isVisible()) {
     await createBtn.click()
   }
-  await page.waitForURL(/\/workbench\//, { timeout: 15000 })
+  await page.waitForURL(/\/workbench(?:\?id=[^&]*)?//, { timeout: 15000 })
   await page.waitForLoadState('networkidle')
 }
 
@@ -54,6 +54,6 @@ test.describe('PDF 导出', () => {
     await expect(exportCards).toHaveCount(0)
 
     // 页面仍应正常（无崩溃）
-    await expect(page).toHaveURL(/\/workbench\//)
+    await expect(page).toHaveURL(/\/workbench(?:\?id=[^&]*)?//)
   })
 })

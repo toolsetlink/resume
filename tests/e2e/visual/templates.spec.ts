@@ -101,7 +101,7 @@ async function enterWorkbench(page: Page) {
   await page.waitForLoadState('networkidle')
   await page.waitForSelector('h1', { timeout: 15000 })
   await page.getByRole('button', { name: /创建简历/ }).first().click()
-  await page.waitForURL(/\/workbench\/.+/, { timeout: 15000 })
+  await page.waitForURL(/\/workbench\?id=/, { timeout: 15000 })
   await waitForWorkbenchReady(page)
 }
 

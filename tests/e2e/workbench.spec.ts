@@ -28,7 +28,7 @@ async function createResumeAndEnterWorkbench(page: import('@playwright/test').Pa
   // Ant Button "创建简历" 文本（messages/zh.json: resume.create = "创建简历"）
   const createBtn = page.getByRole('button', { name: /创建简历/ })
   await createBtn.first().click()
-  await page.waitForURL(/\/workbench\/.+/, { timeout: 15000 })
+  await page.waitForURL(/\/workbench\?id=/, { timeout: 15000 })
   await waitForWorkbenchReady(page)
 }
 
