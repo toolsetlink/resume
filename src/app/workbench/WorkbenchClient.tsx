@@ -48,8 +48,13 @@ export default function WorkbenchClient() {
   }, [resumeId])
 
   const handleExportPdf = async () => {
-    try { await exportToPdf(); message.success('PDF 导出成功') }
-    catch (e: any) { message.error(`导出失败: ${e.message}`) }
+    try {
+      await exportToPdf()
+      message.success('PDF 导出成功')
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      message.error(`导出失败: ${msg}`)
+    }
   }
 
   if (!resumeId) return <div className="min-h-screen flex items-center justify-center"><p>{t.common.loading}</p></div>
@@ -57,7 +62,6 @@ export default function WorkbenchClient() {
   return (
     <div className="workbench-page h-screen flex flex-col overflow-hidden bg-[hsl(var(--bg-base))]">
       <WorkbenchHeader
-        resumeId={resumeId}
         isSaving={isSaving}
         lastSavedAt={lastSavedAt}
         isExporting={isExporting}
@@ -71,7 +75,7 @@ export default function WorkbenchClient() {
       <div className="flex-1 overflow-hidden">
         <Allotment>
           <Allotment.Pane preferredSize="40%" minSize={280} maxSize={560} visible={sidebarVisible}>
-            <div className="h-full overflow-y-auto bg-[hsl(var(--bg-card))]">
+            <div className="no-print h-full overflow-y-auto bg-[hsl(var(--bg-card))]">
               <SectionAccordion />
             </div>
           </Allotment.Pane>
@@ -92,7 +96,7 @@ export default function WorkbenchClient() {
       <TemplateSwitcher open={templateSwitcherVisible} onOpenChange={setTemplateSwitcherVisible} />
       <ThemeColorPopover open={themeColorVisible} onOpenChange={setThemeColorVisible} />
       <Drawer title="全局设置" open={globalSettingsVisible} onClose={() => setGlobalSettingsVisible(false)} size={400}>
-        {globalSettingsVisible && <GlobalSettingsPanel resumeId={resumeId} />}
+        {globalSettingsVisible && <GlobalSettingsPanel />}
       </Drawer>
     </div>
   )

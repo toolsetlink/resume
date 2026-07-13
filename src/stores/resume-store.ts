@@ -84,15 +84,18 @@ export const useResumeStore = create<ResumeStore>()(
       },
 
       createResumeFromTemplate(templateId: string): ResumeData {
-        const skeleton = createNewResume('新建简历')
+        const now = new Date().toISOString()
+        // 用 satisfies 让 TS 校验形状，避免 as 强转偷偷绕开类型。
+        // initialResumeState 已经包含中文样例数据（李明/清华/前端工程师等），
+        // 这里只覆盖 id/时间戳/标题/模板 id。
         const resume = {
           ...initialResumeState,
-          id: skeleton.id,
-          title: skeleton.title,
-          createdAt: skeleton.createdAt,
-          updatedAt: skeleton.updatedAt,
+          id: uuidv4(),
+          title: '新建简历',
+          createdAt: now,
+          updatedAt: now,
           templateId,
-        } as ResumeData
+        } satisfies ResumeData
         set((state) => {
           state.resumes.push(resume)
           state.activeResumeId = resume.id

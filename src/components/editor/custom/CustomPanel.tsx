@@ -137,7 +137,7 @@ export function CustomPanel() {
 
       {sectionIds.length === 0 && (
         <div className="text-center py-8 text-[hsl(var(--text-tertiary))]">
-          暂无自定义模块，点击"新建分区"开始添加
+          暂无自定义模块，点击「新建分区」开始添加
         </div>
       )}
 

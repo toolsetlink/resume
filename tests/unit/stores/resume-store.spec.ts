@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useResumeStore } from '@/stores/resume-store'
 import { blankResumeState } from '@/shared/config/initialResumeData'
+import type { ResumeCase } from '@/shared/types/case'
 
 beforeEach(() => {
   blankResumeState.education = []
@@ -64,8 +65,8 @@ describe('resume store - CRUD', () => {
     const caseData = {
       meta: { id: 'test', title: 'Test Case', description: '', templateId: 'professional', industry: '互联网', position: '前端', experienceLevel: '高级', style: '简约' },
       resumeData: { ...blankResumeState, id: 'old-id', title: 'Old', basic: { ...blankResumeState.basic, name: 'Test' }, createdAt: '', updatedAt: '', templateId: null, customData: {}, education: [], experience: [], projects: [], certificates: [], certificatesContent: '', skillContent: '', skills: [], selfEvaluationContent: '', activeSection: 'basic', draggingProjectId: null, menuSections: [], globalSettings: { baseFontSize: 16, pagePadding: 32, paragraphSpacing: 12, lineHeight: 1.5, headerSize: 20, subheaderSize: 16, sectionSpacing: 10 } }
-    }
-    const resume = store.createResumeFromCase(caseData as any)
+    } satisfies ResumeCase
+    const resume = store.createResumeFromCase(caseData)
     expect(resume.id).not.toBe('old-id')
     expect(resume.basic.name).toBe('Test')
   })
@@ -75,7 +76,6 @@ describe('resume store - field updates', () => {
   it('updateResumeTitle changes title and updatedAt', () => {
     const store = useResumeStore.getState()
     const r = store.createResume('旧标题')
-    const oldUpdatedAt = r.updatedAt
     store.updateResumeTitle(r.id, '新标题')
     const updated = useResumeStore.getState().resumes.find(x => x.id === r.id)
     expect(updated?.title).toBe('新标题')

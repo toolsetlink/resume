@@ -1,7 +1,7 @@
 {
   "name": "自由简历",
   "short_name": "自由简历",
-  "description": "隐私优先的在线简历编辑器，支持多模板、AI 辅助、PDF 导出",
+  "description": "隐私优先的在线简历编辑器，支持多模板与 PDF 导出",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

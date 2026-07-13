@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Form, Input, InputNumber, Select, Radio, Button, Upload, message } from 'antd'
-import type { UploadFile } from 'antd'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
 import type { PhotoConfig } from '@/shared/types/resume'
+import { DEFAULT_PHOTO_CONFIG } from '@/shared/types/resume'
 
 export function BasicInfoPanel() {
   const activeResume = useResumeStore(selectActiveResume)
@@ -13,25 +13,21 @@ export function BasicInfoPanel() {
 
   const [form] = Form.useForm()
   const [photo, setPhoto] = useState<string>('')
-  const [photoConfig, setPhotoConfig] = useState<PhotoConfig>({
-    width: 90,
-    height: 120,
-    aspectRatio: '1:1',
-    borderRadius: 'none',
-    customBorderRadius: 0,
-    visible: true,
-  })
+  const [photoConfig, setPhotoConfig] = useState<PhotoConfig>(DEFAULT_PHOTO_CONFIG)
   const [layout, setLayout] = useState<'left' | 'center' | 'right'>('left')
 
+  // 只在切换简历时同步一次，避免在 useEffect 里同步 setState 触发 cascading renders。
+  const lastSyncedResumeIdRef = useRef<string | null | undefined>(undefined)
   useEffect(() => {
-    if (activeResume?.basic) {
+    if (activeResume?.basic && activeResumeId !== lastSyncedResumeIdRef.current) {
+      lastSyncedResumeIdRef.current = activeResumeId
       const b = activeResume.basic
       form.setFieldsValue(b)
       setPhoto(b.photo || '')
-      setPhotoConfig(b.photoConfig || photoConfig)
+      setPhotoConfig(b.photoConfig || DEFAULT_PHOTO_CONFIG)
       setLayout(b.layout || 'left')
     }
-  }, [activeResume])
+  }, [activeResume, activeResumeId, form])
 
   const commit = useCallback(() => {
     if (!activeResumeId) return
@@ -39,7 +35,9 @@ export function BasicInfoPanel() {
     updateBasicInfo(activeResumeId, { ...values, photo, photoConfig, layout })
   }, [activeResumeId, form, photo, photoConfig, layout, updateBasicInfo])
 
-  const handlePhotoSelect = (file: UploadFile) => {
+  // Antd 的 beforeUpload 收的是 RcFile（File 子类），直接读 reader 即可，
+  // 不再需要 UploadFile.originFileObj 这一层包装。
+  const handlePhotoSelect = (file: File): boolean => {
     const reader = new FileReader()
     reader.onload = () => {
       const base64 = reader.result as string
@@ -55,9 +53,7 @@ export function BasicInfoPanel() {
         }
       }, 0)
     }
-    if (file.originFileObj) {
-      reader.readAsDataURL(file.originFileObj)
-    }
+    reader.readAsDataURL(file)
     return false
   }
 
@@ -102,7 +98,7 @@ export function BasicInfoPanel() {
           <div className="flex flex-col gap-2">
             <Upload
               showUploadList={false}
-              beforeUpload={handlePhotoSelect as any}
+              beforeUpload={handlePhotoSelect}
             >
               <Button>选择照片</Button>
             </Upload>

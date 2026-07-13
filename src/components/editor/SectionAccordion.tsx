@@ -5,7 +5,7 @@ import { Button, Tooltip, Switch } from 'antd'
 import { GripVertical, ChevronDown, ChevronUp, Plus, Lightbulb } from 'lucide-react'
 import messages from '@/messages/zh.json'
 import { ComponentType } from 'react'
-import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { MenuSection } from '@/shared/types/resume'
@@ -101,7 +101,7 @@ export function SectionAccordion() {
     })
   }, [])
 
-  const handleDragEnd = useCallback((event: any) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
     if (!activeResumeId || !over || active.id === over.id) return
     const oldIndex = sections.findIndex(s => s.id === active.id)

@@ -136,15 +136,6 @@ export const initialResumeState = {
   globalSettings: initialGlobalSettings,
 }
 
-// 基本信息菜单模块（向后兼容保留）
-const BASIC_MENU_SECTION: MenuSection = {
-  id: 'basic',
-  title: '基本信息',
-  icon: '👤',
-  enabled: true,
-  order: 0,
-}
-
 // 空白简历默认模块列表（全部 8 个模块，前 5 个默认开启，后 3 个默认关闭）
 export const DEFAULT_MENU_SECTIONS: MenuSection[] = [
   { id: 'basic', title: '基本信息', icon: '👤', enabled: true, order: 0 },

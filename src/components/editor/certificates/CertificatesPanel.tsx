@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
@@ -15,30 +15,32 @@ export function CertificatesPanel() {
   const activeResume = useResumeStore(selectActiveResume)
   const activeResumeId = useResumeStore(s => s.activeResumeId)
   const updateCertificatesContent = useResumeStore(s => s.updateCertificatesContent)
-  const [content, setContent] = useState(activeResume?.certificatesContent || '')
 
-  useEffect(() => {
-    if (activeResume?.certificatesContent !== undefined && activeResume.certificatesContent !== content) {
-      setContent(activeResume.certificatesContent)
-    }
-  }, [activeResume?.certificatesContent])
-
+  // 见 SkillPanel：去掉本地 content state，editor.getHTML() 当真值，
+  // store 变化时通过 effect 灌入 editor，不再 setState in effect。
   const editor = useEditor({
     immediatelyRender: true,
-    content,
-    extensions: [StarterKit.configure({ link: { openOnClick: false } }), TextStyle, Color, Highlight, TextAlign.configure({ types: ['heading', 'paragraph'] }), Placeholder.configure({ placeholder: '请输入证书信息...' })],
+    content: activeResume?.certificatesContent ?? '',
+    extensions: [
+      StarterKit.configure({ link: { openOnClick: false } }),
+      TextStyle,
+      Color,
+      Highlight,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Placeholder.configure({ placeholder: '请输入证书信息...' }),
+    ],
     onUpdate: ({ editor: ed }) => {
-      const html = ed.getHTML()
-      setContent(html)
-      if (activeResumeId) updateCertificatesContent(activeResumeId, html)
+      if (activeResumeId) updateCertificatesContent(activeResumeId, ed.getHTML())
     },
   })
 
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, { emitUpdate: false })
+    if (!editor) return
+    const next = activeResume?.certificatesContent ?? ''
+    if (next !== editor.getHTML()) {
+      editor.commands.setContent(next, { emitUpdate: false })
     }
-  }, [content, editor])
+  }, [activeResume?.certificatesContent, editor])
 
   return (
     <div className="p-4 space-y-3">

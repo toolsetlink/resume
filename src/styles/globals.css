@@ -155,6 +155,18 @@ body {
     size: A4;
   }
 
+  /* 隐藏工作台 UI 浮层（Drawer/Modal/Popover 是 portal 到 body 的，no-print 抓不到） */
+  .ant-drawer,
+  .ant-drawer-mask,
+  .ant-modal,
+  .ant-modal-mask,
+  .ant-popover,
+  .ant-tooltip,
+  .ant-message,
+  .ant-notification {
+    display: none !important;
+  }
+
   body {
     background: white !important;
     -webkit-print-color-adjust: exact;

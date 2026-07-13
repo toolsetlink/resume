@@ -17,11 +17,11 @@ describe('MODULE_CONFIGS', () => {
   })
 
   it('all modules have Chinese titles and descriptions', () => {
-    for (const module of MODULE_CONFIGS) {
-      expect(module.title).toBeTypeOf('string')
-      expect(module.title).not.toBe('')
-      expect(module.description).toBeTypeOf('string')
-      expect(module.description).not.toBe('')
+    for (const cfg of MODULE_CONFIGS) {
+      expect(cfg.title).toBeTypeOf('string')
+      expect(cfg.title).not.toBe('')
+      expect(cfg.description).toBeTypeOf('string')
+      expect(cfg.description).not.toBe('')
     }
   })
 })

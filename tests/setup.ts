@@ -10,8 +10,10 @@ class StorageMock implements Storage {
   setItem(key: string, value: string): void { this.store[key] = String(value) }
 }
 
-if (!globalThis.localStorage) { (globalThis as any).localStorage = new StorageMock() }
-if (!globalThis.sessionStorage) { (globalThis as any).sessionStorage = new StorageMock() }
+type GlobalWithStorages = typeof globalThis & { localStorage?: Storage; sessionStorage?: Storage }
+const g = globalThis as GlobalWithStorages
+if (!g.localStorage) g.localStorage = new StorageMock()
+if (!g.sessionStorage) g.sessionStorage = new StorageMock()
 
 if (!globalThis.matchMedia) {
   globalThis.matchMedia = (query: string): MediaQueryList => ({
@@ -22,10 +24,24 @@ if (!globalThis.matchMedia) {
   })
 }
 
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root: Element | Document | null = null
+  readonly rootMargin = '0px'
+  readonly thresholds: ReadonlyArray<number> = []
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] { return [] }
+}
 if (!globalThis.IntersectionObserver) {
-  globalThis.IntersectionObserver = class { observe(){} unobserve(){} disconnect(){} takeRecords(){ return [] } } as any
+  globalThis.IntersectionObserver = MockIntersectionObserver
 }
 
+class MockResizeObserver implements ResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
 if (!globalThis.ResizeObserver) {
-  globalThis.ResizeObserver = class { observe(){} unobserve(){} disconnect(){} } as any
+  globalThis.ResizeObserver = MockResizeObserver
 }

@@ -1,20 +1,19 @@
 'use client'
 
-import { Slider, Switch, Select, Space } from 'antd'
+import { Slider, Switch, Select } from 'antd'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
+import type { GlobalSettings } from '@/shared/types/resume'
 
-interface GlobalSettingsPanelProps {
-  resumeId: string
-}
-
-export function GlobalSettingsPanel({ resumeId }: GlobalSettingsPanelProps) {
+export function GlobalSettingsPanel() {
   const activeResume = useResumeStore(selectActiveResume)
   const updateGlobalSettings = useResumeStore(s => s.updateGlobalSettings)
   const gs = activeResume?.globalSettings
   if (!gs) return null
 
-  const update = (key: string, value: any) => {
-    updateGlobalSettings(resumeId, { [key]: value })
+  // 用 keyof GlobalSettings 收窄 key/value 类型，避免 any 漏类型。
+  const update = <K extends keyof GlobalSettings>(key: K, value: GlobalSettings[K]) => {
+    if (!activeResume) return
+    updateGlobalSettings(activeResume.id, { [key]: value })
   }
 
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
@@ -15,30 +15,32 @@ export function SkillPanel() {
   const activeResume = useResumeStore(selectActiveResume)
   const activeResumeId = useResumeStore(s => s.activeResumeId)
   const updateSkillContent = useResumeStore(s => s.updateSkillContent)
-  const [content, setContent] = useState(activeResume?.skillContent || '')
 
-  useEffect(() => {
-    if (activeResume?.skillContent !== undefined && activeResume.skillContent !== content) {
-      setContent(activeResume.skillContent)
-    }
-  }, [activeResume?.skillContent])
-
+  // 不再在组件里维护本地 content 副本。editor.getHTML() 才是唯一真值，
+  // store 变化时通过 effect 把内容塞进 editor，避免 setState in effect 触发 cascading renders。
   const editor = useEditor({
     immediatelyRender: true,
-    content,
-    extensions: [StarterKit.configure({ link: { openOnClick: false } }), TextStyle, Color, Highlight, TextAlign.configure({ types: ['heading', 'paragraph'] }), Placeholder.configure({ placeholder: '请输入专业技能...' })],
+    content: activeResume?.skillContent ?? '',
+    extensions: [
+      StarterKit.configure({ link: { openOnClick: false } }),
+      TextStyle,
+      Color,
+      Highlight,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Placeholder.configure({ placeholder: '请输入专业技能...' }),
+    ],
     onUpdate: ({ editor: ed }) => {
-      const html = ed.getHTML()
-      setContent(html)
-      if (activeResumeId) updateSkillContent(activeResumeId, html)
+      if (activeResumeId) updateSkillContent(activeResumeId, ed.getHTML())
     },
   })
 
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, { emitUpdate: false })
+    if (!editor) return
+    const next = activeResume?.skillContent ?? ''
+    if (next !== editor.getHTML()) {
+      editor.commands.setContent(next, { emitUpdate: false })
     }
-  }, [content, editor])
+  }, [activeResume?.skillContent, editor])
 
   return (
     <div className="p-4 space-y-3">
