@@ -67,14 +67,7 @@ async function fillFieldAndCommit(
 }
 
 test.describe('工作台编辑→预览闭环', () => {
-  test.beforeEach(async ({ page, context }) => {
-    // 锁定中文 locale：next-intl 默认按 Accept-Language 探测，Chromium 是 en-US 会跳 /en/dashboard
-    await context.addCookies([{
-      name: 'NEXT_LOCALE',
-      value: 'zh',
-      domain: 'localhost',
-      path: '/',
-    }])
+  test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
     await page.evaluate(() => {
@@ -179,7 +172,7 @@ test.describe('工作台编辑→预览闭环', () => {
   test('左侧模块导航标题显示为"模块"', async ({ page }) => {
     await createResumeAndEnterWorkbench(page)
 
-    // SectionAccordion 顶部 h2 用 t('editor.modules') = "模块"
+    // SectionAccordion 顶部 h2 使用 messages.editor.modules = "模块"
     const heading = page.locator('h2', { hasText: '模块' })
     await expect(heading.first()).toBeVisible()
   })

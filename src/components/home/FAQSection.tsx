@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 
-const faqKeys = ['free', 'privacy', 'export']
+const faqKeys = ['free', 'privacy', 'export'] as const
 
 export function FAQSection() {
-  const t = useTranslations()
+  const t = messages
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
@@ -15,7 +15,7 @@ export function FAQSection() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.1] text-[hsl(var(--text-primary))] sm:text-4xl">
-            {t('landing.faq.title')}
+            {t.landing.faq.title}
           </h2>
         </div>
         <div className="mt-12 space-y-3">
@@ -31,7 +31,7 @@ export function FAQSection() {
                 onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
               >
                 <span className="text-[16px] font-medium text-[hsl(var(--text-primary))]">
-                  {t(`landing.faq.items.${key}.q`)}
+                  {t.landing.faq.items[key].q}
                 </span>
                 <span
                   className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[hsl(var(--bg-subtle))] transition-all duration-300 ${
@@ -48,7 +48,7 @@ export function FAQSection() {
               >
                 <div className="overflow-hidden">
                   <p className="px-6 pb-5 text-[15px] leading-[1.6] text-[hsl(var(--text-secondary))]">
-                    {t(`landing.faq.items.${key}.a`)}
+                    {t.landing.faq.items[key].a}
                   </p>
                 </div>
               </div>

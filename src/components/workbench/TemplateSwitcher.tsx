@@ -1,7 +1,7 @@
 'use client'
 
 import { Drawer } from 'antd'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 import { TEMPLATE_REGISTRY } from '@/components/templates/registry'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
 
@@ -11,7 +11,7 @@ interface TemplateSwitcherProps {
 }
 
 export function TemplateSwitcher({ open, onOpenChange }: TemplateSwitcherProps) {
-  const t = useTranslations()
+  const t = messages
   const activeResume = useResumeStore(selectActiveResume)
   const setTemplateId = useResumeStore(s => s.setTemplateId)
 
@@ -22,7 +22,7 @@ export function TemplateSwitcher({ open, onOpenChange }: TemplateSwitcherProps) 
   }
 
   return (
-    <Drawer title={t('templates.selectTemplate')} open={open} onClose={() => onOpenChange(false)} size={480}>
+    <Drawer title={t.templates.selectTemplate} open={open} onClose={() => onOpenChange(false)} size={480}>
       <div className="grid grid-cols-2 gap-3">
         {TEMPLATE_REGISTRY.map(entry => (
           <div key={entry.config.id} className={`rounded-lg border p-4 cursor-pointer transition-all hover:shadow-md ${activeResume?.templateId === entry.config.id ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand-light))]' : 'border-[hsl(var(--border-default))]'}`} onClick={() => handleSelect(entry.config.id)}>
@@ -31,7 +31,7 @@ export function TemplateSwitcher({ open, onOpenChange }: TemplateSwitcherProps) 
             </div>
             <div className="font-medium text-sm">{entry.config.name}</div>
             <div className="text-xs text-[hsl(var(--text-secondary))]">{entry.config.description}</div>
-            {activeResume?.templateId === entry.config.id && <div className="text-xs text-[hsl(var(--brand))] mt-1">{t('templates.currentTemplate')}</div>}
+            {activeResume?.templateId === entry.config.id && <div className="text-xs text-[hsl(var(--brand))] mt-1">{t.templates.currentTemplate}</div>}
           </div>
         ))}
       </div>

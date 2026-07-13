@@ -258,9 +258,9 @@ A4 区域:  bg-canvas-paper，shadow-lg
 | 1 | Apple 渐变光晕背景 | HeroSection, CTA, TemplatePreview | **HIGH** |
 | 2 | 胶囊形按钮 (!rounded-full) | HeroSection, TemplatePreview, CTA | **HIGH** |
 | 3 | 硬编码 Tailwind gray (text-gray-*) | Dashboard, SidePanel, EditPanel | **HIGH** |
-| 4 | TDesign 未对接品牌色 | 全站 t-button/t-input 等 | MEDIUM |
-| 5 | Dashboard Header 与 Landing Header 不一致 | dashboard/index.vue | MEDIUM |
-| 6 | Splitpanes 分割条为默认样式 | workbench/[id].vue | LOW |
+| 4 | Ant Design 未对接品牌色 | 全站 ant-btn/ant-input 等 | MEDIUM |
+| 5 | Dashboard Header 与 Landing Header 不一致 | src/app/dashboard/page.tsx | MEDIUM |
+| 6 | Allotment 分割条为默认样式 | src/components/workbench/* | LOW |
 | 7 | SF Pro Display 独占字体声明 | main.css | MEDIUM |
 | 8 | Apple Blue #0071e3 主色 | main.css，全站 | **HIGH** |
 | 9 | 卡片 hover 动画过度 | FeaturesSection | LOW |
@@ -278,7 +278,7 @@ Phase 1 — CSS Token 层（先改颜色、字体、圆角、阴影）
 
 Phase 2 — 组件层（全局组件改造）
   4. 更新按钮样式: rounded-full → rounded-md
-  5. TDesign ConfigProvider 对接品牌色
+  5. Ant Design ConfigProvider 对接品牌色
   6. 统一全站 Header
 
 Phase 3 — 页面层（逐个页面重写）

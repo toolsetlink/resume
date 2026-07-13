@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 import type { GlobalSettings } from '@/shared/types/resume'
 import type { ResumeTemplate } from '@/shared/types/template'
 import { SectionTitle } from './SectionTitle'
@@ -13,7 +13,7 @@ interface SkillSectionProps {
 }
 
 export function SkillSection({ content, globalSettings }: SkillSectionProps) {
-  const t = useTranslations()
+  const t = messages
   const sectionSpacing = globalSettings?.sectionSpacing || 10
   const sectionStyle = useMemo(() => ({ marginBottom: `${sectionSpacing}px` }), [sectionSpacing])
 
@@ -21,7 +21,7 @@ export function SkillSection({ content, globalSettings }: SkillSectionProps) {
 
   return (
     <section style={sectionStyle}>
-      <SectionTitle title={t('resume.sections.skills')} globalSettings={globalSettings} />
+      <SectionTitle title={t.resume.sections.skills} globalSettings={globalSettings} />
       <div className="rich-content" dangerouslySetInnerHTML={{ __html: content }} />
     </section>
   )

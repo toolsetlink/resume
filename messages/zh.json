@@ -151,7 +151,6 @@
     "light": "浅色",
     "dark": "深色",
     "system": "跟随系统",
-    "language": "语言",
     "font": "字体",
     "themeColor": "主题色"
   },
@@ -165,7 +164,11 @@
       "features": "功能",
       "templates": "模板",
       "faq": "FAQ",
-      "start": "开始使用"
+      "start": "开始使用",
+      "switchToLight": "切换到浅色模式",
+      "switchToDark": "切换到深色模式",
+      "openMenu": "打开菜单",
+      "closeMenu": "关闭菜单"
     },
     "hero": {
       "badge": "隐私优先 · 数据本地存储",

@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { Modal, Button } from 'antd'
 import { Plus } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
 import { MODULE_CONFIGS } from '@/shared/config/modules'
 
@@ -14,7 +14,7 @@ interface ModuleLibraryDialogProps {
 }
 
 export function ModuleLibraryDialog({ open, onOpenChange, onEnabled }: ModuleLibraryDialogProps) {
-  const t = useTranslations()
+  const t = messages
   const activeResume = useResumeStore(selectActiveResume)
   const enableMenuSection = useResumeStore(s => s.enableMenuSection)
 
@@ -33,19 +33,19 @@ export function ModuleLibraryDialog({ open, onOpenChange, onEnabled }: ModuleLib
   }
 
   return (
-    <Modal title={t('editor.moduleLibrary')} open={open} onCancel={() => onOpenChange(false)} footer={null} width={480}>
+    <Modal title={t.editor.moduleLibrary} open={open} onCancel={() => onOpenChange(false)} footer={null} width={480}>
       {allEnabled ? (
-        <p className="text-center text-[hsl(var(--text-secondary))] py-4">{t('editor.allEnabled')}</p>
+        <p className="text-center text-[hsl(var(--text-secondary))] py-4">{t.editor.allEnabled}</p>
       ) : (
         <div className="space-y-2 max-h-80 overflow-y-auto">
           {disabledModules.map(mod => (
             <div key={mod.id} className="flex items-center justify-between px-3 py-2 rounded border border-[hsl(var(--border-default))]">
               <div className="flex items-center gap-2">
                 <span>{mod.icon}</span>
-                <span className="text-sm font-medium">{mod.title.zh}</span>
+                <span className="text-sm font-medium">{mod.title}</span>
               </div>
               <Button type="primary" size="small" onClick={() => handleEnable(mod.id)}>
-                <Plus className="w-3 h-3 mr-1" />{t('editor.enable')}
+                <Plus className="w-3 h-3 mr-1" />{t.editor.enable}
               </Button>
             </div>
           ))}

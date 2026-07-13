@@ -22,13 +22,11 @@ async function goToWorkbench(page: Page) {
   if (await createBtn.isVisible()) {
     await createBtn.click()
   }
-  await page.waitForURL(/\/workbench(?:\?id=[^&]*)?//, { timeout: 15000 })
+  await page.waitForURL(/\/workbench(?:\?id=[^&]*)?/, { timeout: 15000 })
   await page.waitForLoadState('networkidle')
 }
 
-test.beforeEach(async ({ page, context }) => {
-  // 锁中文 locale，避免 Chromium 默认 Accept-Language 跳 /en/dashboard
-  await context.addCookies([{ name: 'NEXT_LOCALE', value: 'zh', domain: 'localhost', path: '/' }])
+test.beforeEach(async ({ page }) => {
   await page.goto('/')
   await page.evaluate(() => localStorage.clear())
 })
@@ -54,6 +52,6 @@ test.describe('PDF 导出', () => {
     await expect(exportCards).toHaveCount(0)
 
     // 页面仍应正常（无崩溃）
-    await expect(page).toHaveURL(/\/workbench(?:\?id=[^&]*)?//)
+    await expect(page).toHaveURL(/\/workbench(?:\?id=[^&]*)?/)
   })
 })

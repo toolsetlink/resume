@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 import type { Experience, GlobalSettings } from '@/shared/types/resume'
 import type { ResumeTemplate } from '@/shared/types/template'
 import { SectionTitle } from './SectionTitle'
@@ -13,7 +13,7 @@ interface ExperienceSectionProps {
 }
 
 export function ExperienceSection({ experiences, globalSettings, template }: ExperienceSectionProps) {
-  const t = useTranslations()
+  const t = messages
   const visibleExperiences = useMemo(() => (experiences || []).filter(e => e.visible !== false), [experiences])
   const themeColor = globalSettings?.themeColor || template.colorScheme.primary
   const subheaderSize = globalSettings?.subheaderSize || 16
@@ -26,7 +26,7 @@ export function ExperienceSection({ experiences, globalSettings, template }: Exp
 
   return (
     <section style={sectionStyle}>
-      <SectionTitle title={t('resume.sections.experience')} globalSettings={globalSettings} />
+      <SectionTitle title={t.resume.sections.experience} globalSettings={globalSettings} />
       <div>
         {visibleExperiences.map(exp => (
           <div key={exp.id} style={itemStyle}>

@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { Button, Tooltip, Switch } from 'antd'
 import { GripVertical, ChevronDown, ChevronUp, Plus, Lightbulb } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 import { ComponentType } from 'react'
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
@@ -37,7 +37,7 @@ function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, 
   onMoveDown: (id: string) => void
   onToggleSection: (id: string, enabled: boolean) => void
 }) {
-  const t = useTranslations()
+  const t = messages
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id })
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
   const Panel = panelMap[section.id]
@@ -46,17 +46,17 @@ function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, 
   return (
     <div ref={setNodeRef} style={style} className="section-card rounded border bg-[hsl(var(--bg-card))]">
       <div className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[hsl(var(--bg-subtle))]" onClick={() => onToggle(section.id)}>
-        <Tooltip title={t('editor.dragToSort')}>
+        <Tooltip title={t.editor.dragToSort}>
           <span {...attributes} {...listeners} className="cursor-grab"><GripVertical className="w-4 h-4 text-[hsl(var(--text-tertiary))]" /></span>
         </Tooltip>
         <span className="text-base">{section.icon}</span>
         <div className="flex-1 flex items-center gap-2 min-w-0">
           <span className="text-sm font-medium truncate">{section.title}</span>
-          {!section.enabled && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-secondary))]">{t('editor.hidden')}</span>}
+          {!section.enabled && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-secondary))]">{t.editor.hidden}</span>}
         </div>
-        <Tooltip title={t('editor.moveUp')}><Button type="text" size="small" disabled={index === 0} onClick={e => { e.stopPropagation(); onMoveUp(section.id) }} icon={<ChevronUp className="w-4 h-4" />} /></Tooltip>
-        <Tooltip title={t('editor.moveDown')}><Button type="text" size="small" disabled={index === total - 1} onClick={e => { e.stopPropagation(); onMoveDown(section.id) }} icon={<ChevronDown className="w-4 h-4" />} /></Tooltip>
-        <Tooltip title={t('editor.toggleVisibility')}><Switch size="small" checked={section.enabled} onChange={checked => onToggleSection(section.id, checked)} onClick={(_, e) => e.stopPropagation()} /></Tooltip>
+        <Tooltip title={t.editor.moveUp}><Button type="text" size="small" disabled={index === 0} onClick={e => { e.stopPropagation(); onMoveUp(section.id) }} icon={<ChevronUp className="w-4 h-4" />} /></Tooltip>
+        <Tooltip title={t.editor.moveDown}><Button type="text" size="small" disabled={index === total - 1} onClick={e => { e.stopPropagation(); onMoveDown(section.id) }} icon={<ChevronDown className="w-4 h-4" />} /></Tooltip>
+        <Tooltip title={t.editor.toggleVisibility}><Switch size="small" checked={section.enabled} onChange={checked => onToggleSection(section.id, checked)} onClick={(_, e) => e.stopPropagation()} /></Tooltip>
         <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
       </div>
       <div className={`grid transition-all duration-300 ${isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
@@ -71,7 +71,7 @@ function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, 
 }
 
 export function SectionAccordion() {
-  const t = useTranslations()
+  const t = messages
   const activeResume = useResumeStore(selectActiveResume)
   const activeResumeId = useResumeStore(s => s.activeResumeId)
   const updateMenuSections = useResumeStore(s => s.updateMenuSections)
@@ -124,16 +124,16 @@ export function SectionAccordion() {
     <div className="w-full flex flex-col">
       <div className="px-4 pt-4 pb-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-[hsl(var(--text-secondary))]">{t('editor.modules')}</h2>
+          <h2 className="text-sm font-medium text-[hsl(var(--text-secondary))]">{t.editor.modules}</h2>
           <Button type="primary" size="small" onClick={() => setLibraryVisible(true)}>
-            <Plus className="w-4 h-4 mr-1" />{t('editor.addModule')}
+            <Plus className="w-4 h-4 mr-1" />{t.editor.addModule}
           </Button>
         </div>
         {showGuide && (
           <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-md bg-[hsl(var(--brand)/0.08)] border border-[hsl(var(--brand)/0.2)] text-xs text-[hsl(var(--text-secondary))]">
             <Lightbulb className="w-4 h-4 text-[hsl(var(--brand))] flex-shrink-0" />
-            <span className="flex-1">{t('editor.guideTip')}</span>
-            <Button type="text" size="small" onClick={() => setShowGuide(false)}>{t('editor.gotIt')}</Button>
+            <span className="flex-1">{t.editor.guideTip}</span>
+            <Button type="text" size="small" onClick={() => setShowGuide(false)}>{t.editor.gotIt}</Button>
           </div>
         )}
       </div>

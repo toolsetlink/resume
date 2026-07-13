@@ -17,7 +17,6 @@ import type {
 import {
   createNewResume,
   initialResumeState,
-  initialResumeStateEn,
 } from '@/shared/config/initialResumeData'
 import { MODULE_CONFIGS } from '@/shared/config/modules'
 import { STORAGE_KEYS } from '@/shared/config/constants'
@@ -29,7 +28,7 @@ interface ResumeState {
 
 interface ResumeActions {
   createResume: (title?: string) => ResumeData
-  createResumeFromTemplate: (templateId: string, locale: 'zh' | 'en') => ResumeData
+  createResumeFromTemplate: (templateId: string) => ResumeData
   createResumeFromCase: (caseData: ResumeCase) => ResumeData
   deleteResume: (id: string) => void
   duplicateResume: (id: string) => ResumeData | null
@@ -84,11 +83,10 @@ export const useResumeStore = create<ResumeStore>()(
         return resume
       },
 
-      createResumeFromTemplate(templateId: string, locale: 'zh' | 'en'): ResumeData {
+      createResumeFromTemplate(templateId: string): ResumeData {
         const skeleton = createNewResume('新建简历')
-        const seed = locale === 'en' ? initialResumeStateEn : initialResumeState
         const resume = {
-          ...seed,
+          ...initialResumeState,
           id: skeleton.id,
           title: skeleton.title,
           createdAt: skeleton.createdAt,
@@ -162,7 +160,7 @@ export const useResumeStore = create<ResumeStore>()(
             if (!existingIds.has(config.id)) {
               r.menuSections.push({
                 id: config.id,
-                title: config.title.zh,
+                title: config.title,
                 icon: config.icon,
                 enabled: config.enabled,
                 order: config.order,

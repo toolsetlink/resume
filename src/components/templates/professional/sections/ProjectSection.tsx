@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 import type { Project, GlobalSettings } from '@/shared/types/resume'
 import type { ResumeTemplate } from '@/shared/types/template'
 import { SectionTitle } from './SectionTitle'
@@ -13,7 +13,7 @@ interface ProjectSectionProps {
 }
 
 export function ProjectSection({ projects, globalSettings, template }: ProjectSectionProps) {
-  const t = useTranslations()
+  const t = messages
   const visibleProjects = useMemo(() => (projects || []).filter(p => p.visible !== false), [projects])
   const themeColor = globalSettings?.themeColor || template.colorScheme.primary
   const subheaderSize = globalSettings?.subheaderSize || 16
@@ -25,7 +25,7 @@ export function ProjectSection({ projects, globalSettings, template }: ProjectSe
 
   return (
     <section style={sectionStyle}>
-      <SectionTitle title={t('resume.sections.projects')} globalSettings={globalSettings} />
+      <SectionTitle title={t.resume.sections.projects} globalSettings={globalSettings} />
       <div>
         {visibleProjects.map(proj => (
           <div key={proj.id} style={itemStyle}>

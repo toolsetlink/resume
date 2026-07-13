@@ -16,10 +16,12 @@ describe('MODULE_CONFIGS', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('all modules have zh and en titles', () => {
-    for (const m of MODULE_CONFIGS) {
-      expect(m.title.zh).toBeTruthy()
-      expect(m.title.en).toBeTruthy()
+  it('all modules have Chinese titles and descriptions', () => {
+    for (const module of MODULE_CONFIGS) {
+      expect(module.title).toBeTypeOf('string')
+      expect(module.title).not.toBe('')
+      expect(module.description).toBeTypeOf('string')
+      expect(module.description).not.toBe('')
     }
   })
 })

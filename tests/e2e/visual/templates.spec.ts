@@ -1,6 +1,5 @@
 // 模板视觉回归测试 - 自由简历项目
-// 注意：Vue/Nuxt 时代有 /snapshot/${templateId} 这种专用预览路由，迁移到 Next.js 后没保留。
-// 现在所有模板都通过 /workbench/[id] 渲染（已 <PaginatedResumePreview> 集成）。
+// 所有模板都通过 /workbench/[id] 渲染（<PaginatedResumePreview> 集成）。
 //
 // 本套件覆盖：
 //   - 4 套模板的「关键 DOM 元素」存在（test.toMatch — 永远不需要 snapshot 重生成）
@@ -52,10 +51,7 @@ function templateDisplayName(id: typeof TEMPLATE_IDS[number]): string {
 }
 
 test.describe('模板视觉回归', () => {
-  test.beforeEach(async ({ page, context }) => {
-    await context.addCookies([
-      { name: 'NEXT_LOCALE', value: 'zh', domain: 'localhost', path: '/' },
-    ])
+  test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
     await page.evaluate(() => localStorage.clear())
@@ -86,7 +82,7 @@ test.describe('模板视觉回归', () => {
     await expect(page.locator('#resume-preview ' + TEMPLATE_ROOT_SELECTOR.creative).first()).toBeVisible()
   })
 
-  // 视觉 snapshot 暂时跳过：当前 baseline 是 Vue/Nuxt 时代的截图（/snapshot/X 路由已不存在）。
+  // 视觉 snapshot 暂时跳过：等下次决定 baseline 策略时启用。
   // 重新生成 baseline 的步骤：
   //   1. 跑 `pnpm exec playwright test --update-snapshots tests/e2e/visual/templates.spec.ts`
   //   2. 人工 review 生成的 baseline 后 commit
@@ -106,13 +102,6 @@ async function enterWorkbench(page: Page) {
 }
 
 test.describe('落地页视觉回归', () => {
-  test.beforeEach(async ({ context }) => {
-    await context.clearCookies()
-    await context.addCookies([
-      { name: 'NEXT_LOCALE', value: 'zh', domain: 'localhost', path: '/' },
-    ])
-  })
-
   test('中文落地页视觉一致', async ({ page }) => {
     test.skip(true, '见文件顶部注释：等下次决定 baseline 策略时手动启用')
   })

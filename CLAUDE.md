@@ -2,7 +2,7 @@
 
 自由简历 (ziyou-resume) — Privacy-first online resume editor with multi-template support and PDF export.
 
-**Stack:** Next.js 16 + React 19 + TypeScript + Zustand + Ant Design + Tailwind CSS v4 + next-intl + Vitest + Playwright + PNPM
+**Stack:** Next.js 16 + React 19 + TypeScript + Zustand + Ant Design + Tailwind CSS v4 + Vitest + Playwright + PNPM
 
 ## Commands
 
@@ -20,14 +20,11 @@ pnpm exec playwright test   # Run E2E tests
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── layout.tsx          # Root layout (metadata)
-│   ├── page.tsx            # Redirect to default locale
+│   ├── layout.tsx          # Root layout: AntdRegistry + ThemeProvider
+│   ├── page.tsx            # Chinese landing page (SSR with generateMetadata)
 │   ├── robots.ts / sitemap.ts
-│   └── [locale]/           # i18n routes
-│       ├── layout.tsx      # Providers: NextIntlClientProvider + AntdRegistry + ThemeProvider
-│       ├── page.tsx        # Landing page (SSR with generateMetadata)
-│       ├── dashboard/      # Client-only pages
-│       └── workbench/      # Client-only editor
+│   ├── dashboard/          # Client-only pages
+│   └── workbench/          # Client-only editor
 ├── components/
 │   ├── home/               # Landing page sections
 │   ├── templates/          # 4 resume templates + registry
@@ -37,7 +34,7 @@ src/
 ├── hooks/                  # usePdfExport, useAutoSave, useItemSaveStatus, useResumeCases
 ├── stores/resume-store.ts  # Zustand + Immer + persist (27 actions)
 ├── shared/                 # Pure TS types and config
-├── i18n/                   # next-intl: routing, request, navigation
+├── i18n/config.ts          # Chinese locale placeholder (no runtime i18n)
 └── styles/globals.css      # HSL design tokens + rich-content CSS
 ```
 
@@ -45,7 +42,7 @@ src/
 
 - **`@/`** → `src/`
 - **State**: Zustand with Immer middleware. Persisted to localStorage key `resume-storage`.
-- **i18n**: next-intl with `localePrefix: 'as-needed'`. SSR-safe via `getTranslations()`.
+- **Language**: Chinese-only. UI strings are imported directly from `messages/zh.json`; `src/i18n/config.ts` is a configuration placeholder only.
 - **Templates pluggable**: Add at `src/components/templates/{name}/`, register in `registry.ts`.
 - **Client-only**: Dashboard and Workbench use `'use client'`. Landing page fully SSR.
 - **Dynamic components**: React component map pattern (`Record<string, ComponentType>`).

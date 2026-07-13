@@ -29,17 +29,7 @@ async function getHtmlClass(page: import('@playwright/test').Page): Promise<stri
 }
 
 test.describe('暗色模式切换与持久化', () => {
-  test.beforeEach(async ({ context, page }) => {
-    // 清除 cookie 避免 i18n 重定向干扰（Playwright Chromium 默认 Accept-Language=en-US）
-    await context.clearCookies()
-    await context.addCookies([
-      {
-        name: 'NEXT_LOCALE',
-        value: 'zh',
-        domain: 'localhost',
-        path: '/',
-      },
-    ])
+  test.beforeEach(async ({ page }) => {
     // 先访问一次页面，确保 localStorage 域名上下文已建立，再清理
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
@@ -70,11 +60,8 @@ test.describe('暗色模式切换与持久化', () => {
     const initialHtmlClass = await getHtmlClass(page)
     expect(initialHtmlClass).not.toContain('dark')
 
-    // LandingHeader 右侧操作区有两个 variant=text 的 t-button：
-    //   1) 语言切换（Languages 图标）
-    //   2) 暗色切换（Sun/Moon 图标，toggleColorMode）
-    // 暗色切换按钮是第二个 variant=text 按钮
-    const themeToggle = page.locator('header .ant-btn').nth(1)
+    // LandingHeader 的第一个 Ant Design 按钮是主题切换按钮
+    const themeToggle = page.locator('header .ant-btn').nth(0)
     await expect(themeToggle).toBeVisible()
 
     // 点击切换到 dark
@@ -115,7 +102,7 @@ test.describe('暗色模式切换与持久化', () => {
     await page.waitForLoadState('networkidle')
 
     // 通过 UI 切换到 dark
-    const themeToggle = page.locator('header .ant-btn').nth(1)
+    const themeToggle = page.locator('header .ant-btn').nth(0)
     await expect(themeToggle).toBeVisible()
     await themeToggle.click()
 
@@ -140,7 +127,7 @@ test.describe('暗色模式切换与持久化', () => {
     await page.waitForLoadState('networkidle')
 
     // 先切换到 dark
-    const themeToggle = page.locator('header .ant-btn').nth(1)
+    const themeToggle = page.locator('header .ant-btn').nth(0)
     await expect(themeToggle).toBeVisible()
     await themeToggle.click()
     await expect.poll(async () => await getHtmlClass(page), { timeout: 5000 }).toContain('dark')

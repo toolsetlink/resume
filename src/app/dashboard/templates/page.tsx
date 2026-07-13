@@ -2,15 +2,14 @@
 
 import { useEffect } from 'react'
 import { Button, message } from 'antd'
-import { useTranslations } from 'next-intl'
-import { useRouter } from '@/i18n/navigation'
+import messages from '@/messages/zh.json'
 import { TEMPLATE_REGISTRY } from '@/components/templates/registry'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
 import { LandingHeader } from '@/components/home/LandingHeader'
 
+const t = messages
+
 export default function DashboardTemplatesPage() {
-  const t = useTranslations()
-  const router = useRouter()
   const activeResume = useResumeStore(selectActiveResume)
   const setTemplateId = useResumeStore(s => s.setTemplateId)
   const initialize = useResumeStore(s => s.initialize)
@@ -20,14 +19,14 @@ export default function DashboardTemplatesPage() {
   const handleSelect = (templateId: string) => {
     if (!activeResume) return
     setTemplateId(activeResume.id, templateId)
-    message.success(t('templates.switchSuccess'))
+    message.success(t.templates.switchSuccess)
   }
 
   return (
     <div className="min-h-screen bg-[hsl(var(--bg-base))]">
       <LandingHeader />
       <div className="p-8 max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">{t('templates.selectTemplate')}</h1>
+        <h1 className="text-2xl font-bold mb-6">{t.templates.selectTemplate}</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {TEMPLATE_REGISTRY.map(entry => (
             <div key={entry.config.id} className={`rounded-xl border p-6 cursor-pointer transition-all duration-200 hover:shadow-md ${activeResume?.templateId === entry.config.id ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand-light))]' : 'border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))]'}`} onClick={() => handleSelect(entry.config.id)}>
@@ -39,7 +38,7 @@ export default function DashboardTemplatesPage() {
               <div className="flex gap-1 mt-3">
                 {[entry.config.colorScheme.primary, entry.config.colorScheme.secondary, entry.config.colorScheme.text].map((c, i) => <span key={i} className="w-5 h-5 rounded-full border border-[hsl(var(--border-default))]" style={{ backgroundColor: c }} />)}
               </div>
-              {activeResume?.templateId === entry.config.id && <Button type="primary" size="small" className="mt-3 w-full">{t('templates.currentTemplate')}</Button>}
+              {activeResume?.templateId === entry.config.id && <Button type="primary" size="small" className="mt-3 w-full">{t.templates.currentTemplate}</Button>}
             </div>
           ))}
         </div>

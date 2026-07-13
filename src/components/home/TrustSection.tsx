@@ -2,10 +2,10 @@
 
 import { ShieldCheck, FileText, Sparkles, Globe } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 
 interface TrustItem {
-  key: string
+  key: keyof typeof messages.landing.trust
   icon: LucideIcon
 }
 
@@ -17,7 +17,7 @@ const trustItems: TrustItem[] = [
 ]
 
 export function TrustSection() {
-  const t = useTranslations()
+  const t = messages
 
   return (
     <section className="py-24 sm:py-32">
@@ -29,7 +29,7 @@ export function TrustSection() {
                 <item.icon className="h-[22px] w-[22px]" />
               </div>
               <div className="text-[13px] font-medium text-[hsl(var(--text-secondary))]">
-                {t(`landing.trust.${item.key}`)}
+                {t.landing.trust[item.key]}
               </div>
             </div>
           ))}

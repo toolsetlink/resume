@@ -15,10 +15,8 @@ async function waitForDashboardReady(page: import('@playwright/test').Page) {
 }
 
 test.describe('简历 CRUD', () => {
-  test.beforeEach(async ({ page, context }) => {
-    // 锁中文 locale，避免 Chromium 默认 Accept-Language 跳 /en/dashboard
-    await context.addCookies([{ name: 'NEXT_LOCALE', value: 'zh', domain: 'localhost', path: '/' }])
-    // 先访问根路径（i18n 默认中文，不会带前缀），确保浏览器上下文已就绪
+  test.beforeEach(async ({ page }) => {
+    // 先访问根路径，确保浏览器上下文已就绪
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
     // 清理 localStorage，避免之前测试的数据干扰
@@ -28,7 +26,7 @@ test.describe('简历 CRUD', () => {
   })
 
   test('初始为空时点击创建简历按钮跳转工作台', async ({ page }) => {
-    // 访问 dashboard（默认中文无前缀）
+    // 访问 dashboard
     await page.goto('/dashboard')
     await waitForDashboardReady(page)
 

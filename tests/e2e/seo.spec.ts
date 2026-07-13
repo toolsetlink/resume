@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 // ============================================================
 // SEO 配置 E2E 测试（Task 10.11）
 // 覆盖：
-//   - 落地页 og / twitter / canonical / hreflang meta
+//   - 落地页 og / twitter / canonical meta
 //   - 应用页面 noindex,nofollow
 //   - sitemap.xml / sitemap_index.xml 可访问
 //   - robots.txt 可访问且包含 Disallow
@@ -13,7 +13,7 @@ import { test, expect } from '@playwright/test'
 // ============================================================
 
 test.describe('落地页 SEO meta', () => {
-  test('og / twitter / canonical / hreflang meta 完整', async ({ page }) => {
+  test('og / twitter / canonical meta 完整且无语言备用链接', async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
@@ -44,17 +44,8 @@ test.describe('落地页 SEO meta', () => {
     const canonical = page.locator('link[rel="canonical"]')
     await expect(canonical).toHaveAttribute('href', /.+/)
 
-    // hreflang: zh-CN
-    const hreflangZh = page.locator('link[rel="alternate"][hreflang="zh-CN"]')
-    await expect(hreflangZh).toHaveAttribute('href', /.+/)
-
-    // hreflang: en-US
-    const hreflangEn = page.locator('link[rel="alternate"][hreflang="en-US"]')
-    await expect(hreflangEn).toHaveAttribute('href', /.+/)
-
-    // hreflang: x-default
-    const hreflangDefault = page.locator('link[rel="alternate"][hreflang="x-default"]')
-    await expect(hreflangDefault).toHaveAttribute('href', /.+/)
+    const languageAlternates = page.locator('link[rel="alternate"][hreflang]')
+    await expect(languageAlternates).toHaveCount(0)
   })
 })
 

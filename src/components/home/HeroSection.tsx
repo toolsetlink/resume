@@ -3,21 +3,16 @@
 import { useMemo } from 'react'
 import { Button } from 'antd'
 import { ShieldCheck, Plus, LayoutTemplate } from 'lucide-react'
-import { useTranslations, useLocale } from 'next-intl'
-import { useRouter } from '@/i18n/navigation'
+import { useRouter } from 'next/navigation'
+import messages from '@/messages/zh.json'
+
+const TAGS = ['React', 'TypeScript', 'Node.js', 'Vue', '团队管理']
 
 export function HeroSection() {
-  const t = useTranslations()
-  const locale = useLocale()
+  const t = messages
   const router = useRouter()
 
-  const tags = useMemo(
-    () =>
-      locale === 'zh'
-        ? ['React', 'TypeScript', 'Node.js', 'Vue', '团队管理']
-        : ['React', 'TypeScript', 'Node.js', 'Vue', 'Leadership'],
-    [locale]
-  )
+  const tags = useMemo(() => TAGS, [])
 
   return (
     <section className="relative overflow-hidden">
@@ -26,13 +21,13 @@ export function HeroSection() {
           <div className="fade-in-up text-center lg:text-left">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))]/80 px-3.5 py-1.5 text-[12px] font-medium text-[hsl(var(--text-secondary))]">
               <ShieldCheck className="h-3.5 w-3.5 text-[hsl(var(--brand))]" />
-              {t('landing.hero.badge')}
+              {t.landing.hero.badge}
             </span>
             <h1 className="mt-7 text-[clamp(2.5rem,6vw,4.5rem)] font-bold leading-[1.05] text-[hsl(var(--text-primary))] sm:text-5xl lg:text-[4.5rem]">
-              {t('landing.hero.title')}
+              {t.landing.hero.title}
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-[19px] leading-relaxed text-[hsl(var(--text-secondary))] lg:mx-0">
-              {t('landing.hero.subtitle')}
+              {t.landing.hero.subtitle}
             </p>
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
               <Button
@@ -42,7 +37,7 @@ export function HeroSection() {
                 onClick={() => router.push('/dashboard')}
               >
                 <Plus className="mr-1.5 h-[18px] w-[18px]" />
-                {t('landing.hero.cta.create')}
+                {t.landing.hero.cta.create}
               </Button>
               <Button
                 size="large"
@@ -52,7 +47,7 @@ export function HeroSection() {
                 }}
               >
                 <LayoutTemplate className="mr-1.5 h-[18px] w-[18px]" />
-                {t('landing.hero.cta.templates')}
+                {t.landing.hero.cta.templates}
               </Button>
             </div>
           </div>
@@ -63,14 +58,14 @@ export function HeroSection() {
             >
               <div className="flex items-center gap-4 border-b border-[hsl(var(--border-default))] pb-5">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--brand))] text-[18px] font-bold text-white">
-                  {t('landing.hero.preview.name').charAt(0)}
+                  {t.landing.hero.preview.name.charAt(0)}
                 </div>
                 <div>
                   <div className="text-[18px] font-semibold text-[hsl(var(--text-primary))]">
-                    {t('landing.hero.preview.name')}
+                    {t.landing.hero.preview.name}
                   </div>
                   <div className="text-[14px] text-[hsl(var(--text-secondary))]">
-                    {t('landing.hero.preview.title')}
+                    {t.landing.hero.preview.title}
                   </div>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useTranslations } from 'next-intl'
+import messages from '@/messages/zh.json'
 import type { CustomItem, GlobalSettings, MenuSection } from '@/shared/types/resume'
 import type { ResumeTemplate } from '@/shared/types/template'
 import { SectionTitle } from './SectionTitle'
@@ -14,7 +14,7 @@ interface CustomSectionProps {
 }
 
 export function CustomSection({ customData, globalSettings, template, menuSections }: CustomSectionProps) {
-  const t = useTranslations()
+  const t = messages
   const baseFontSize = globalSettings?.baseFontSize || 16
   const subheaderSize = globalSettings?.subheaderSize || 16
   const sectionSpacing = globalSettings?.sectionSpacing || 10
@@ -35,7 +35,7 @@ export function CustomSection({ customData, globalSettings, template, menuSectio
         if (items.length === 0) return null
         return (
           <div key={section.id} style={sectionStyle}>
-            <SectionTitle title={t('resume.sections.custom')} globalSettings={globalSettings} />
+            <SectionTitle title={t.resume.sections.custom} globalSettings={globalSettings} />
             {items.map(item => (
               <div key={item.id} style={itemStyle}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Landing Page', () => {
   test('renders Chinese landing page with SEO metadata', async ({ page }) => {
-    await page.goto('/zh')
+    await page.goto('/')
     await expect(page).toHaveTitle(/自由简历/)
     const jsonLdScripts = await page.locator('script[type="application/ld+json"]').count()
     expect(jsonLdScripts).toBeGreaterThanOrEqual(4)
@@ -14,15 +14,22 @@ test.describe('Landing Page', () => {
     expect(canonical).toBeTruthy()
   })
 
-  test('renders English landing page', async ({ page }) => {
-    await page.goto('/en')
-    await expect(page).toHaveTitle(/ZiYou/)
-    expect(await page.locator('script[type="application/ld+json"]').count()).toBeGreaterThanOrEqual(4)
+  test('header controls expose accessible names and menu state', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+
+    await expect(page.getByRole('button', { name: '切换到深色模式' })).toBeVisible()
+
+    const openMenuButton = page.getByRole('button', { name: '打开菜单' })
+    await expect(openMenuButton).toHaveAttribute('aria-expanded', 'false')
+    await openMenuButton.click()
+
+    await expect(page.getByRole('button', { name: '关闭菜单' })).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.locator('#mobile-navigation')).toBeVisible()
   })
 
-  test('language switcher redirects correctly', async ({ page }) => {
-    await page.goto('/')
-    const url = page.url()
-    expect(url).toMatch(/\/(zh|en)?$/)
+  test('locale-prefixed routes are not available', async ({ request }) => {
+    expect((await request.get('/zh')).status()).toBe(404)
+    expect((await request.get('/en')).status()).toBe(404)
   })
 })

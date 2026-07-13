@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import { Drawer, message } from 'antd'
 import { Allotment } from 'allotment'
 import 'allotment/dist/style.css'
-import { useTranslations } from 'next-intl'
-import { useRouter } from '@/i18n/navigation'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import messages from '@/messages/zh.json'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
 import { PaginatedResumePreview } from '@/components/preview/PaginatedResumePreview'
 import { SectionAccordion } from '@/components/editor/SectionAccordion'
@@ -17,11 +16,11 @@ import { GlobalSettingsPanel } from '@/components/workbench/GlobalSettingsPanel'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { usePdfExport } from '@/hooks/usePdfExport'
 
+const t = messages
+
 export default function WorkbenchClient() {
-  const t = useTranslations()
   const router = useRouter()
   const searchParams = useSearchParams()
-  // 静态导出 (output: 'export') 不支持动态路由段，改用 ?id= 查询参数
   const resumeId = searchParams.get('id') ?? ''
 
   const activeResume = useResumeStore(selectActiveResume)
@@ -53,7 +52,7 @@ export default function WorkbenchClient() {
     catch (e: any) { message.error(`导出失败: ${e.message}`) }
   }
 
-  if (!resumeId) return <div className="min-h-screen flex items-center justify-center"><p>{t('common.loading')}</p></div>
+  if (!resumeId) return <div className="min-h-screen flex items-center justify-center"><p>{t.common.loading}</p></div>
 
   return (
     <div className="workbench-page h-screen flex flex-col overflow-hidden bg-[hsl(var(--bg-base))]">
@@ -82,7 +81,7 @@ export default function WorkbenchClient() {
                 <PaginatedResumePreview resumeData={activeResume} />
               ) : (
                 <div className="mx-auto bg-white shadow-lg flex items-center justify-center text-[hsl(var(--text-tertiary))]" style={{ width: 794, minHeight: 1123 }}>
-                  {t('common.loading')}
+                  {t.common.loading}
                 </div>
               )}
             </div>

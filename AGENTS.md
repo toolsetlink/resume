@@ -39,12 +39,6 @@ pnpm exec next build --webpack
 - `useEditor` 必须设 `immediatelyRender: true`（v3 默认 false，SSR 同步渲染需要 true）
 - `useEditor` 自动管理 `editor.destroy()`，**不要**写手动 `useEffect(() => () => editor?.destroy(), [])` cleanup
 
-## E2E 测试是 Nuxt 时代遗留（待迁移）
+## E2E 测试
 
-`tests/e2e/*.spec.ts` 里大部分选择器是 Vue + TDesign 时代的：
-
-- `.t-form__item` / `.t-dialog` / `.t-input__inner`（TDesign）
-- 注释提到 `TDesign 渲染结构`
-- `localStorage.clear()` 清理但仍假设 Vue 响应式语义
-
-当前栈是 React 19 + Ant Design 6 + Next.js 16（见 `CLAUDE.md`）。这些 E2E 选 ASSERT 一定会失败，需要按 Ant Design 6 的 DOM 重写一遍（典型锚点：`.ant-form-item`、`.ant-modal`、`.ant-input`）。重写后再跑 Playwright。
+`tests/e2e/*.spec.ts` 选择器按 Ant Design 6 的 DOM 编写（典型锚点：`.ant-form-item`、`.ant-modal`、`.ant-input`）。选择器随 UI 库升级更新，跑 Playwright 前先确认选择器与当前组件版本对齐。

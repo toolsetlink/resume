@@ -42,11 +42,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Nuxt (legacy build artifacts)
-.nuxt/
-.output/
-dist/
-
 # test artifacts
 test-results/
 playwright-report/
@@ -54,5 +49,4 @@ playwright-report/
 # IDE
 .idea/
 *.iml
-dist/
 deploy.log

@@ -50,11 +50,13 @@ describe('resume store - CRUD', () => {
     expect(useResumeStore.getState().resumes).toHaveLength(2)
   })
 
-  it('createResumeFromTemplate seeds example data', () => {
+  it('createResumeFromTemplate seeds Chinese example data', () => {
     const store = useResumeStore.getState()
-    const resume = store.createResumeFromTemplate('professional', 'zh')
+    expect(store.createResumeFromTemplate).toHaveLength(1)
+
+    const resume = store.createResumeFromTemplate('professional')
     expect(resume.templateId).toBe('professional')
-    expect(resume.basic.name).toBeTruthy()
+    expect(resume.basic.name).toBe('李明')
   })
 
   it('createResumeFromCase deep clones case data', () => {

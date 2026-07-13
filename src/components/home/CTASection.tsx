@@ -2,11 +2,11 @@
 
 import { Button } from 'antd'
 import { ArrowRight } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { useRouter } from '@/i18n/navigation'
+import { useRouter } from 'next/navigation'
+import messages from '@/messages/zh.json'
 
 export function CTASection() {
-  const t = useTranslations()
+  const t = messages
   const router = useRouter()
 
   return (
@@ -18,10 +18,10 @@ export function CTASection() {
         >
           <div className="fade-in relative">
             <h2 className="text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.1] text-white sm:text-4xl">
-              {t('landing.cta.title')}
+              {t.landing.cta.title}
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-[18px] leading-relaxed text-white/85 sm:text-[19px]">
-              {t('landing.cta.subtitle')}
+              {t.landing.cta.subtitle}
             </p>
             <div className="mt-10 flex justify-center">
               <Button
@@ -29,7 +29,7 @@ export function CTASection() {
                 className="!h-12 !bg-white !px-8 !text-[15px] !font-semibold !text-[hsl(var(--brand))]"
                 onClick={() => router.push('/dashboard')}
               >
-                {t('landing.cta.button')}
+                {t.landing.cta.button}
                 <ArrowRight className="ml-1.5 h-[18px] w-[18px]" />
               </Button>
             </div>
