@@ -12,7 +12,6 @@ export const elegantConfig: ResumeTemplate = {
     background: '#fafafa',
     text: '#334155',
   },
-  spacing: { sectionGap: 24, itemGap: 16, contentPadding: 48 },
+  spacing: { itemGap: 16, contentPadding: 48 },
   basic: { layout: 'center' },
-  availableSections: ['skills', 'experience', 'projects', 'education', 'selfEvaluation', 'certificates'],
 }

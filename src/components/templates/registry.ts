@@ -23,27 +23,10 @@ export const TEMPLATE_REGISTRY: TemplateRegistryEntry[] = [
   { config: creativeConfig, Component: CreativeTemplate },
 ]
 
-export const DEFAULT_TEMPLATES: ResumeTemplate[] = TEMPLATE_REGISTRY.map((e) => e.config)
-
 export function getTemplateComponent(layout: string): ComponentType<{ data: ResumeData; template: ResumeTemplate }> | null {
   return TEMPLATE_REGISTRY.find((e) => e.config.layout === layout)?.Component ?? null
 }
 
 export function getTemplateConfig(id: string): ResumeTemplate | null {
   return TEMPLATE_REGISTRY.find((e) => e.config.id === id)?.config ?? null
-}
-
-export const TEMPLATE_SLUG_MAP: Record<string, string> = {
-  professional: 'professional-resume',
-  modern: 'modern-resume',
-  elegant: 'elegant-resume',
-  creative: 'creative-resume',
-}
-
-export function getTemplateSlug(id: string): string {
-  return TEMPLATE_SLUG_MAP[id] ?? id
-}
-
-export function getTemplateIdBySlug(slug: string): string | null {
-  return Object.entries(TEMPLATE_SLUG_MAP).find(([, v]) => v === slug)?.[0] ?? null
 }

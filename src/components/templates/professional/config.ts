@@ -13,15 +13,10 @@ export const professionalConfig: ResumeTemplate = {
     text: '#374151',
   },
   spacing: {
-    sectionGap: 20,
     itemGap: 14,
     contentPadding: 40,
   },
   basic: {
     layout: 'left',
   },
-  availableSections: [
-    'skills', 'experience', 'projects', 'education',
-    'selfEvaluation', 'certificates',
-  ],
 }

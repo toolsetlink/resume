@@ -12,7 +12,6 @@ export const creativeConfig: ResumeTemplate = {
     background: '#ffffff',
     text: '#1f2937',
   },
-  spacing: { sectionGap: 16, itemGap: 12, contentPadding: 24 },
+  spacing: { itemGap: 12, contentPadding: 24 },
   basic: { layout: 'center' },
-  availableSections: ['skills', 'experience', 'projects', 'education', 'selfEvaluation', 'certificates'],
 }

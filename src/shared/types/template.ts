@@ -14,20 +14,10 @@ export interface ResumeTemplate {
     text: string
   }
   spacing: {
-    sectionGap: number
     itemGap: number
     contentPadding: number
   }
   basic: {
     layout?: 'left' | 'center' | 'right'
-  }
-  availableSections?: string[]
-}
-
-// 模板配置接口
-export interface TemplateConfig {
-  sectionTitle: {
-    className?: string
-    styles: Record<string, string>
   }
 }

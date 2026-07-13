@@ -12,7 +12,6 @@ export const modernConfig: ResumeTemplate = {
     background: '#ffffff',
     text: '#1e293b',
   },
-  spacing: { sectionGap: 18, itemGap: 12, contentPadding: 0 },
+  spacing: { itemGap: 12, contentPadding: 0 },
   basic: { layout: 'left' },
-  availableSections: ['skills', 'experience', 'projects', 'education', 'selfEvaluation', 'certificates'],
 }
