@@ -4,9 +4,6 @@
 export interface PhotoConfig {
   width: number
   height: number
-  aspectRatio: '1:1' | '4:3' | '3:4' | '16:9' | 'custom'
-  borderRadius: 'none' | 'medium' | 'full' | 'custom'
-  customBorderRadius: number
   visible: boolean
 }
 
@@ -39,13 +36,13 @@ export interface BasicInfo {
   email: string
   phone: string
   location: string
+  website?: string
   icons: Record<string, string>
   employementStatus: string
   photo: string
   photoConfig: PhotoConfig
   fieldOrder?: BasicFieldType[]
   customFields: CustomFieldType[]
-  layout?: 'left' | 'center' | 'right'
   age?: string
 }
 
@@ -170,9 +167,6 @@ export interface ResumeData {
 export const DEFAULT_PHOTO_CONFIG: PhotoConfig = {
   width: 90,
   height: 120,
-  aspectRatio: '1:1',
-  borderRadius: 'none',
-  customBorderRadius: 0,
   visible: true,
 }
 
@@ -190,33 +184,4 @@ export const THEME_COLORS = [
   '#FF4500',
   '#4B0082',
   '#2E8B57',
-]
-
-// 照片比例计算
-export const getRatioMultiplier = (ratio: PhotoConfig['aspectRatio']): number => {
-  switch (ratio) {
-    case '4:3':
-      return 3 / 4
-    case '3:4':
-      return 4 / 3
-    case '16:9':
-      return 9 / 16
-    default:
-      return 1
-  }
-}
-
-// 照片圆角值
-export const getBorderRadiusValue = (config?: PhotoConfig): string => {
-  if (!config) return '0'
-  switch (config.borderRadius) {
-    case 'medium':
-      return '0.5rem'
-    case 'full':
-      return '9999px'
-    case 'custom':
-      return `${config.customBorderRadius}px`
-    default:
-      return '0'
-  }
-}
+] // 主题色预设结束

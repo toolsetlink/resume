@@ -3,7 +3,7 @@
 import { LandingHeader } from './LandingHeader'
 import { HeroSection } from './HeroSection'
 import { FeaturesSection } from './FeaturesSection'
-import { TemplatesSection } from './TemplatesSection'
+import { CasesSection } from './CasesSection'
 import { TrustSection } from './TrustSection'
 import { CTASection } from './CTASection'
 import { FAQSection } from './FAQSection'
@@ -16,7 +16,7 @@ export function LandingPageClient() {
       <main>
         <HeroSection />
         <FeaturesSection />
-        <TemplatesSection />
+        <CasesSection />
         <TrustSection />
         <CTASection />
         <FAQSection />

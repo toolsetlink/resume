@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Form, Input, InputNumber, Select, Radio, Button, Upload } from 'antd'
+import { Form, Input, InputNumber, Button, Upload } from 'antd'
+import { Trash2 } from 'lucide-react'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
-import type { PhotoConfig } from '@/shared/types/resume'
+import type { CustomFieldType, PhotoConfig } from '@/shared/types/resume'
 import { DEFAULT_PHOTO_CONFIG } from '@/shared/types/resume'
 
 export function BasicInfoPanel() {
@@ -14,7 +15,6 @@ export function BasicInfoPanel() {
   const [form] = Form.useForm()
   const [photo, setPhoto] = useState<string>('')
   const [photoConfig, setPhotoConfig] = useState<PhotoConfig>(DEFAULT_PHOTO_CONFIG)
-  const [layout, setLayout] = useState<'left' | 'center' | 'right'>('left')
 
   // 只在切换简历时同步一次，避免在 useEffect 里同步 setState 触发 cascading renders。
   const lastSyncedResumeIdRef = useRef<string | null | undefined>(undefined)
@@ -25,17 +25,41 @@ export function BasicInfoPanel() {
       form.setFieldsValue(b)
       setPhoto(b.photo || '')
       setPhotoConfig(b.photoConfig || DEFAULT_PHOTO_CONFIG)
-      setLayout(b.layout || 'left')
+      setCustomFields(b.customFields || [])
     }
     // form 是 Form.useForm() 的稳定引用，photoConfig 不参与判断（只在 ref 命中分支里被读）。
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeResume, activeResumeId])
 
+  const [customFields, setCustomFields] = useState<CustomFieldType[]>([])
+
+  const commitCustomFields = useCallback((next: CustomFieldType[]) => {
+    setCustomFields(next)
+    if (activeResumeId) {
+      updateBasicInfo(activeResumeId, { customFields: next })
+    }
+  }, [activeResumeId, updateBasicInfo])
+
+  const addCustomField = useCallback(() => {
+    commitCustomFields([
+      ...customFields,
+      { id: crypto.randomUUID(), label: '', value: '' },
+    ])
+  }, [customFields, commitCustomFields])
+
+  const updateCustomField = useCallback((id: string, patch: Partial<CustomFieldType>) => {
+    commitCustomFields(customFields.map(f => f.id === id ? { ...f, ...patch } : f))
+  }, [customFields, commitCustomFields])
+
+  const removeCustomField = useCallback((id: string) => {
+    commitCustomFields(customFields.filter(f => f.id !== id))
+  }, [customFields, commitCustomFields])
+
   const commit = useCallback(() => {
     if (!activeResumeId) return
     const values = form.getFieldsValue()
-    updateBasicInfo(activeResumeId, { ...values, photo, photoConfig, layout })
-  }, [activeResumeId, form, photo, photoConfig, layout, updateBasicInfo])
+    updateBasicInfo(activeResumeId, { ...values, photo, photoConfig })
+  }, [activeResumeId, form, photo, photoConfig, updateBasicInfo])
 
   // Antd 的 beforeUpload 收的是 RcFile（File 子类），直接读 reader 即可，
   // 不再需要 UploadFile.originFileObj 这一层包装。
@@ -50,7 +74,6 @@ export function BasicInfoPanel() {
             ...form.getFieldsValue(),
             photo: base64,
             photoConfig,
-            layout,
           })
         }
       }, 0)
@@ -61,26 +84,14 @@ export function BasicInfoPanel() {
 
   const removePhoto = () => {
     setPhoto('')
-    commit()
+    // 直接传 photo: ''，绕开 commit 闭包里的旧 photo 值（setPhoto 后立刻调用 commit 拿到的是 stale 值）
+    if (activeResumeId) {
+      updateBasicInfo(activeResumeId, { photo: '', photoConfig })
+    }
   }
 
   return (
     <div className="space-y-6 p-6">
-      <div className="space-y-2">
-        <h3 className="text-base font-medium">布局</h3>
-        <Radio.Group
-          value={layout}
-          onChange={(e) => {
-            setLayout(e.target.value)
-            setTimeout(commit, 0)
-          }}
-        >
-          <Radio.Button value="left">左对齐</Radio.Button>
-          <Radio.Button value="center">居中</Radio.Button>
-          <Radio.Button value="right">右对齐</Radio.Button>
-        </Radio.Group>
-      </div>
-
       <div className="space-y-2">
         <h3 className="text-base font-medium">照片</h3>
         <div className="flex items-center gap-4">
@@ -112,7 +123,7 @@ export function BasicInfoPanel() {
             )}
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3 mt-3">
+        <div className="grid grid-cols-2 gap-3 mt-3">
           <div>
             <label className="text-xs text-[hsl(var(--text-secondary))]">
               宽度
@@ -139,23 +150,6 @@ export function BasicInfoPanel() {
                 setPhotoConfig((p) => ({ ...p, height: v || 120 }))
               }}
               style={{ width: '100%' }}
-            />
-          </div>
-          <div>
-            <label className="text-xs text-[hsl(var(--text-secondary))]">
-              圆角
-            </label>
-            <Select
-              value={photoConfig.borderRadius}
-              onChange={(v) =>
-                setPhotoConfig((p) => ({ ...p, borderRadius: v }))
-              }
-              style={{ width: '100%' }}
-              options={[
-                { value: 'none', label: '无' },
-                { value: 'medium', label: '中等' },
-                { value: 'full', label: '圆形' },
-              ]}
             />
           </div>
         </div>
@@ -188,6 +182,40 @@ export function BasicInfoPanel() {
             </Form.Item>
           </div>
         </Form>
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-medium">自定义字段</h3>
+          <Button size="small" onClick={addCustomField}>添加字段</Button>
+        </div>
+        {customFields.length === 0 && (
+          <p className="text-xs text-[hsl(var(--text-tertiary))]">
+            暂无自定义字段。例如可添加"个人网站"、"GitHub"等。
+          </p>
+        )}
+        {customFields.map(field => (
+          <div key={field.id} className="flex items-center gap-2">
+            <Input
+              placeholder="标签 (如:个人网站)"
+              value={field.label}
+              onChange={e => updateCustomField(field.id, { label: e.target.value })}
+              style={{ width: 180 }}
+            />
+            <Input
+              placeholder="值 (如:https://example.com)"
+              value={field.value}
+              onChange={e => updateCustomField(field.id, { value: e.target.value })}
+            />
+            <Button
+              type="text"
+              danger
+              icon={<Trash2 size={16} />}
+              onClick={() => removeCustomField(field.id)}
+              aria-label="删除字段"
+            />
+          </div>
+        ))}
       </div>
     </div>
   )

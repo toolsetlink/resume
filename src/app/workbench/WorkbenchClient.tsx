@@ -11,7 +11,7 @@ import { PaginatedResumePreview } from '@/components/preview/PaginatedResumePrev
 import { SectionAccordion } from '@/components/editor/SectionAccordion'
 import { WorkbenchHeader } from '@/components/workbench/WorkbenchHeader'
 import { TemplateSwitcher } from '@/components/workbench/TemplateSwitcher'
-import { ThemeColorPopover } from '@/components/workbench/ThemeColorPopover'
+import { ThemeColorDrawer } from '@/components/workbench/ThemeColorDrawer'
 import { GlobalSettingsPanel } from '@/components/workbench/GlobalSettingsPanel'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { usePdfExport } from '@/hooks/usePdfExport'
@@ -26,6 +26,7 @@ export default function WorkbenchClient() {
   const activeResume = useResumeStore(selectActiveResume)
   const initialize = useResumeStore(s => s.initialize)
   const setActiveResume = useResumeStore(s => s.setActiveResume)
+  const updateResumeTitle = useResumeStore(s => s.updateResumeTitle)
 
   const { isSaving, lastSavedAt } = useAutoSave()
   const { isExporting, exportToPdf } = usePdfExport()
@@ -69,6 +70,10 @@ export default function WorkbenchClient() {
         isSaving={isSaving}
         lastSavedAt={lastSavedAt}
         isExporting={isExporting}
+        resumeTitle={activeResume?.title ?? ''}
+        onTitleChange={(title) => {
+          if (activeResume) updateResumeTitle(activeResume.id, title)
+        }}
         onBack={() => router.push('/dashboard')}
         onToggleSidebar={() => setSidebarVisible(v => !v)}
         onExportPdf={handleExportPdf}
@@ -98,8 +103,8 @@ export default function WorkbenchClient() {
       </div>
 
       <TemplateSwitcher open={templateSwitcherVisible} onOpenChange={setTemplateSwitcherVisible} />
-      <ThemeColorPopover open={themeColorVisible} onOpenChange={setThemeColorVisible} />
-      <Drawer title="全局设置" open={globalSettingsVisible} onClose={() => setGlobalSettingsVisible(false)} size={400}>
+      <ThemeColorDrawer open={themeColorVisible} onOpenChange={setThemeColorVisible} />
+      <Drawer title="排版" open={globalSettingsVisible} onClose={() => setGlobalSettingsVisible(false)} size={400}>
         {globalSettingsVisible && <GlobalSettingsPanel />}
       </Drawer>
     </div>

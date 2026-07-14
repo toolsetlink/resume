@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { Button, Tooltip, Switch } from 'antd'
-import { GripVertical, ChevronDown, ChevronUp, Plus, Lightbulb } from 'lucide-react'
+import { GripVertical, ChevronDown, ChevronUp, Lightbulb } from 'lucide-react'
 import messages from '@/messages/zh.json'
 import { ComponentType } from 'react'
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
@@ -10,7 +10,6 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { CSS } from '@dnd-kit/utilities'
 import type { MenuSection } from '@/shared/types/resume'
 import { useResumeStore, selectActiveResume } from '@/stores/resume-store'
-import { ModuleLibraryDialog } from './ModuleLibraryDialog'
 
 import { BasicInfoPanel } from '@/components/editor/basic/BasicInfoPanel'
 import { EducationPanel } from '@/components/editor/education/EducationPanel'
@@ -44,25 +43,51 @@ function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, 
   const isExpanded = expandedIds.has(section.id)
 
   return (
-    <div ref={setNodeRef} style={style} className="section-card rounded border bg-[hsl(var(--bg-card))]">
-      <div className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[hsl(var(--bg-subtle))]" onClick={() => onToggle(section.id)}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`section-card rounded-lg border overflow-hidden transition-colors ${
+        isExpanded
+          ? 'border-[hsl(var(--border-hover))] bg-[hsl(var(--bg-card))] shadow-sm'
+          : 'border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))] hover:border-[hsl(var(--border-hover))]'
+      }`}
+    >
+      <div
+        className={`relative flex items-center gap-2 px-3 py-2.5 cursor-pointer transition-colors ${
+          isExpanded ? 'bg-[hsl(var(--bg-subtle))]' : 'hover:bg-[hsl(var(--bg-subtle))]'
+        }`}
+        onClick={() => onToggle(section.id)}
+      >
+        {isExpanded && (
+          <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-[hsl(var(--brand))]" />
+        )}
         <Tooltip title={t.editor.dragToSort}>
-          <span {...attributes} {...listeners} className="cursor-grab"><GripVertical className="w-4 h-4 text-[hsl(var(--text-tertiary))]" /></span>
+          <span {...attributes} {...listeners} className="cursor-grab opacity-50 hover:opacity-100 transition-opacity">
+            <GripVertical className="w-4 h-4 text-[hsl(var(--text-tertiary))]" />
+          </span>
         </Tooltip>
-        <span className="text-base">{section.icon}</span>
+        <span className="text-base shrink-0" aria-hidden>{section.icon}</span>
         <div className="flex-1 flex items-center gap-2 min-w-0">
-          <span className="text-sm font-medium truncate">{section.title}</span>
-          {!section.enabled && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-secondary))]">{t.editor.hidden}</span>}
+          <span className="text-sm font-medium truncate text-[hsl(var(--text-primary))]">{section.title}</span>
+          {!section.enabled && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[hsl(var(--bg-canvas))] text-[hsl(var(--text-tertiary))]">
+              {t.editor.hidden}
+            </span>
+          )}
         </div>
         <Tooltip title={t.editor.moveUp}><Button type="text" size="small" disabled={index === 0} onClick={e => { e.stopPropagation(); onMoveUp(section.id) }} icon={<ChevronUp className="w-4 h-4" />} /></Tooltip>
         <Tooltip title={t.editor.moveDown}><Button type="text" size="small" disabled={index === total - 1} onClick={e => { e.stopPropagation(); onMoveDown(section.id) }} icon={<ChevronDown className="w-4 h-4" />} /></Tooltip>
         <Tooltip title={t.editor.toggleVisibility}><Switch size="small" checked={section.enabled} onChange={checked => onToggleSection(section.id, checked)} onClick={(_, e) => e.stopPropagation()} /></Tooltip>
-        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 text-[hsl(var(--text-tertiary))] transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
       </div>
       <div className={`grid transition-all duration-300 ${isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
         <div className="overflow-hidden">
-          <div className="border-t px-3 py-3">
-            {Panel ? <Panel /> : <div className="text-center text-[hsl(var(--text-tertiary))] py-4">该模块暂无可编辑内容</div>}
+          <div className="border-t border-[hsl(var(--border-default))]">
+            {Panel ? <Panel /> : (
+              <div className="text-center text-[hsl(var(--text-tertiary))] py-6 text-sm">
+                该模块暂无可编辑内容
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -79,7 +104,6 @@ export function SectionAccordion() {
   const moveMenuSection = useResumeStore(s => s.moveMenuSection)
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(['basic']))
-  const [libraryVisible, setLibraryVisible] = useState(false)
   const [showGuide, setShowGuide] = useState(true)
 
   const sections = useMemo(() => {
@@ -127,12 +151,7 @@ export function SectionAccordion() {
   return (
     <div className="w-full flex flex-col">
       <div className="px-4 pt-4 pb-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-[hsl(var(--text-secondary))]">{t.editor.modules}</h2>
-          <Button type="primary" size="small" onClick={() => setLibraryVisible(true)}>
-            <Plus className="w-4 h-4 mr-1" />{t.editor.addModule}
-          </Button>
-        </div>
+        <h2 className="text-sm font-medium text-[hsl(var(--text-secondary))]">{t.editor.modules}</h2>
         {showGuide && (
           <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-md bg-[hsl(var(--brand)/0.08)] border border-[hsl(var(--brand)/0.2)] text-xs text-[hsl(var(--text-secondary))]">
             <Lightbulb className="w-4 h-4 text-[hsl(var(--brand))] flex-shrink-0" />
@@ -161,8 +180,6 @@ export function SectionAccordion() {
           </div>
         </SortableContext>
       </DndContext>
-
-      <ModuleLibraryDialog open={libraryVisible} onOpenChange={setLibraryVisible} onEnabled={id => { setExpandedIds(prev => new Set(prev).add(id)) }} />
     </div>
   )
 }

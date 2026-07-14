@@ -130,7 +130,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
       {TOOLBAR_GROUPS.map((group, groupIdx) => (
         <div key={group.id} className="flex items-center gap-0.5">
           {groupIdx > 0 && (
-            <div className="w-px h-5 bg-[hsl(var(--border-base))] mx-1" />
+            <div className="w-px h-5 bg-[hsl(var(--border-default))] mx-1" />
           )}
           {group.buttons.map((btn) => {
             const Icon = btn.icon
@@ -146,8 +146,8 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
                 title={btn.title}
                 className={`p-1.5 rounded text-sm transition-colors ${
                   isActive
-                    ? 'bg-[hsl(var(--primary))] text-white'
-                    : 'text-[hsl(var(--text-secondary))] hover:bg-[hsl(var(--bg-elevated))]'
+                    ? 'bg-[hsl(var(--brand))] text-[hsl(var(--text-inverse))]'
+                    : 'text-[hsl(var(--text-secondary))] hover:bg-[hsl(var(--bg-subtle))]'
                 }`}
                 onClick={() => actionFn(editor)}
               >

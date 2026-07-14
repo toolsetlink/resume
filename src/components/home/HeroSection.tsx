@@ -43,7 +43,7 @@ export function HeroSection() {
                 size="large"
                 className="!h-12 !px-7 !text-[15px] !font-medium"
                 onClick={() => {
-                  document.getElementById('templates')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  document.getElementById('cases')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                 }}
               >
                 <LayoutTemplate className="mr-1.5 h-[18px] w-[18px]" />

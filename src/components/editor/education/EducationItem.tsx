@@ -1,8 +1,10 @@
 'use client'
 
 import { Input } from 'antd'
-import { Trash2 } from 'lucide-react'
 import type { Education } from '@/shared/types/resume'
+import { ItemCard, Field, FieldRow } from '@/components/editor/ItemCard'
+import { MonthRangePicker } from '@/components/editor/MonthRangePicker'
+import { RichTextEditor } from '@/components/editor/RichTextEditor'
 
 interface EducationItemProps {
   item: Education
@@ -11,58 +13,59 @@ interface EducationItemProps {
 }
 
 export function EducationItem({ item, onChange, onDelete }: EducationItemProps) {
+  const handleDateChange = (next: { start: string; end: string }) => {
+    onChange(item.id, { startDate: next.start, endDate: next.end })
+  }
+
   return (
-    <div className="border rounded-lg p-4 space-y-3 bg-[hsl(var(--bg-elevated))]">
-      <div className="grid grid-cols-2 gap-3">
-        <Input
-          value={item.school}
-          placeholder="学校名称"
-          onChange={(e) => onChange(item.id, { school: e.target.value })}
+    <ItemCard onDelete={() => onDelete(item.id)} deleteLabel="删除教育经历">
+      <FieldRow>
+        <Field label="学校" required>
+          <Input
+            value={item.school}
+            placeholder="请输入学校名称"
+            onChange={(e) => onChange(item.id, { school: e.target.value })}
+          />
+        </Field>
+        <Field label="专业" required>
+          <Input
+            value={item.major}
+            placeholder="请输入专业"
+            onChange={(e) => onChange(item.id, { major: e.target.value })}
+          />
+        </Field>
+      </FieldRow>
+      <FieldRow>
+        <Field label="学位">
+          <Input
+            value={item.degree}
+            placeholder="如 本科、硕士"
+            onChange={(e) => onChange(item.id, { degree: e.target.value })}
+          />
+        </Field>
+        <Field label="GPA">
+          <Input
+            value={item.gpa ?? ''}
+            placeholder="如 3.8/4.0 (可选)"
+            onChange={(e) => onChange(item.id, { gpa: e.target.value })}
+          />
+        </Field>
+      </FieldRow>
+      <Field label="时间">
+        <MonthRangePicker
+          start={item.startDate}
+          end={item.endDate}
+          onChange={handleDateChange}
         />
-        <Input
-          value={item.major}
-          placeholder="专业"
-          onChange={(e) => onChange(item.id, { major: e.target.value })}
+      </Field>
+      <Field label="描述">
+        <RichTextEditor
+          value={item.description ?? ''}
+          placeholder="描述主修课程、研究方向、成绩亮点等（可选）"
+          minHeight={80}
+          onChange={(html) => onChange(item.id, { description: html })}
         />
-      </div>
-      <Input
-        value={item.degree}
-        placeholder="学位 (如 本科、硕士)"
-        onChange={(e) => onChange(item.id, { degree: e.target.value })}
-      />
-      <div className="grid grid-cols-2 gap-3">
-        <Input
-          value={item.startDate}
-          placeholder="开始日期 (如 2019-09)"
-          onChange={(e) => onChange(item.id, { startDate: e.target.value })}
-        />
-        <Input
-          value={item.endDate}
-          placeholder="结束日期 (如 2023-06)"
-          onChange={(e) => onChange(item.id, { endDate: e.target.value })}
-        />
-      </div>
-      <Input
-        value={item.gpa}
-        placeholder="GPA (可选)"
-        onChange={(e) => onChange(item.id, { gpa: e.target.value })}
-      />
-      <Input.TextArea
-        value={item.description}
-        placeholder="描述 (可选)"
-        rows={3}
-        onChange={(e) => onChange(item.id, { description: e.target.value })}
-      />
-      <div className="flex justify-end">
-        <button
-          type="button"
-          className="inline-flex items-center gap-1 text-sm text-red-500 hover:text-red-600 transition-colors"
-          onClick={() => onDelete(item.id)}
-        >
-          <Trash2 className="w-4 h-4" />
-          删除
-        </button>
-      </div>
-    </div>
+      </Field>
+    </ItemCard>
   )
 }

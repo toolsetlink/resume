@@ -31,7 +31,8 @@
   "templates": {
     "selectTemplate": "选择模板",
     "currentTemplate": "当前模板",
-    "switchSuccess": "模板已切换"
+    "switchSuccess": "模板已切换",
+    "unset": "未选择模板"
   },
   "workbench": {
     "collapseSidebar": "折叠侧边栏"
@@ -41,6 +42,11 @@
     "delete": "删除简历",
     "duplicate": "复制简历",
     "empty": "还没有简历，点击创建第一份吧",
+    "emptyHint": "从空白模板开始，或从已有案例复制一份",
+    "count": "共 {count} 份简历",
+    "listLabel": "简历列表",
+    "deleteConfirmTitle": "确认删除这份简历吗",
+    "deleteConfirmDescription": "删除后无法恢复",
     "sections": {
       "basic": "基本信息",
       "skills": "专业技能",
@@ -54,11 +60,6 @@
   },
   "editor": {
     "modules": "模块",
-    "addModule": "添加模块",
-    "moduleLibrary": "模块库",
-    "enable": "启用",
-    "enabled": "已启用",
-    "allEnabled": "所有模块均已启用",
     "moveUp": "上移",
     "moveDown": "下移",
     "dragToSort": "拖动排序",
@@ -109,7 +110,7 @@
   "landing": {
     "nav": {
       "features": "功能",
-      "templates": "模板",
+      "templates": "案例",
       "faq": "FAQ",
       "start": "开始使用",
       "switchToLight": "切换到浅色模式",
@@ -123,7 +124,7 @@
       "subtitle": "自由简历是一款免费、隐私优先的在线简历编辑器。多模板选择、PDF 导出，一站式助力你的求职之路。",
       "cta": {
         "create": "立即创建",
-        "templates": "查看模板"
+        "templates": "查看案例"
       },
       "preview": {
         "name": "张三",
@@ -145,7 +146,11 @@
       "all": "全部",
       "useThis": "使用此案例",
       "empty": "暂无案例",
-      "loading": "加载中..."
+      "loading": "加载中...",
+      "filter": {
+        "industry": "行业",
+        "experience": "经验"
+      }
     },
     "features": {
       "title": "为求职者打造的核心功能",

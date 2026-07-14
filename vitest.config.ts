@@ -27,6 +27,9 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: { '@': path.resolve(__dirname, './src') },
+    alias: [
+      { find: /^@\/messages\/(.*)\.json$/, replacement: path.resolve(__dirname, './messages/$1.json') },
+      { find: '@', replacement: path.resolve(__dirname, './src') },
+    ],
   },
 })

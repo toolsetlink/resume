@@ -82,9 +82,9 @@ test.describe('工作台编辑→预览闭环', () => {
     const preview = page.locator('#resume-preview')
     await expect(preview).toBeVisible()
 
-    // 左侧编辑面板：BasicInfoPanel 中包含「布局」标题（中文）
-    const layoutTitle = page.locator('h3', { hasText: '布局' })
-    await expect(layoutTitle.first()).toBeVisible()
+    // 左侧编辑面板：BasicInfoPanel 中包含「基本信息」标题（中文）
+    const basicTitle = page.locator('h3', { hasText: '基本信息' })
+    await expect(basicTitle.first()).toBeVisible()
   })
 
   test('编辑姓名后预览同步更新', async ({ page }) => {

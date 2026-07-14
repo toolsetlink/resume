@@ -22,20 +22,30 @@ export function CustomSection({ customData, globalSettings, template, menuSectio
   const sectionStyle = useMemo(() => ({ marginBottom: `${sectionSpacing}px` }), [sectionSpacing])
   const itemStyle = useMemo(() => ({ marginBottom: `${template.spacing.itemGap}px` }), [template.spacing.itemGap])
 
-  const customSections = useMemo(() =>
-    (menuSections || []).filter(s => s.enabled && s.id.startsWith('custom_')),
-  [menuSections])
+  // customData 的 key 才是真值源（CustomPanel 用 uuidv4() 创建分区），
+  // menuSections 仅作为标题/排序的参考，找不到时回退到 items[0].title。
+  const customSectionEntries = useMemo(() => {
+    const meta = new Map((menuSections || []).map(s => [s.id, s]))
+    return Object.keys(customData || {})
+      .map(id => ({ id, meta: meta.get(id) }))
+      .filter(({ id, meta }) => {
+        if (meta && !meta.enabled) return false
+        const items = (customData[id] || []).filter(i => i.visible !== false)
+        return items.length > 0
+      })
+  }, [customData, menuSections])
 
-  if (customSections.length === 0) return null
+  if (customSectionEntries.length === 0) return null
 
   return (
     <>
-      {customSections.map(section => {
-        const items = (customData[section.id] || []).filter(i => i.visible !== false)
-        if (items.length === 0) return null
+      {customSectionEntries.map(({ id, meta }) => {
+        const items = (customData[id] || []).filter(i => i.visible !== false)
+        // 标题优先级：menuSection.title → items[0].title → 兜底「自定义」
+        const title = meta?.title || items[0]?.title || t.resume.sections.custom
         return (
-          <div key={section.id} style={sectionStyle}>
-            <SectionTitle title={t.resume.sections.custom} globalSettings={globalSettings} />
+          <div key={id} style={sectionStyle}>
+            <SectionTitle title={title} globalSettings={globalSettings} />
             {items.map(item => (
               <div key={item.id} style={itemStyle}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>

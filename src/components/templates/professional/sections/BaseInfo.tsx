@@ -3,7 +3,6 @@
 import { useMemo } from 'react'
 import type { BasicInfo, GlobalSettings } from '@/shared/types/resume'
 import type { ResumeTemplate } from '@/shared/types/template'
-import { getBorderRadiusValue } from '@/shared/types/resume'
 
 interface BaseInfoProps {
   basic: BasicInfo
@@ -12,7 +11,7 @@ interface BaseInfoProps {
 }
 
 export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
-  const layout = basic.layout || template.basic.layout || 'left'
+  const layout = template.basic.layout || 'left'
 
   const layoutClass = useMemo(() => {
     switch (layout) {
@@ -40,7 +39,6 @@ export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
     return {
       width: cfg ? cfg.width : 90,
       height: cfg ? cfg.height : 120,
-      borderRadius: getBorderRadiusValue(cfg),
     }
   }, [basic.photoConfig])
 

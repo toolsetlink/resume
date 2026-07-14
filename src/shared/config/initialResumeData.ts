@@ -43,12 +43,7 @@ export const initialResumeState = {
     },
     photoConfig: DEFAULT_PHOTO_CONFIG,
     customFields: [
-      {
-        id: 'personal',
-        label: '个人网站',
-        value: 'https://liming.dev',
-        icon: 'Globe',
-      },
+      { id: 'personal-website', label: '个人网站', value: '' },
     ],
     photo: '',
   },
