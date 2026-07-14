@@ -227,7 +227,17 @@ body {
   }
 
   /* 5) A4 页本体：撑满整张 @page (210×297mm)，内容按 padding 内缩 */
+  /*
+   * 必须用 position: absolute：.a4-page 屏幕态的 offsetParent 是右侧 splitViewView
+   * (left: 560px)。position: relative + left:0 只会让 .a4-page 回到自己的偏移原点，
+   * 父容器的 x 偏移仍在前面累积，Chrome 打印预览按 @page 裁剪时还是会把内容挤到
+   * 左上角只露一小条。absolute + 父级全 static，会让 .a4-page 相对 body (left:0)
+   * 重新定位，正好顶到 @page 左上角。
+   */
   .a4-page {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 210mm !important;
     height: 297mm !important;
     min-height: 297mm !important;
@@ -241,9 +251,6 @@ body {
     padding: 40px !important;
     page-break-after: always;
     break-after: page;
-    position: relative !important;
-    left: 0 !important;
-    top: 0 !important;
   }
 
   .a4-page:last-child {

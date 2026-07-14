@@ -54,7 +54,7 @@ export default function WorkbenchClient() {
 
   const handleExportPdf = async () => {
     try {
-      await exportToPdf()
+      await exportToPdf(activeResume?.title)
       message.success('PDF 导出成功')
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)

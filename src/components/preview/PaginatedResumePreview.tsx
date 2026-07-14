@@ -96,20 +96,31 @@ function analyzeContainer(container: HTMLElement): AnalyzedSection[] {
   return result
 }
 
+// 居中阈值：最后一页内容高度 < 页面可用高度的 75% 时，认为页面"明显有富余"，
+// 上下均分空白做居中。75%+ 按满页排（看着更像正常页面而不是空文档）。
+const CENTERING_THRESHOLD = 0.75
+
+type PackedPage = {
+  items: HTMLElement[]
+  height: number
+}
+
 // 按内容顶满切页：
 //   - 累计 height，超 pageHeight 就先 flush
 //   - 单个 item 高度 >= 50% pageHeight 就独占一页（避免切碎）
 //   - itemized section 的标题跟着该 section 的首个 item 一起落页；
 //     item 跨页时标题不放，避免重复
-function packPages(analyzed: AnalyzedSection[], pageHeight: number): HTMLElement[][] {
-  const pages: HTMLElement[][] = []
-  let currentPage: HTMLElement[] = []
+function packPages(analyzed: AnalyzedSection[], pageHeight: number): PackedPage[] {
+  const pages: PackedPage[] = []
+  let currentItems: HTMLElement[] = []
   let currentHeight = 0
   let titlePlacedForSection: Set<string> = new Set()
 
   const flushPage = () => {
-    if (currentPage.length > 0) pages.push(currentPage)
-    currentPage = []
+    if (currentItems.length > 0) {
+      pages.push({ items: currentItems, height: currentHeight })
+    }
+    currentItems = []
     currentHeight = 0
     // 切页后让下一段 section 重新放自己的标题
     titlePlacedForSection = new Set()
@@ -118,10 +129,10 @@ function packPages(analyzed: AnalyzedSection[], pageHeight: number): HTMLElement
   for (const section of analyzed) {
     if (!section.isItemized) {
       const item = section.atomic!
-      if (currentHeight + item.height > pageHeight && currentPage.length > 0) {
+      if (currentHeight + item.height > pageHeight && currentItems.length > 0) {
         flushPage()
       }
-      currentPage.push(item.el)
+      currentItems.push(item.el)
       currentHeight += item.height
       continue
     }
@@ -137,11 +148,11 @@ function packPages(analyzed: AnalyzedSection[], pageHeight: number): HTMLElement
       if (itemH >= pageHeight * SINGLE_PAGE_FRACTION) {
         flushPage()
         if (section.titleEl && !titleAlreadyPlaced) {
-          currentPage.push(section.titleEl)
+          currentItems.push(section.titleEl)
           currentHeight += titleH
           titlePlacedForSection.add(section.id)
         }
-        currentPage.push(items[i].el)
+        currentItems.push(items[i].el)
         currentHeight += itemH
         flushPage()
         continue
@@ -158,24 +169,26 @@ function packPages(analyzed: AnalyzedSection[], pageHeight: number): HTMLElement
 
       // 放标题（仅本 section 第一次）
       if (section.titleEl && !titleAlreadyPlaced) {
-        if (currentHeight + titleH > pageHeight && currentPage.length > 0) {
+        if (currentHeight + titleH > pageHeight && currentItems.length > 0) {
           flushPage()
         }
-        currentPage.push(section.titleEl)
+        currentItems.push(section.titleEl)
         currentHeight += titleH
         titlePlacedForSection.add(section.id)
       }
 
       // 放 item；如果还是越界就 flush 之后再放（item 跨页时不再补标题）
-      if (currentHeight + itemH > pageHeight && currentPage.length > 0) {
+      if (currentHeight + itemH > pageHeight && currentItems.length > 0) {
         flushPage()
       }
-      currentPage.push(items[i].el)
+      currentItems.push(items[i].el)
       currentHeight += itemH
     }
   }
 
-  if (currentPage.length > 0) pages.push(currentPage)
+  if (currentItems.length > 0) {
+    pages.push({ items: currentItems, height: currentHeight })
+  }
   return pages
 }
 
@@ -188,7 +201,7 @@ export function PaginatedResumePreview({ resumeData }: { resumeData: ResumeData 
   )
 
   const measureRef = useRef<HTMLDivElement>(null)
-  const [pages, setPages] = useState<HTMLElement[][]>([])
+  const [pages, setPages] = useState<PackedPage[]>([])
 
   const contentPadding = templateConfig.spacing.contentPadding ?? DEFAULT_PAGE_PADDING_PX
   const pageContentHeight = a4ContentHeightPx(contentPadding)
@@ -245,7 +258,8 @@ export function PaginatedResumePreview({ resumeData }: { resumeData: ResumeData 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageContentHeight])
 
-  const displayPages = pages.length > 0 ? pages : [[] as HTMLElement[]]
+  const displayPages = pages.length > 0 ? pages : [{ items: [] as HTMLElement[], height: 0 }]
+  const lastPageIdx = displayPages.length - 1
 
   return (
     <>
@@ -268,24 +282,37 @@ export function PaginatedResumePreview({ resumeData }: { resumeData: ResumeData 
       </div>
 
       <div id="resume-preview" className="resume-pages flex flex-col items-center gap-6 pt-6 pb-12">
-        {displayPages.map((pageItems, pageIdx) => (
-          <div
-            key={pageIdx}
-            className="a4-page bg-white shadow-lg"
-            style={{
-              ...pageContentStyle,
-              height: A4_HEIGHT_PX,
-              overflow: 'hidden',
-              position: 'relative',
-            }}
-          >
-            <div className="a4-page-content flex flex-col h-full">
-              {pageItems.map((item, i) => (
-                <div key={i} dangerouslySetInnerHTML={{ __html: item.outerHTML }} />
-              ))}
+        {displayPages.map((page, pageIdx) => {
+          const isLast = pageIdx === lastPageIdx
+          const shouldCenter =
+            isLast && page.height < pageContentHeight * CENTERING_THRESHOLD
+          const topPad = shouldCenter ? (pageContentHeight - page.height) / 2 : 0
+          return (
+            <div
+              key={pageIdx}
+              className="a4-page bg-white shadow-lg"
+              style={{
+                ...pageContentStyle,
+                height: A4_HEIGHT_PX,
+                overflow: 'hidden',
+                position: 'relative',
+              }}
+            >
+              <div
+                className="a4-page-content flex flex-col h-full"
+                style={
+                  shouldCenter
+                    ? { paddingTop: `${topPad}px`, paddingBottom: `${topPad}px` }
+                    : undefined
+                }
+              >
+                {page.items.map((item, i) => (
+                  <div key={i} dangerouslySetInnerHTML={{ __html: item.outerHTML }} />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </>
   )
