@@ -1,6 +1,6 @@
 'use client'
 
-import { ShieldCheck, FileText, Sparkles, Globe } from 'lucide-react'
+import { ShieldCheck, FileText, Globe } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import messages from '@/messages/zh.json'
 
@@ -12,7 +12,6 @@ interface TrustItem {
 const trustItems: TrustItem[] = [
   { key: 'free', icon: FileText },
   { key: 'privacy', icon: ShieldCheck },
-  { key: 'ai', icon: Sparkles },
   { key: 'export', icon: Globe },
 ]
 

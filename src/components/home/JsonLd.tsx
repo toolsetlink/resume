@@ -10,7 +10,7 @@ export function JsonLd() {
     name: '自由简历',
     alternateName: 'ZiYou Resume',
     url: SITE_URL,
-    description: '隐私优先的在线简历编辑器，支持多模板、AI 辅助写作、PDF 导出',
+    description: '隐私优先的在线简历编辑器，支持多模板与 PDF 导出',
     logo: `${SITE_URL}/icon.svg`,
   }
 
