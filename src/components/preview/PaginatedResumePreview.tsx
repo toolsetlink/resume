@@ -108,13 +108,14 @@ type PackedPage = {
 // 按内容顶满切页：
 //   - 累计 height，超 pageHeight 就先 flush
 //   - 单个 item 高度 >= 50% pageHeight 就独占一页（避免切碎）
-//   - itemized section 的标题跟着该 section 的首个 item 一起落页；
-//     item 跨页时标题不放，避免重复
+//   - itemized section 的标题只放一次，跟着 section 首个落页的 item 一起；
+//     切页后续 item 直接跟过去（不再补标题，避免重复标题跨页）。
+//   - titlePlacedForSection 按 section 维度累计，flushPage 不能重置。
 function packPages(analyzed: AnalyzedSection[], pageHeight: number): PackedPage[] {
   const pages: PackedPage[] = []
   let currentItems: HTMLElement[] = []
   let currentHeight = 0
-  let titlePlacedForSection: Set<string> = new Set()
+  const titlePlacedForSection: Set<string> = new Set()
 
   const flushPage = () => {
     if (currentItems.length > 0) {
@@ -122,8 +123,6 @@ function packPages(analyzed: AnalyzedSection[], pageHeight: number): PackedPage[
     }
     currentItems = []
     currentHeight = 0
-    // 切页后让下一段 section 重新放自己的标题
-    titlePlacedForSection = new Set()
   }
 
   for (const section of analyzed) {
