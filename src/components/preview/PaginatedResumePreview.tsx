@@ -1,126 +1,176 @@
 'use client'
 
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { getTemplateConfig } from '@/components/templates/registry'
 import { professionalConfig } from '@/components/templates/professional/config'
 import { renderSections } from '@/components/templates/professional/renderSections'
 import type { ResumeData } from '@/shared/types/resume'
+import {
+  A4_WIDTH_PX,
+  A4_HEIGHT_PX,
+  DEFAULT_PAGE_PADDING_PX,
+  a4ContentHeightPx,
+} from '@/shared/config/print'
 
-const A4_WIDTH = 794
-const A4_HEIGHT = 1123
+// 单个 item 高度超过半页就别硬塞，宁可整段换页——剩下的白空用户还能接受，
+// 但一整段 item 被切成两半既难看又丢内容。
+const SINGLE_PAGE_FRACTION = 0.5
+
+type AnalyzedItem = {
+  el: HTMLElement
+  height: number
+}
 
 type AnalyzedSection = {
   id: string
-  el: HTMLElement | null
-  elHeight: number
   titleEl: HTMLElement | null
   titleHeight: number
-  items: HTMLElement[]
-  itemHeights: number[]
   isItemized: boolean
+  // atomic 模式：整个 section 是一个 item
+  atomic?: AnalyzedItem
+  // itemized 模式：一组 item，外加一个可选标题（itemized section 必有标题）
+  items?: AnalyzedItem[]
 }
 
-function findItems(el: HTMLElement): { items: HTMLElement[]; isItemized: boolean } {
-  const titleEl = el.querySelector(':scope > h2') as HTMLElement | null
-  if (!titleEl) {
-    return { items: [el], isItemized: false }
+// 把 section 顶层 children 拆成 "标题 + item 列表"。
+// 返回的是 HTMLElement[]，由调用方包成 AnalyzedItem。
+//
+// BaseInfo / 其他无标题的"页头型" section：顶层没有 H2/H3，直接整段当 atomic item。
+// 否则会把它内部的子 div 当成 items 列表，dangerouslySetInnerHTML 序列化后会丢
+// 掉外层 wrapper 的 className（典型现象：`professional-base-info` 只在测量容器里
+// 出现，#resume-preview 里看不到）。
+function findSectionItems(section: HTMLElement): HTMLElement[] | undefined {
+  const titleEl = Array.from(section.children).find(
+    (c) => c.tagName === 'H2' || c.tagName === 'H3'
+  ) as HTMLElement | undefined
+
+  // 没标题 → 整段就是 item
+  if (!titleEl) return [section]
+
+  const containerIdx = Array.from(section.children).indexOf(titleEl) + 1
+  const container = section.children[containerIdx] as HTMLElement | undefined
+  if (!container || container.tagName !== 'DIV') return [section]
+
+  // 容器自身是 rich-content（详情型 section）→ 整段当一个 item
+  if (container.classList.contains('rich-content')) {
+    return [container]
   }
 
-  const directDivs = Array.from(el.children).filter(c => c.tagName === 'DIV') as HTMLElement[]
-  if (directDivs.length === 0) {
-    return { items: [el], isItemized: false }
-  }
-
-  if (directDivs.length === 1) {
-    const innerDiv = directDivs[0]
-    if (innerDiv.classList.contains('rich-content')) {
-      return { items: [el], isItemized: false }
-    }
-    if (innerDiv.children.length > 1) {
-      return { items: Array.from(innerDiv.children) as HTMLElement[], isItemized: true }
-    }
-    return { items: [el], isItemized: false }
-  }
-
-  return { items: directDivs, isItemized: true }
+  const kids = Array.from(container.children)
+  if (kids.length === 0) return [container]
+  return kids as HTMLElement[]
 }
 
 function analyzeContainer(container: HTMLElement): AnalyzedSection[] {
   const result: AnalyzedSection[] = []
   Array.from(container.children).forEach((topEl, idx) => {
     const el = topEl as HTMLElement
-    const { items, isItemized } = findItems(el)
+    const titleEl =
+      (Array.from(el.children).find(
+        (c) => c.tagName === 'H2' || c.tagName === 'H3'
+      ) as HTMLElement | undefined) ?? null
 
-    if (!isItemized) {
+    // 没有标题的 section（BaseInfo / 装饰 div）→ 整段 atomic，避免把外层
+    // wrapper 的 className 当成 item 序列切掉（#resume-preview 里就找不到
+    // `*-base-info` 了）。
+    if (!titleEl) {
       result.push({
         id: `atomic-${idx}`,
-        el,
-        elHeight: el.offsetHeight,
         titleEl: null,
         titleHeight: 0,
-        items: [],
-        itemHeights: [],
         isItemized: false,
+        atomic: { el, height: el.offsetHeight },
       })
       return
     }
 
-    const titleEl = el.querySelector(':scope > h2') as HTMLElement | null
+    const items = findSectionItems(el)!
     result.push({
       id: `items-${idx}`,
-      el: null,
-      elHeight: 0,
       titleEl,
-      titleHeight: titleEl?.offsetHeight ?? 0,
-      items,
-      itemHeights: items.map(i => i.offsetHeight),
+      titleHeight: titleEl.offsetHeight,
       isItemized: true,
+      items: items.map((i) => ({ el: i, height: i.offsetHeight })),
     })
   })
   return result
 }
 
+// 按内容顶满切页：
+//   - 累计 height，超 pageHeight 就先 flush
+//   - 单个 item 高度 >= 50% pageHeight 就独占一页（避免切碎）
+//   - itemized section 的标题跟着该 section 的首个 item 一起落页；
+//     item 跨页时标题不放，避免重复
 function packPages(analyzed: AnalyzedSection[], pageHeight: number): HTMLElement[][] {
   const pages: HTMLElement[][] = []
   let currentPage: HTMLElement[] = []
   let currentHeight = 0
-  const titlePlaced = new Set<string>()
+  let titlePlacedForSection: Set<string> = new Set()
 
   const flushPage = () => {
     if (currentPage.length > 0) pages.push(currentPage)
     currentPage = []
     currentHeight = 0
+    // 切页后让下一段 section 重新放自己的标题
+    titlePlacedForSection = new Set()
   }
 
   for (const section of analyzed) {
     if (!section.isItemized) {
-      const h = section.elHeight
-      if (currentHeight + h > pageHeight && currentPage.length > 0) {
+      const item = section.atomic!
+      if (currentHeight + item.height > pageHeight && currentPage.length > 0) {
         flushPage()
       }
-      if (section.el) {
-        currentPage.push(section.el)
-        currentHeight += h
-      }
+      currentPage.push(item.el)
+      currentHeight += item.height
       continue
     }
 
-    for (let i = 0; i < section.items.length; i++) {
-      const itemH = section.itemHeights[i]
-      const needsTitle = !titlePlaced.has(section.id)
-      const titleH = needsTitle ? section.titleHeight : 0
+    const items = section.items!
+    const titleH = section.titleHeight
 
-      if (currentHeight + titleH + itemH > pageHeight && currentPage.length > 0) {
+    for (let i = 0; i < items.length; i++) {
+      const itemH = items[i].height
+      const titleAlreadyPlaced = titlePlacedForSection.has(section.id)
+
+      // 单个 item 超过半页 → 独占一页，标题也跟过去（贴在内容上方）
+      if (itemH >= pageHeight * SINGLE_PAGE_FRACTION) {
+        flushPage()
+        if (section.titleEl && !titleAlreadyPlaced) {
+          currentPage.push(section.titleEl)
+          currentHeight += titleH
+          titlePlacedForSection.add(section.id)
+        }
+        currentPage.push(items[i].el)
+        currentHeight += itemH
+        flushPage()
+        continue
+      }
+
+      // 加上标题高度后会越界 → 切页，标题放新页第一行
+      if (
+        section.titleEl &&
+        !titleAlreadyPlaced &&
+        currentHeight + titleH + itemH > pageHeight
+      ) {
         flushPage()
       }
 
-      if (!titlePlaced.has(section.id) && section.titleEl) {
+      // 放标题（仅本 section 第一次）
+      if (section.titleEl && !titleAlreadyPlaced) {
+        if (currentHeight + titleH > pageHeight && currentPage.length > 0) {
+          flushPage()
+        }
         currentPage.push(section.titleEl)
-        currentHeight += section.titleHeight
-        titlePlaced.add(section.id)
+        currentHeight += titleH
+        titlePlacedForSection.add(section.id)
       }
 
-      currentPage.push(section.items[i])
+      // 放 item；如果还是越界就 flush 之后再放（item 跨页时不再补标题）
+      if (currentHeight + itemH > pageHeight && currentPage.length > 0) {
+        flushPage()
+      }
+      currentPage.push(items[i].el)
       currentHeight += itemH
     }
   }
@@ -130,25 +180,36 @@ function packPages(analyzed: AnalyzedSection[], pageHeight: number): HTMLElement
 }
 
 export function PaginatedResumePreview({ resumeData }: { resumeData: ResumeData }) {
-  const templateConfig = (resumeData.templateId && getTemplateConfig(resumeData.templateId)) || professionalConfig
-  const sections = useMemo(() => renderSections(resumeData, templateConfig), [resumeData, templateConfig])
+  const templateConfig =
+    (resumeData.templateId && getTemplateConfig(resumeData.templateId)) || professionalConfig
+  const sections = useMemo(
+    () => renderSections(resumeData, templateConfig),
+    [resumeData, templateConfig]
+  )
 
   const measureRef = useRef<HTMLDivElement>(null)
   const [pages, setPages] = useState<HTMLElement[][]>([])
 
-  const pageContentStyle: CSSProperties = useMemo(() => ({
-    width: A4_WIDTH,
-    padding: `${templateConfig.spacing.contentPadding}px`,
-    backgroundColor: templateConfig.colorScheme.background,
-    color: templateConfig.colorScheme.text,
-    fontSize: `${resumeData.globalSettings?.baseFontSize || 16}px`,
-    lineHeight: String(resumeData.globalSettings?.lineHeight || 1.6),
-    fontFamily: "'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
-    boxSizing: 'border-box',
-  }), [templateConfig, resumeData.globalSettings])
+  const contentPadding = templateConfig.spacing.contentPadding ?? DEFAULT_PAGE_PADDING_PX
+  const pageContentHeight = a4ContentHeightPx(contentPadding)
+  const pageContentWidth = A4_WIDTH_PX - contentPadding * 2
 
-  const pageContentHeight = A4_HEIGHT - templateConfig.spacing.contentPadding * 2
+  const pageContentStyle: CSSProperties = useMemo(
+    () => ({
+      width: A4_WIDTH_PX,
+      padding: `${contentPadding}px`,
+      backgroundColor: templateConfig.colorScheme.background,
+      color: templateConfig.colorScheme.text,
+      fontSize: `${resumeData.globalSettings?.baseFontSize || 16}px`,
+      lineHeight: String(resumeData.globalSettings?.lineHeight || 1.6),
+      fontFamily:
+        "'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
+      boxSizing: 'border-box',
+    }),
+    [templateConfig, resumeData.globalSettings, contentPadding]
+  )
 
+  // 一次同步测量（layout 阶段拿到初值）。后面字体加载完成/窗口尺寸变化时再异步补一次。
   useLayoutEffect(() => {
     if (!measureRef.current) return
     const analyzed = analyzeContainer(measureRef.current)
@@ -156,24 +217,52 @@ export function PaginatedResumePreview({ resumeData }: { resumeData: ResumeData 
     setPages(packed)
   }, [sections, pageContentHeight])
 
+  useEffect(() => {
+    const measure = () => {
+      if (!measureRef.current) return
+      const analyzed = analyzeContainer(measureRef.current)
+      const packed = packPages(analyzed, pageContentHeight)
+      setPages(packed)
+    }
+
+    // 字体加载完后重测（中文/英文字体切换会影响 offsetHeight）
+    const fonts = (document as Document & { fonts?: FontFaceSet }).fonts
+    if (fonts?.ready) {
+      fonts.ready.then(measure).catch(() => {})
+    }
+
+    // 窗口尺寸变化时重测（用户拖动分栏/缩放）
+    let raf = 0
+    const onResize = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(measure)
+    }
+    window.addEventListener('resize', onResize)
+    return () => {
+      window.removeEventListener('resize', onResize)
+      cancelAnimationFrame(raf)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageContentHeight])
+
   const displayPages = pages.length > 0 ? pages : [[] as HTMLElement[]]
 
   return (
     <>
+      {/* 测量容器：藏在屏幕外但参与布局（visibility:hidden 会让 offsetHeight=0） */}
       <div
         aria-hidden="true"
         className="resume-measurement"
         style={{
           ...pageContentStyle,
-          position: 'absolute',
-          visibility: 'hidden',
+          position: 'fixed',
           top: 0,
-          left: 0,
+          left: '-99999px',
           pointerEvents: 'none',
           zIndex: -1,
         }}
       >
-        <div ref={measureRef}>
+        <div ref={measureRef} style={{ width: pageContentWidth }}>
           {sections}
         </div>
       </div>
@@ -183,9 +272,14 @@ export function PaginatedResumePreview({ resumeData }: { resumeData: ResumeData 
           <div
             key={pageIdx}
             className="a4-page bg-white shadow-lg"
-            style={{ ...pageContentStyle, height: A4_HEIGHT, overflow: 'hidden', position: 'relative' }}
+            style={{
+              ...pageContentStyle,
+              height: A4_HEIGHT_PX,
+              overflow: 'hidden',
+              position: 'relative',
+            }}
           >
-            <div className="flex flex-col h-full">
+            <div className="a4-page-content flex flex-col h-full">
               {pageItems.map((item, i) => (
                 <div key={i} dangerouslySetInnerHTML={{ __html: item.outerHTML }} />
               ))}
