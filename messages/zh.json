@@ -197,12 +197,7 @@
       }
     },
     "footer": {
-      "copyright": "© 2026 自由简历. 保留所有权利.",
-      "links": {
-        "github": "GitHub",
-        "privacy": "隐私",
-        "terms": "条款"
-      }
+      "copyright": "© 2026 自由简历. 保留所有权利."
     }
   }
 }
