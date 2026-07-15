@@ -149,13 +149,7 @@ body {
   }
 }
 
-/* === CSS Paged Media 基础设施（B 阶段迁移伏笔） ===
-   当前仍是 packPages JS 测量 + dangerouslySetInnerHTML 序列化架构。下面这套 break-* 工具类
-   是 B 阶段迁到原生 CSS 分页时的钩子 —— 等 packPages 删掉、单棵 React 树按 CSS break-* 自动
-   分页时,在 section / item 节点上加 .item-no-break 即可，屏幕预览和打印位置保持一致。
-
-   注意：现在这些工具类不参与实际分页（packPages 已经把内容切好了），只保证未来迁移时
-   一行 CSS 就能切换，不用再改 React 组件结构。 */
+/* === CSS Paged Media 工具类（B 阶段启用） === */
 .item-no-break {
   break-inside: avoid;
   page-break-inside: avoid;
@@ -171,24 +165,46 @@ body {
   page-break-after: always;
 }
 
+/* === 屏幕态预览容器：单棵 React 树自然流 ===
+   之前 packPages 切出多个 .a4-page 卡片，现在合并为单个 .resume-pages。
+   794px = A4 宽;min-height 1123px = A4 高,让用户看到"这是 A4 纸"的视觉提示,
+   内容多时自然撑开。 */
+.resume-pages {
+  width: 794px;
+  max-width: 100%;
+  margin: 24px auto;
+  padding: 40px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  min-height: 1123px;
+  color: #1f2937;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.resume-section + .resume-section {
+  margin-top: 14px;
+}
+
 /* === 工作台布局拆解（@media print） === */
 @media print {
   @page {
-    margin: 0;
+    /* 40mm 是页面边距,Chrome 自动按 A4 大小把 .resume-pages 内容切到多页 */
     size: A4;
+    margin: 40px;
   }
 
-  /* 命名页：首页和后续页可分别定制页眉/页脚/页码，B 阶段启用 */
   @page :first {
     /* 首页占位：未来可加简历标题、姓名等 */
   }
 
   @page resume {
     size: A4;
-    margin: 0;
+    margin: 40px;
   }
 
-  /* 隐藏工作台 UI 浮层（Drawer/Modal/Popover 是 portal 到 body 的，no-print 抓不到） */
+  /* 隐藏工作台 UI 浮层 */
   .ant-drawer,
   .ant-drawer-mask,
   .ant-modal,
@@ -207,13 +223,11 @@ body {
     print-color-adjust: exact;
   }
 
-  .no-print,
-  .resume-measurement {
+  .no-print {
     display: none !important;
   }
 
-  /* === 工作台布局拆解：让 .a4-page 真正占据每一张打印纸 === */
-  /* 1) workbench 顶层容器：去掉 flex / 高度限制，子元素按文档流铺开 */
+  /* 1) workbench 顶层 + flex-1 子层:块级撑开 */
   .workbench-page,
   .workbench-page > .flex-1 {
     display: block !important;
@@ -221,10 +235,7 @@ body {
     overflow: visible !important;
   }
 
-  /* 2) Allotment 分栏：水平布局改成块级。用 :has() 选中包含 .workbench-sidebar /
-        .workbench-preview 的任意祖先容器（Allotment 根 div / splitView 容器 / splitViewView
-        都符合），统一强制块级。这避免了之前依赖 [class*='allotment-module_*'] 的脆弱匹配
-        —— 升级 allotment 后 class 哈希后缀会变，原选择器会静默失效。 */
+  /* 2) Allotment 分栏:水平布局改块级,用 :has() 选包含 sidebar/preview 的祖先容器 */
   .workbench-page :is(div):has(> .workbench-sidebar),
   .workbench-page :is(div):has(> .workbench-preview),
   .workbench-page div:has(.workbench-sidebar),
@@ -236,12 +247,12 @@ body {
     flex: none !important;
   }
 
-  /* 3) 侧栏整列隐藏（导出 PDF 时不需要编辑器） */
+  /* 3) 侧栏隐藏 */
   .workbench-sidebar {
     display: none !important;
   }
 
-  /* 4) 预览外层：去掉内边距 / 滚动条 / 画布色背景，否则左侧会留一大块画布色空白 */
+  /* 4) 预览外层:去掉 padding / 滚动条 / 画布色背景 */
   .workbench-preview {
     padding: 0 !important;
     margin: 0 !important;
@@ -251,50 +262,22 @@ body {
     width: 100% !important;
   }
 
-  /* 4) 分页容器：取消 flex 居中 + 间距，每张 .a4-page 直接顶到页面顶部 */
+  /* 5) 屏幕态的卡片外壳去掉,Chrome 按 @page 自动分页 */
   .resume-pages {
-    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
     padding: 0 !important;
-    gap: 0 !important;
-    margin: 0 !important;
-    align-items: stretch !important;
-  }
-
-  /* 5) A4 页本体：撑满整张 @page (210×297mm)，内容按 padding 内缩 */
-  /*
-   * 必须用 position: absolute：.a4-page 屏幕态的 offsetParent 是右侧 splitViewView
-   * (left: 560px)。position: relative + left:0 只会让 .a4-page 回到自己的偏移原点，
-   * 父容器的 x 偏移仍在前面累积，Chrome 打印预览按 @page 裁剪时还是会把内容挤到
-   * 左上角只露一小条。absolute + 父级全 static，会让 .a4-page 相对 body (left:0)
-   * 重新定位，正好顶到 @page 左上角。
-   */
-  .a4-page {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    min-height: 297mm !important;
-    max-height: 297mm !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
     box-shadow: none !important;
-    overflow: hidden !important;
-    /* 覆盖屏幕侧 inline 的 padding（不同模板 padding 不同），
-       统一用 40px 给 PDF 留安全内边距 */
-    padding: 40px !important;
-    page-break-after: always;
-    break-after: page;
+    min-height: 0 !important;
   }
 
-  .a4-page:last-child {
-    page-break-after: auto;
-    break-after: auto;
+  .resume-section + .resume-section {
+    margin-top: 0 !important;
   }
 
-  /* item / section 尽量不跨页断开 */
-  section,
-  .a4-page > * > * {
+  /* section 不跨页断开,过大时由浏览器强制切 */
+  .resume-section {
     break-inside: avoid;
     page-break-inside: avoid;
   }
