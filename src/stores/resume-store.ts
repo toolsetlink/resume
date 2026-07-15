@@ -157,6 +157,9 @@ export const useResumeStore = create<ResumeStore>()(
         set((state) => {
           const r = state.resumes.find((r) => r.id === id)
           if (!r) return
+          // 历史 localStorage 数据可能缺 menuSections(初始 schema 演进时漏了 migration),
+          // 这里做防御性兜底,后续 map/sort 才能工作。
+          if (!Array.isArray(r.menuSections)) r.menuSections = []
           const existingIds = new Set(r.menuSections.map((s) => s.id))
           let changed = false
           for (const config of MODULE_CONFIGS) {

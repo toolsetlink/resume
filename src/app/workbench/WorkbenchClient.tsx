@@ -84,12 +84,12 @@ export default function WorkbenchClient() {
       <div className="flex-1 overflow-hidden">
         <Allotment>
           <Allotment.Pane preferredSize="40%" minSize={280} maxSize={560} visible={sidebarVisible}>
-            <div className="no-print h-full overflow-y-auto bg-[hsl(var(--bg-card))]">
+            <div className="workbench-sidebar no-print h-full overflow-y-auto bg-[hsl(var(--bg-card))]">
               <SectionAccordion />
             </div>
           </Allotment.Pane>
           <Allotment.Pane>
-            <div className="h-full overflow-auto bg-[hsl(var(--bg-canvas))] px-6 pt-6 pb-12">
+            <div className="workbench-preview h-full overflow-auto bg-[hsl(var(--bg-canvas))] px-6 pt-6 pb-12">
               {activeResume ? (
                 <PaginatedResumePreview resumeData={activeResume} />
               ) : (

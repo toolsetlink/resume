@@ -188,33 +188,34 @@ body {
     overflow: visible !important;
   }
 
-  /* 2) Allotment 分栏：水平布局改成块级；左栏（编辑器）整列隐藏；
-        右栏（预览）撑满整页，避免被工作区分栏约束导致 A4 页偏向右侧。
-        class 末尾的哈希后缀（__L-yRc 等）每次构建都不同，所以用 [class*=] 部分匹配 */
-  [class*='allotment-module_splitView__'],
-  [class*='allotment-module_splitViewContainer__'],
-  [class*='allotment-module_splitViewView__'] {
+  /* 2) Allotment 分栏：水平布局改成块级。用 :has() 选中包含 .workbench-sidebar /
+        .workbench-preview 的任意祖先容器（Allotment 根 div / splitView 容器 / splitViewView
+        都符合），统一强制块级。这避免了之前依赖 [class*='allotment-module_*'] 的脆弱匹配
+        —— 升级 allotment 后 class 哈希后缀会变，原选择器会静默失效。 */
+  .workbench-page :is(div):has(> .workbench-sidebar),
+  .workbench-page :is(div):has(> .workbench-preview),
+  .workbench-page div:has(.workbench-sidebar),
+  .workbench-page div:has(.workbench-preview) {
     display: block !important;
     width: 100% !important;
     height: auto !important;
     position: static !important;
     flex: none !important;
   }
-  /* 左栏（编辑器）整列隐藏：第一个 splitViewView 父级被外层 splitView 包住，
-     整个 splitView 容器下面的第一个子 splitViewView 隐藏 */
-  [class*='allotment-module_splitView__']
-    > [class*='allotment-module_splitViewContainer__']
-    > [class*='allotment-module_splitViewView__']:first-child {
+
+  /* 3) 侧栏整列隐藏（导出 PDF 时不需要编辑器） */
+  .workbench-sidebar {
     display: none !important;
   }
 
-  /* 3) 预览外层：去掉内边距 / 滚动条 / 画布色背景，否则左侧会留一大块画布色空白 */
-  .h-full.overflow-auto.bg-\[hsl\(var\(--bg-canvas\)\)\] {
+  /* 4) 预览外层：去掉内边距 / 滚动条 / 画布色背景，否则左侧会留一大块画布色空白 */
+  .workbench-preview {
     padding: 0 !important;
     margin: 0 !important;
     background: transparent !important;
     overflow: visible !important;
     height: auto !important;
+    width: 100% !important;
   }
 
   /* 4) 分页容器：取消 flex 居中 + 间距，每张 .a4-page 直接顶到页面顶部 */

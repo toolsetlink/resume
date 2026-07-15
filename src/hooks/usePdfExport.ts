@@ -9,11 +9,13 @@ import { useCallback, useEffect, useState } from 'react'
  *   - 不开新窗口，避免样式/字体在 about:blank 上下文里 404
  *   - 不被浏览器弹窗拦截
  *   - 不写 outerHTML，原页面 CSS 变量、@page、字体全部生效
- *   - onafterprint 事件精准清状态，不用 setTimeout 猜时机
  *
- * 文件名：导出时把 document.title 改成 "{resumeTitle}-YYYY-MM-DD.pdf"，
- * Chrome 系统打印对话框"另存为 PDF"默认会用这个作为文件名。导出后
- * 立即恢复原 title（不必等 afterprint），避免污染用户后续操作。
+ * 准备顺序（解决打印态与屏幕态不一致的几个常见坑）：
+ *   1. 等待 document.fonts.ready —— 否则中文 fallback 字体在打印时撑高/缩短
+ *   2. img.decode() —— complete+naturalHeight 对 base64 不可靠，decode 真正解码
+ *   3. document.title 改为 "{title}-YYYY-MM-DD.pdf"，Chrome 系统对话框会读取
+ *   4. afterprint 触发后恢复 title —— 不能在 print() 后立即恢复，Chrome 可能在
+ *      同步代码里就读取 title 作默认文件名（"另存为 PDF"场景）
  */
 export function usePdfExport() {
   const [isExporting, setIsExporting] = useState(false)
@@ -28,21 +30,32 @@ export function usePdfExport() {
     const sourceEl = document.getElementById('resume-preview')
     if (!sourceEl) throw new Error('找不到导出元素 #resume-preview')
 
-    // 等所有图片加载完再打开系统打印框，否则可能打出空图片。
+    // 1) 等字体加载完。中文 fallback 链（PingFang / 微软雅黑）在不同 OS 上宽度不同，
+    //    必须在 print 前就加载完，否则 Chrome 打印引擎会用 fallback 字体撑高/缩短内容。
+    if (document.fonts?.ready) {
+      try {
+        await document.fonts.ready
+      } catch {
+        // 字体加载失败不阻断导出
+      }
+    }
+
+    // 2) 等所有图片解码完。complete+naturalHeight 对 base64 图片不可靠（某些浏览器
+    //    complete=true 时 naturalHeight 还是 0），decode() 是 W3C 标准 API，真正等到
+    //    图片可绘制后再继续。
     const images = Array.from(sourceEl.querySelectorAll('img'))
     await Promise.all(
-      images.map(img =>
-        img.complete && img.naturalHeight !== 0
-          ? Promise.resolve()
-          : new Promise<void>(resolve => {
-              img.addEventListener('load', () => resolve(), { once: true })
-              img.addEventListener('error', () => resolve(), { once: true })
-            })
-      )
+      images.map(async (img) => {
+        if (img.complete && img.naturalWidth > 0) return
+        try {
+          await img.decode()
+        } catch {
+          // 图片解码失败也继续，避免阻塞导出
+        }
+      })
     )
 
-    // 改 document.title → Chrome 系统打印对话框"另存为 PDF"会用它作默认文件名。
-    // 保存原值，导出后（catch 路径）恢复。
+    // 3) 改 document.title → Chrome 系统打印对话框"另存为 PDF"会读这个作为默认文件名。
     const originalTitle = document.title
     const now = new Date()
     const yyyy = now.getFullYear()
@@ -52,15 +65,23 @@ export function usePdfExport() {
     const safeTitle = (resumeTitle || '').trim() || '简历'
     document.title = `${safeTitle}-${dateStr}`
 
+    // 4) 注册一次性 afterprint 恢复 title。不能在 print() 后立即同步恢复 —— Chrome
+    //    在某些版本里会同步读取 document.title 作为默认文件名，同步恢复会导致
+    //    PDF 文件名变成原 title。
+    let restored = false
+    const restoreTitle = () => {
+      if (restored) return
+      restored = true
+      document.title = originalTitle
+      window.removeEventListener('afterprint', restoreTitle)
+    }
+    window.addEventListener('afterprint', restoreTitle)
+
     setIsExporting(true)
     try {
       window.print()
-      // 同步恢复：Chrome 系统对话框关闭后立即执行，不必等 afterprint，
-      // 避免用户在 PDF 已存盘后立刻操作页面时 title 仍是临时值。
-      document.title = originalTitle
     } catch (e) {
-      document.title = originalTitle
-      setIsExporting(false)
+      restoreTitle()
       throw e
     }
   }, [])
