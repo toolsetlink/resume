@@ -149,10 +149,43 @@ body {
   }
 }
 
+/* === CSS Paged Media 基础设施（B 阶段迁移伏笔） ===
+   当前仍是 packPages JS 测量 + dangerouslySetInnerHTML 序列化架构。下面这套 break-* 工具类
+   是 B 阶段迁到原生 CSS 分页时的钩子 —— 等 packPages 删掉、单棵 React 树按 CSS break-* 自动
+   分页时,在 section / item 节点上加 .item-no-break 即可，屏幕预览和打印位置保持一致。
+
+   注意：现在这些工具类不参与实际分页（packPages 已经把内容切好了），只保证未来迁移时
+   一行 CSS 就能切换，不用再改 React 组件结构。 */
+.item-no-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.page-break-before {
+  break-before: page;
+  page-break-before: always;
+}
+
+.page-break-after {
+  break-after: page;
+  page-break-after: always;
+}
+
+/* === 工作台布局拆解（@media print） === */
 @media print {
   @page {
     margin: 0;
     size: A4;
+  }
+
+  /* 命名页：首页和后续页可分别定制页眉/页脚/页码，B 阶段启用 */
+  @page :first {
+    /* 首页占位：未来可加简历标题、姓名等 */
+  }
+
+  @page resume {
+    size: A4;
+    margin: 0;
   }
 
   /* 隐藏工作台 UI 浮层（Drawer/Modal/Popover 是 portal 到 body 的，no-print 抓不到） */

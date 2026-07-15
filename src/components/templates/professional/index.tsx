@@ -10,6 +10,19 @@ interface ProfessionalTemplateProps {
   template: ResumeTemplate
 }
 
+// 4 套模板的视觉差异通过 config 注入,这里只负责映射到容器 CSS。
+// 字体栈差异让切换模板时肉眼立即可见（elegant 用衬线,其他 sans-serif）；
+// itemGap 让 section 间距按模板区分;primary 作为 accent 注入给 section 标题。
+function fontFamilyFor(template: ResumeTemplate): string {
+  if (template.id === 'elegant') {
+    return "'Source Han Serif SC', 'Songti SC', 'Noto Serif CJK SC', 'PingFang SC', Georgia, serif"
+  }
+  if (template.id === 'creative') {
+    return "'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif"
+  }
+  return "'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif"
+}
+
 export function ProfessionalTemplate({ data, template }: ProfessionalTemplateProps) {
   const sections = renderSections(data, template)
 
@@ -19,10 +32,20 @@ export function ProfessionalTemplate({ data, template }: ProfessionalTemplatePro
     padding: `${template.spacing.contentPadding}px`,
     fontSize: `${data.globalSettings?.baseFontSize || 16}px`,
     lineHeight: String(data.globalSettings?.lineHeight || 1.6),
+    // accent color:让 section 标题、链接、强调元素按模板主色渲染
+    ['--template-accent' as string]: template.colorScheme.primary,
   }), [template, data.globalSettings])
 
   return (
-    <div className="flex flex-col w-full min-h-full" data-template={template.id} style={{ ...containerStyle, fontFamily: "'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" }}>
+    <div
+      className="flex flex-col w-full min-h-full"
+      data-template={template.id}
+      style={{
+        ...containerStyle,
+        gap: `${template.spacing.itemGap}px`,
+        fontFamily: fontFamilyFor(template),
+      }}
+    >
       {sections}
     </div>
   )
