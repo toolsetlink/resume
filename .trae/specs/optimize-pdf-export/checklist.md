@@ -1,0 +1,13 @@
+- [x] `@media print` 中 `@page` 的 `margin` 已设为 `0`，浏览器无空间渲染页眉页脚
+- [x] `.resume-pages` 打印态显式设置了 `padding: 40px`，视觉边距保持不变
+- [x] `.resume-section` 不再使用 `break-inside: avoid`，允许 section 自由跨页
+- [x] `PaginatedResumePreview.tsx` 中 section 外层 div 不再带 `item-no-break` 类
+- [x] `ExperienceSection` / `EducationSection` / `ProjectSection` 中每个 entry 外层 div 带 `item-no-break` 类
+- [x] `CertificateSection` / `CustomSection` 中每个条目外层带 `item-no-break` 类
+- [x] `SelfEvaluationSection` / `SkillSection` 整体保留 `item-no-break`（短内容整体不分割）
+- [x] `globals.css` 在 `@media print` 内新增 `.rich-content > ul > li, .rich-content > ol > li, .rich-content > p { break-inside: avoid; }` 规则
+- [x] 屏幕态 `.resume-pages` 样式未变（width / padding / box-shadow / min-height 等保持原值）
+- [x] PDF 导出后顶部无时间戳与文件标识
+- [x] PDF 导出后底部无 URL
+- [x] PDF 多页时分页合理：单条 entry 不被切断，section 可跨页，无大面积留白
+- [ ] E2E 测试 `tests/e2e/pdf-export.spec.ts` 通过（需人工验证：沙箱无法运行 Playwright）

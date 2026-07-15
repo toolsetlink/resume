@@ -190,18 +190,10 @@ body {
 /* === 工作台布局拆解（@media print） === */
 @media print {
   @page {
-    /* 40mm 是页面边距,Chrome 自动按 A4 大小把 .resume-pages 内容切到多页 */
+    /* margin:0 彻底消除 Chrome 自动页眉(日期/文件名)和页脚(URL/页码)的渲染空间;
+       每页一致的 40px 视觉边距由导出时 JS 注入的 .a4-page 容器 padding 提供。 */
     size: A4;
-    margin: 40px;
-  }
-
-  @page :first {
-    /* 首页占位：未来可加简历标题、姓名等 */
-  }
-
-  @page resume {
-    size: A4;
-    margin: 40px;
+    margin: 0;
   }
 
   /* 隐藏工作台 UI 浮层 */
@@ -262,7 +254,8 @@ body {
     width: 100% !important;
   }
 
-  /* 5) 屏幕态的卡片外壳去掉,Chrome 按 @page 自动分页 */
+  /* 5) 屏幕态的卡片外壳去掉;导出时 JS 会把内容切到多个 .a4-page 容器,
+        每个容器自带 padding 提供一致的 40px 边距 */
   .resume-pages {
     width: auto !important;
     max-width: none !important;
@@ -272,14 +265,48 @@ body {
     min-height: 0 !important;
   }
 
+  /* 6) JS 注入的每页容器:固定 A4 尺寸 + 40px 内边距,保证所有页面上下左右留白一致 */
+  .a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 40px;
+    box-sizing: border-box;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .a4-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  /* 7) 隐藏 Allotment 分隔条(sash + separatorBorder ::before),消除侧边垂直细线 */
+  .workbench-page [class*='sash'],
+  .workbench-page [class*='splitViewView']:not(:first-child)::before {
+    display: none !important;
+  }
+
   .resume-section + .resume-section {
     margin-top: 0 !important;
   }
 
-  /* section 不跨页断开,过大时由浏览器强制切 */
+  /* section 允许跨页流式断开,避免大 section 整块被挤到下一页造成大段空白 */
   .resume-section {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  /* 单条 entry 与富文本行级块不跨页切断(覆盖所有块级子元素) */
+  .item-no-break,
+  .rich-content > * {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  /* section 标题不孤立在页底(兜底:JS 分页已做预判,这里作为 CSS 二道防线) */
+  .resume-section h2 {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 }
 

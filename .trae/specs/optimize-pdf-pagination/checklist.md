@@ -1,0 +1,15 @@
+- [x] `paginateForPrint` 重构为段落级流式装箱：以每个独立 DOM 段落（`<p>` / `<li>` / 结构性子元素 div）为流动单元，而非整个 section 或单条 entry
+- [x] 富文本内多段落按段流动：前 N 个 `<p>` 留当前页，剩余推到下一页，当前页底部不留大面积空白
+- [x] entry 结构性子元素（公司名行/职位行/GPA行）按行流动，不因整条 entry 不可分割而全推到下一页
+- [x] 单个 DOM 段落整体不被跨页切断（装箱阶段整段推到下一页 + CSS `break-inside: avoid` 兜底）
+- [x] section 标题孤儿控制：标题装入后若首个段落装不下当前页，标题与首个段落一起推到下一页
+- [x] 屏幕预览不受影响（JS 分页仅在 `exportToPdf` 执行时临时修改 DOM，`afterprint` 后恢复）
+- [x] `@page { margin: 0 }` 保留，PDF 顶部无时间戳/文件标识
+- [x] `@page { margin: 0 }` 保留，PDF 底部无 URL / 页码
+- [x] Allotment splitter 隐藏规则保留，PDF 侧边无垂直细线
+- [x] `.a4-page { padding: 40px }` 保留，所有页面上下左右留白一致为 40px
+- [x] `collectFlowUnits` 和 `packIntoPages` 抽取为可独立测试的纯函数
+- [x] 单元测试覆盖：叶子节点收集、单页装得下、多页按段分页、单段超页、标题孤儿控制、多 section 混合
+- [x] `pnpm exec tsc --noEmit` 通过
+- [x] `pnpm vitest run` 现有测试 + 新增测试均通过
+- [ ] E2E `tests/e2e/pdf-export.spec.ts` 通过（需在非沙箱环境人工验证）

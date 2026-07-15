@@ -27,7 +27,7 @@ export function PaginatedResumePreview({ resumeData }: { resumeData: ResumeData 
       style={templateContainerStyle(templateConfig, resumeData)}
     >
       {sections.map((section, idx) => (
-        <div key={idx} className="resume-section item-no-break" data-section-idx={idx}>
+        <div key={idx} className="resume-section" data-section-idx={idx}>
           {section}
         </div>
       ))}
