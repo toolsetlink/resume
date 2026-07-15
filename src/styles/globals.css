@@ -181,10 +181,10 @@ body {
   color: #1f2937;
   font-size: 16px;
   line-height: 1.6;
-}
-
-.resume-section + .resume-section {
-  margin-top: 14px;
+  /* flex column + gap 让 PaginatedResumePreview 用 template.spacing.itemGap
+     控制 section 间距；打印态 Chrome 会自然把子元素按 break-inside 切页。 */
+  display: flex;
+  flex-direction: column;
 }
 
 /* === 工作台布局拆解（@media print） === */
