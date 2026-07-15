@@ -15,6 +15,7 @@ export function BasicInfoPanel() {
   const [form] = Form.useForm()
   const [photo, setPhoto] = useState<string>('')
   const [photoConfig, setPhotoConfig] = useState<PhotoConfig>(DEFAULT_PHOTO_CONFIG)
+  const [customFields, setCustomFields] = useState<CustomFieldType[]>([])
 
   // 只在切换简历时同步一次，避免在 useEffect 里同步 setState 触发 cascading renders。
   const lastSyncedResumeIdRef = useRef<string | null | undefined>(undefined)
@@ -27,18 +28,14 @@ export function BasicInfoPanel() {
       setPhotoConfig(b.photoConfig || DEFAULT_PHOTO_CONFIG)
       setCustomFields(b.customFields || [])
     }
-    // form 是 Form.useForm() 的稳定引用，photoConfig 不参与判断（只在 ref 命中分支里被读）。
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeResume, activeResumeId])
-
-  const [customFields, setCustomFields] = useState<CustomFieldType[]>([])
+  }, [activeResume, activeResumeId, form])
 
   const commitCustomFields = useCallback((next: CustomFieldType[]) => {
     setCustomFields(next)
     if (activeResumeId) {
       updateBasicInfo(activeResumeId, { customFields: next })
     }
-  }, [activeResumeId, updateBasicInfo])
+  }, [activeResumeId, updateBasicInfo, setCustomFields])
 
   const addCustomField = useCallback(() => {
     commitCustomFields([
@@ -191,7 +188,7 @@ export function BasicInfoPanel() {
         </div>
         {customFields.length === 0 && (
           <p className="text-xs text-[hsl(var(--text-tertiary))]">
-            暂无自定义字段。例如可添加"个人网站"、"GitHub"等。
+            暂无自定义字段。例如可添加&quot;个人网站&quot;、&quot;GitHub&quot;等。
           </p>
         )}
         {customFields.map(field => (

@@ -24,10 +24,10 @@ export function ThemeColorDrawer({ open, onOpenChange }: ThemeColorDrawerProps) 
   const currentColor = activeResume?.globalSettings?.themeColor
 
   // antd ColorPicker 在 SSR 时会注入 <script> 标签，触发 React 19 hydration 警告；
-  // 仅在 client mount 后再渲染。
+  // 仅在 client mount 后再渲染。React 19 禁止 effect 内同步 setState，defer 到 microtask。
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
-    setMounted(true)
+    Promise.resolve().then(() => setMounted(true))
   }, [])
 
   const handleChange = (color: string) => {
