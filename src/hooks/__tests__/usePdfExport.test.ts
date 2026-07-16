@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { collectFlowUnits, packIntoPages } from '@/hooks/usePdfExport'
+import { collectFlowUnits, packIntoPages } from '@/lib/pagination'
 
 /**
  * PDF 分页算法单元测试。

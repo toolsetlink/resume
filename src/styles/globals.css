@@ -165,26 +165,43 @@ body {
   page-break-after: always;
 }
 
-/* === 屏幕态预览容器：单棵 React 树自然流 ===
-   之前 packPages 切出多个 .a4-page 卡片，现在合并为单个 .resume-pages。
-   794px = A4 宽;min-height 1123px = A4 高,让用户看到"这是 A4 纸"的视觉提示,
-   内容多时自然撑开。 */
-.resume-pages {
-  width: 794px;
-  max-width: 100%;
-  margin: 24px auto;
+/* === A4 页面卡片(屏幕态 + 打印态共用基类) ===
+   屏幕态 + 打印态都是 min-height: 297mm(完整 A4 纸),短页底部留白 =
+     A4 高度 - 内容高度 - 80px padding。这让屏幕预览和 PDF 完全 1:1 对齐,
+     用户编辑时看到的就是打印出来的样子。 */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
   padding: 40px;
   background: white;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
-  min-height: 1123px;
+  page-break-after: always;
+  break-after: page;
   color: #1f2937;
+}
+
+.a4-page:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+/* === 屏幕态预览容器 ===
+   包裹多张 .a4-page 卡片的"画布",只负责居中和卡片间距,不参与打印分页。
+   794px = A4 宽;min-width: 794px 让窄屏也不压缩,触发外层横向滚动,
+   保证卡片比例与打印输出完全一致。 */
+.resume-pages {
+  width: 794px;
+  min-width: 794px;
+  margin: 24px auto;
+  box-sizing: border-box;
   font-size: 16px;
   line-height: 1.6;
-  /* flex column + gap 让 PaginatedResumePreview 用 template.spacing.itemGap
-     控制 section 间距；打印态 Chrome 会自然把子元素按 break-inside 切页。 */
+  /* column 布局让多张 .a4-page 卡片垂直堆叠;align-items + gap 模拟真实纸张间距 */
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 /* === 工作台布局拆解（@media print） === */
@@ -254,30 +271,21 @@ body {
     width: 100% !important;
   }
 
-  /* 5) 屏幕态的卡片外壳去掉;导出时 JS 会把内容切到多个 .a4-page 容器,
-        每个容器自带 padding 提供一致的 40px 边距 */
+  /* 5) 屏幕态的卡片外壳去掉;屏幕态已经把内容切到多个 .a4-page 容器,
+        打印态把 .resume-pages 改回 block + align stretch,让 .a4-page 紧贴纸面 */
   .resume-pages {
     width: auto !important;
-    max-width: none !important;
+    min-width: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    box-shadow: none !important;
-    min-height: 0 !important;
+    gap: 0 !important;
+    display: block !important;
+    align-items: stretch !important;
   }
 
-  /* 6) JS 注入的每页容器:固定 A4 尺寸 + 40px 内边距,保证所有页面上下左右留白一致 */
+  /* 6) 打印态 .a4-page 关掉阴影(纸张本身没阴影),其余已在基类统一 */
   .a4-page {
-    width: 210mm;
-    min-height: 297mm;
-    padding: 40px;
-    box-sizing: border-box;
-    page-break-after: always;
-    break-after: page;
-  }
-
-  .a4-page:last-child {
-    page-break-after: auto;
-    break-after: auto;
+    box-shadow: none !important;
   }
 
   /* 7) 隐藏 Allotment 分隔条(sash + separatorBorder ::before),消除侧边垂直细线 */

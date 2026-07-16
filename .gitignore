@@ -50,3 +50,6 @@ playwright-report/
 .idea/
 *.iml
 deploy.log
+
+# local screenshots (debug-only, never committed)
+.screenshots/

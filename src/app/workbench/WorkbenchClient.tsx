@@ -89,7 +89,7 @@ export default function WorkbenchClient() {
             </div>
           </Allotment.Pane>
           <Allotment.Pane>
-            <div className="workbench-preview h-full overflow-auto bg-[hsl(var(--bg-canvas))] px-6 pt-6 pb-12">
+            <div className="workbench-preview h-full overflow-auto bg-[hsl(var(--bg-canvas))] px-6 pt-6 pb-6">
               {activeResume ? (
                 <PaginatedResumePreview resumeData={activeResume} />
               ) : (
