@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import { Button, Tooltip, Switch } from 'antd'
+import { Button, Tooltip, Switch, Select } from 'antd'
 import { GripVertical, ChevronDown, ChevronUp, Lightbulb } from 'lucide-react'
 import messages from '@/messages/zh.json'
 import { ComponentType } from 'react'
@@ -26,7 +26,7 @@ const panelMap: Record<string, ComponentType> = {
   selfEvaluation: SelfEvaluationPanel, custom: CustomPanel,
 }
 
-function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, onMoveDown, onToggleSection }: {
+function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, onMoveDown, onToggleSection, showRegionControl, onRegionChange }: {
   section: MenuSection
   index: number
   total: number
@@ -35,9 +35,12 @@ function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, 
   onMoveUp: (id: string) => void
   onMoveDown: (id: string) => void
   onToggleSection: (id: string, enabled: boolean) => void
+  showRegionControl: boolean
+  onRegionChange: (id: string, region: 'main' | 'sidebar') => void
 }) {
   const t = messages
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id })
+  const isBasic = section.id === 'basic'
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id, disabled: isBasic })
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
   const Panel = panelMap[section.id]
   const isExpanded = expandedIds.has(section.id)
@@ -61,11 +64,11 @@ function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, 
         {isExpanded && (
           <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-[hsl(var(--brand))]" />
         )}
-        <Tooltip title={t.editor.dragToSort}>
+        {isBasic ? <span className="w-4" /> : <Tooltip title={t.editor.dragToSort}>
           <span {...attributes} {...listeners} className="cursor-grab opacity-50 hover:opacity-100 transition-opacity">
             <GripVertical className="w-4 h-4 text-[hsl(var(--text-tertiary))]" />
           </span>
-        </Tooltip>
+        </Tooltip>}
         <span className="text-base shrink-0" aria-hidden>{section.icon}</span>
         <div className="flex-1 flex items-center gap-2 min-w-0">
           <span className="text-sm font-medium truncate text-[hsl(var(--text-primary))]">{section.title}</span>
@@ -75,14 +78,27 @@ function SortableCard({ section, index, total, expandedIds, onToggle, onMoveUp, 
             </span>
           )}
         </div>
-        <Tooltip title={t.editor.moveUp}><Button type="text" size="small" disabled={index === 0} onClick={e => { e.stopPropagation(); onMoveUp(section.id) }} icon={<ChevronUp className="w-4 h-4" />} /></Tooltip>
+        {!isBasic && <><Tooltip title={t.editor.moveUp}><Button type="text" size="small" disabled={index === 0} onClick={e => { e.stopPropagation(); onMoveUp(section.id) }} icon={<ChevronUp className="w-4 h-4" />} /></Tooltip>
         <Tooltip title={t.editor.moveDown}><Button type="text" size="small" disabled={index === total - 1} onClick={e => { e.stopPropagation(); onMoveDown(section.id) }} icon={<ChevronDown className="w-4 h-4" />} /></Tooltip>
-        <Tooltip title={t.editor.toggleVisibility}><Switch size="small" checked={section.enabled} onChange={checked => onToggleSection(section.id, checked)} onClick={(_, e) => e.stopPropagation()} /></Tooltip>
+        <Tooltip title={t.editor.toggleVisibility}><Switch size="small" checked={section.enabled} onChange={checked => onToggleSection(section.id, checked)} onClick={(_, e) => e.stopPropagation()} /></Tooltip></>}
         <ChevronDown className={`w-4 h-4 text-[hsl(var(--text-tertiary))] transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
       </div>
       <div className={`grid transition-all duration-300 ${isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
         <div className="overflow-hidden">
           <div className="border-t border-[hsl(var(--border-default))]">
+            {showRegionControl && !isBasic && (
+              <div className="flex items-center justify-between px-4 py-2 border-b border-[hsl(var(--border-default))] text-xs text-[hsl(var(--text-secondary))]">
+                <span>模板位置</span>
+                <Select
+                  size="small"
+                  value={section.region || 'main'}
+                  onChange={(region) => onRegionChange(section.id, region)}
+                  onClick={(event) => event.stopPropagation()}
+                  options={[{ value: 'main', label: '主栏' }, { value: 'sidebar', label: '侧栏' }]}
+                  style={{ width: 104 }}
+                />
+              </div>
+            )}
             {Panel ? <Panel /> : (
               <div className="text-center text-[hsl(var(--text-tertiary))] py-6 text-sm">
                 该模块暂无可编辑内容
@@ -110,6 +126,7 @@ export function SectionAccordion() {
     if (!activeResume) return []
     return [...activeResume.menuSections].sort((a, b) => a.order - b.order)
   }, [activeResume])
+  const showRegionControl = activeResume?.templateId === 'modern' || activeResume?.templateId === 'creative'
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -138,6 +155,11 @@ export function SectionAccordion() {
     if (!activeResumeId) return
     moveMenuSection(activeResumeId, sectionId, direction)
   }, [activeResumeId, moveMenuSection])
+
+  const handleRegionChange = useCallback((sectionId: string, region: 'main' | 'sidebar') => {
+    if (!activeResumeId) return
+    updateMenuSections(activeResumeId, sections.map((section) => section.id === sectionId ? { ...section, region } : section))
+  }, [activeResumeId, sections, updateMenuSections])
 
   // SortableCard 透传 Switch.onChange(checked) 进来，第二个参数是新的 enabled 值。
   // 这里走 toggleMenuSection 是按 store 里的当前值取反，没有用 enabled 入参——保留
@@ -175,6 +197,8 @@ export function SectionAccordion() {
                 onMoveUp={id => handleMove(id, 'up')}
                 onMoveDown={id => handleMove(id, 'down')}
                 onToggleSection={handleToggle}
+                showRegionControl={showRegionControl}
+                onRegionChange={handleRegionChange}
               />
             ))}
           </div>

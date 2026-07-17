@@ -2,22 +2,16 @@
 import { test, expect } from '@playwright/test'
 
 /**
- * 等待工作台就绪：可见预览容器出现且模板已渲染（BaseInfo 含 `${template.id}-base-info`）。
- *
- * 注意：PaginatedResumePreview 同时挂了一个 `visibility: hidden` 的测量 div（用于分页计算），
- * 里面也包含 `${template.id}-base-info`。所以等待必须 scope 到 `#resume-preview` 内，
- * 不然 `.first()` 命中的是隐藏的测量 div，`state: 'visible'` 永远不达标。
+ * 等待工作台就绪：分页输出已经生成至少一张可见 A4 页面。
+ * `.resume-pagination-source` 只负责测量且不可见，断言必须落在 output。
  */
 async function waitForWorkbenchReady(page: import('@playwright/test').Page) {
   await page.waitForLoadState('networkidle')
   await page.waitForSelector('#resume-preview', { timeout: 20000 })
-  await page.waitForSelector(
-    '#resume-preview .professional-base-info,' +
-      ' #resume-preview .modern-base-info,' +
-      ' #resume-preview .elegant-base-info,' +
-      ' #resume-preview .creative-base-info',
-    { timeout: 15000 }
-  )
+  await page.waitForSelector('#resume-preview .resume-pagination-output > .a4-page', {
+    state: 'visible',
+    timeout: 15000,
+  })
 }
 
 // 通过 dashboard 创建简历并进入工作台
@@ -87,43 +81,76 @@ test.describe('工作台编辑→预览闭环', () => {
     await expect(basicTitle.first()).toBeVisible()
   })
 
-  test('编辑姓名后预览同步更新', async ({ page }) => {
+  test('编辑内容在四套模板预览和打印态中完整保留', async ({ page }) => {
     await createResumeAndEnterWorkbench(page)
 
-    await fillFieldAndCommit(page, '姓名', '测试用户张三')
+    const editedValues = ['测试用户张三', '全栈工程师', 'resume-e2e@example.com', '13800001111', '上海']
+    await fillFieldAndCommit(page, '姓名', editedValues[0])
+    await fillFieldAndCommit(page, '职位', editedValues[1])
+    await fillFieldAndCommit(page, '邮箱', editedValues[2])
+    await fillFieldAndCommit(page, '电话', editedValues[3])
+    await fillFieldAndCommit(page, '所在地', editedValues[4])
 
-    // 预览中 .name 渲染姓名（BaseInfo 的 h1 带 className="name"）
-    const preview = page.locator('#resume-preview')
-    await expect(
-      preview.locator('.name', { hasText: '测试用户张三' }).first()
-    ).toBeVisible({ timeout: 5000 })
+    const output = page.locator('#resume-preview .resume-pagination-output')
+    const assertEditedValues = async () => {
+      await expect.poll(async () => output.textContent(), { timeout: 8000 }).toContain(editedValues[0])
+      const text = (await output.textContent()) || ''
+      editedValues.forEach((value) => expect(text).toContain(value))
+    }
+
+    await assertEditedValues()
+
+    const templates = [
+      ['现代极简', 'modern'],
+      ['优雅经典', 'elegant'],
+      ['创意活泼', 'creative'],
+      ['专业简约', 'professional'],
+    ] as const
+
+    for (const [displayName, templateId] of templates) {
+      await page.getByRole('button', { name: '模板', exact: true }).click()
+      const drawer = page.getByRole('dialog', { name: '选择模板' })
+      await expect(drawer).toBeVisible({ timeout: 5000 })
+      await drawer.getByText(displayName, { exact: true }).click()
+      await expect(output.locator(`[data-template="${templateId}"]`).first()).toBeVisible({ timeout: 8000 })
+      await assertEditedValues()
+    }
+
+    const pageCount = await output.locator(':scope > .a4-page').count()
+    await page.emulateMedia({ media: 'print' })
+    await expect(page.locator('#resume-preview .resume-pagination-source')).toBeHidden()
+    expect(await output.locator(':scope > .a4-page').count()).toBe(pageCount)
+    await assertEditedValues()
+
+    await page.emulateMedia({ media: 'screen' })
+    await page.evaluate(() => {
+      window.print = () => {
+        document.documentElement.dataset.pdfExportCalled = 'true'
+        window.dispatchEvent(new Event('afterprint'))
+      }
+    })
+    await page.getByRole('button', { name: '导出 PDF' }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-pdf-export-called', 'true')
+    expect(await output.locator(':scope > .a4-page').count()).toBe(pageCount)
+    await assertEditedValues()
   })
 
   test('切换主题色后预览生效', async ({ page }) => {
     await createResumeAndEnterWorkbench(page)
 
     await fillFieldAndCommit(page, '姓名', '测试用户张三')
-    await expect(page.locator('#resume-preview .name').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('#resume-preview .resume-pagination-output .name').first()).toBeVisible({ timeout: 5000 })
 
-    // WorkbenchHeader 按钮顺序：
-    //   0=back, 1=toggle-sidebar, 2=template-switcher, 3=theme-color, 4=settings, 5=export
-    const headerButtons = page.locator('header button')
-    const themeBtn = headerButtons.nth(3)
-    await themeBtn.click()
-
-    // ThemeColorPopover 是 Ant Popover，无 title 文本；用 .ant-popover-content 直接定
-    const popover = page.locator('.ant-popover-content').first()
-    await expect(popover).toBeVisible({ timeout: 5000 })
+    await page.getByRole('button', { name: '主题色', exact: true }).click()
+    const drawer = page.getByRole('dialog', { name: '主题色' })
+    await expect(drawer).toBeVisible({ timeout: 5000 })
 
     // 读取当前 .name 的 inline color（baseline），再选一个不同色
-    const nameEl = page.locator('#resume-preview .name').first()
+    const nameEl = page.locator('#resume-preview .resume-pagination-output .name').first()
     const beforeColor = await nameEl.evaluate((el) => (el as HTMLElement).style.color || '')
 
     // 选第 8 个 swatch（THEME_COLORS[7] = '#ca8a04'，与默认 #1f2937 不同）
-    const swatches = popover.locator('button.rounded-full')
-    const swatchCount = await swatches.count()
-    expect(swatchCount).toBeGreaterThanOrEqual(8)
-    await swatches.nth(7).click()
+    await drawer.getByRole('button', { name: '#ca8a04' }).click()
 
     // 等待预览中姓名颜色变化
     await expect
@@ -139,21 +166,16 @@ test.describe('工作台编辑→预览闭环', () => {
   test('切换模板后预览仍可见', async ({ page }) => {
     await createResumeAndEnterWorkbench(page)
 
-    const headerButtons = page.locator('header button')
-    const tplBtn = headerButtons.nth(2)
-    await tplBtn.click()
-
-    // TemplateSwitcher 是 Ant Drawer（title="选择模板"）
-    const drawer = page.locator('.ant-drawer-section').first()
+    await page.getByRole('button', { name: '模板', exact: true }).click()
+    const drawer = page.getByRole('dialog', { name: '选择模板' })
     await expect(drawer).toBeVisible({ timeout: 5000 })
 
-    // 选「现代极简」（messages/zh.json: templates.modern = "现代极简"）
-    const modernCard = drawer.locator(':text("现代极简")').first()
+    const modernCard = drawer.getByText('现代极简', { exact: true })
     await expect(modernCard).toBeVisible({ timeout: 5000 })
     await modernCard.click()
 
     // 模板切换后预览根节点 data-template 变为 modern
-    const modernRoot = page.locator('#resume-preview [data-template="modern"]')
+    const modernRoot = page.locator('#resume-preview .resume-pagination-output [data-template="modern"]')
     await expect(modernRoot.first()).toBeVisible({ timeout: 8000 })
   })
 
@@ -176,4 +198,5 @@ test.describe('工作台编辑→预览闭环', () => {
     const heading = page.locator('h2', { hasText: '模块' })
     await expect(heading.first()).toBeVisible()
   })
+
 })

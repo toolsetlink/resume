@@ -14,11 +14,13 @@ export function ProfessionalTemplate({ data, template }: ProfessionalTemplatePro
   const sections = renderSections(data, template)
   return (
     <div
-      className="flex flex-col w-full min-h-full"
+      className="resume-template resume-template-professional flex flex-col w-full min-h-full"
       data-template={template.id}
       style={templateContainerStyle(template, data)}
     >
-      {sections}
+      <div className="resume-template-content" data-pagination-flow="main">
+        {sections.map((section, index) => <div key={index} data-pagination-unit>{section}</div>)}
+      </div>
     </div>
   )
 }

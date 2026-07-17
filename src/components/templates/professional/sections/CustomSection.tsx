@@ -11,9 +11,10 @@ interface CustomSectionProps {
   globalSettings?: GlobalSettings
   template: ResumeTemplate
   menuSections: MenuSection[]
+  customSectionTitles?: Record<string, string>
 }
 
-export function CustomSection({ customData, globalSettings, template, menuSections }: CustomSectionProps) {
+export function CustomSection({ customData, globalSettings, template, menuSections, customSectionTitles }: CustomSectionProps) {
   const t = messages
   const baseFontSize = globalSettings?.baseFontSize || 16
   const subheaderSize = globalSettings?.subheaderSize || 16
@@ -42,7 +43,7 @@ export function CustomSection({ customData, globalSettings, template, menuSectio
       {customSectionEntries.map(({ id, meta }) => {
         const items = (customData[id] || []).filter(i => i.visible !== false)
         // 标题优先级：menuSection.title → items[0].title → 兜底「自定义」
-        const title = meta?.title || items[0]?.title || t.resume.sections.custom
+        const title = customSectionTitles?.[id] || meta?.title || items[0]?.title || t.resume.sections.custom
         return (
           <div key={id} style={sectionStyle}>
             <SectionTitle title={title} globalSettings={globalSettings} />

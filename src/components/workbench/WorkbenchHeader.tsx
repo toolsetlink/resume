@@ -7,6 +7,7 @@ import { ResumeTitleEditor } from './ResumeTitleEditor'
 interface WorkbenchHeaderProps {
   isSaving: boolean
   lastSavedAt: Date | null
+  saveError: string | null
   isExporting: boolean
   resumeTitle?: string
   onTitleChange?: (title: string) => void
@@ -41,7 +42,7 @@ function HeaderAction({
   )
 }
 
-export function WorkbenchHeader({ isSaving, lastSavedAt, isExporting, resumeTitle, onTitleChange, onBack, onToggleSidebar, onExportPdf, onOpenTemplateSwitcher, onOpenThemeColor, onOpenGlobalSettings }: WorkbenchHeaderProps) {
+export function WorkbenchHeader({ isSaving, lastSavedAt, saveError, isExporting, resumeTitle, onTitleChange, onBack, onToggleSidebar, onExportPdf, onOpenTemplateSwitcher, onOpenThemeColor, onOpenGlobalSettings }: WorkbenchHeaderProps) {
   return (
     <header className="no-print flex items-center justify-between h-14 px-3 sm:px-4 border-b border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))]">
       <div className="flex items-center gap-2 min-w-0">
@@ -70,6 +71,9 @@ export function WorkbenchHeader({ isSaving, lastSavedAt, isExporting, resumeTitl
             <span className="text-xs text-[hsl(var(--text-tertiary))] hidden md:inline">
               已保存 {lastSavedAt.toLocaleTimeString()}
             </span>
+          )}
+          {saveError && !isSaving && (
+            <span className="text-xs text-[hsl(var(--danger))]" role="status" title={saveError}>保存失败</span>
           )}
         </div>
       </div>

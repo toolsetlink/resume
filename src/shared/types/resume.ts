@@ -100,7 +100,7 @@ export interface Certificate {
 // 全局设置
 export interface GlobalSettings {
   themeColor?: string
-  fontFamily?: string
+  fontFamily?: 'template' | 'alibaba-puhuiti' | 'sans' | 'serif'
   baseFontSize?: number
   pagePadding?: number
   paragraphSpacing?: number
@@ -109,9 +109,7 @@ export interface GlobalSettings {
   headerSize?: number
   subheaderSize?: number
   useIconMode?: boolean
-  centerSubtitle?: boolean
-  flexibleHeaderLayout?: boolean
-  autoOnePage?: boolean
+  headerAlignment?: 'template' | 'left' | 'center'
 }
 
 // 简历主题
@@ -138,6 +136,7 @@ export interface MenuSection {
   icon: string
   enabled: boolean
   order: number
+  region?: 'main' | 'sidebar'
 }
 
 // 简历数据主结构
@@ -154,6 +153,7 @@ export interface ResumeData {
   certificates: Certificate[]
   certificatesContent: string
   customData: Record<string, CustomItem[]>
+  customSectionTitles?: Record<string, string>
   skillContent: string
   skills: Skill[]
   selfEvaluationContent: string

@@ -11,7 +11,6 @@ import messages from '@/messages/zh.json'
 
 const t = messages
 
-const PREVIEW_WIDTH = 220
 const PREVIEW_HEIGHT = 320
 
 interface ResumeCardProps {
@@ -30,28 +29,20 @@ export function ResumeCard({ resume, onDuplicate, onDelete }: ResumeCardProps) {
     router.push(`/workbench?id=${resume.id}`)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
+  const handlePreviewKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
       goEdit()
     }
   }
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={goEdit}
-      onKeyDown={handleKeyDown}
-      aria-label={`${resume.title} - ${t.common.edit}`}
-      className="group relative flex flex-col bg-[hsl(var(--bg-card))] border border-[hsl(var(--border-default))] rounded-2xl p-4 cursor-pointer transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md hover:border-[hsl(var(--brand))] focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] focus-visible:ring-offset-2"
-    >
-      <div className="rounded-xl overflow-hidden ring-1 ring-black/5 bg-[hsl(var(--bg-base))]">
+    <article className="group relative flex flex-col bg-[hsl(var(--bg-card))] border border-[hsl(var(--border-default))] rounded-2xl p-4 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-md hover:border-[hsl(var(--brand))]">
+      <div role="button" tabIndex={0} onClick={goEdit} onKeyDown={handlePreviewKeyDown} aria-label={`${resume.title} - ${t.common.edit}`} className="rounded-xl overflow-hidden ring-1 ring-black/5 bg-[hsl(var(--bg-base))] text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] focus-visible:ring-offset-2">
         {resume.templateId ? (
           <MiniTemplatePreview
             templateId={resume.templateId}
             sampleData={resume}
-            width={PREVIEW_WIDTH}
             visibleHeight={PREVIEW_HEIGHT}
           />
         ) : (
@@ -77,16 +68,12 @@ export function ResumeCard({ resume, onDuplicate, onDelete }: ResumeCardProps) {
       </div>
 
       <div
-        className="mt-3 flex items-center justify-end gap-1 min-h-7 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-150 ease-out"
-        onClick={(e) => e.stopPropagation()}
+        className="mt-3 flex items-center justify-end gap-1 min-h-7 opacity-100 translate-y-0 transition-all duration-150 ease-out"
       >
         <button
           type="button"
           className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs text-[hsl(var(--text-secondary))] hover:bg-[hsl(var(--bg-subtle))] hover:text-[hsl(var(--brand))] transition-colors"
-          onClick={(e) => {
-            e.stopPropagation()
-            goEdit()
-          }}
+          onClick={goEdit}
         >
           <Pencil className="w-3.5 h-3.5" />
           {t.common.edit}
@@ -94,10 +81,7 @@ export function ResumeCard({ resume, onDuplicate, onDelete }: ResumeCardProps) {
         <button
           type="button"
           className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs text-[hsl(var(--text-secondary))] hover:bg-[hsl(var(--bg-subtle))] hover:text-[hsl(var(--brand))] transition-colors"
-          onClick={(e) => {
-            e.stopPropagation()
-            onDuplicate(resume.id)
-          }}
+          onClick={() => onDuplicate(resume.id)}
         >
           <Copy className="w-3.5 h-3.5" />
           {t.common.duplicate}
@@ -105,11 +89,9 @@ export function ResumeCard({ resume, onDuplicate, onDelete }: ResumeCardProps) {
         <Popconfirm
           title={t.resume.deleteConfirmTitle}
           description={t.resume.deleteConfirmDescription}
-          onConfirm={(e) => {
-            e?.stopPropagation()
+          onConfirm={() => {
             onDelete(resume.id)
           }}
-          onCancel={(e) => e?.stopPropagation()}
           okText={t.common.confirm}
           cancelText={t.common.cancel}
           okButtonProps={{ danger: true }}
@@ -117,13 +99,12 @@ export function ResumeCard({ resume, onDuplicate, onDelete }: ResumeCardProps) {
           <button
             type="button"
             className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs text-[hsl(var(--text-secondary))] hover:bg-[hsl(var(--bg-subtle))] hover:text-[hsl(var(--danger))] transition-colors"
-            onClick={(e) => e.stopPropagation()}
           >
             <Trash2 className="w-3.5 h-3.5" />
             {t.common.delete}
           </button>
         </Popconfirm>
       </div>
-    </div>
+    </article>
   )
 }

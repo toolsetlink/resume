@@ -50,17 +50,13 @@ export function GlobalSettingsPanel() {
         <label className="text-sm font-medium">图标模式</label>
         <Switch checked={gs.useIconMode} onChange={v => update('useIconMode', v)} />
       </div>
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">副标题居中</label>
-        <Switch checked={gs.centerSubtitle} onChange={v => update('centerSubtitle', v)} />
-      </div>
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">自适应一页</label>
-        <Switch checked={gs.autoOnePage} onChange={v => update('autoOnePage', v)} />
-      </div>
       <div>
         <label className="text-sm font-medium">字形</label>
-        <Select value={gs.fontFamily || 'sans'} onChange={v => update('fontFamily', v)} style={{ width: '100%' }} options={[{value:'sans',label:'无衬线'},{value:'serif',label:'衬线'}]} />
+        <Select value={gs.fontFamily || 'template'} onChange={v => update('fontFamily', v)} style={{ width: '100%' }} options={[{value:'template',label:'跟随模板'},{value:'alibaba-puhuiti',label:'阿里巴巴普惠体'},{value:'sans',label:'系统无衬线'},{value:'serif',label:'系统衬线'}]} />
+      </div>
+      <div>
+        <label className="text-sm font-medium">标题对齐</label>
+        <Select value={gs.headerAlignment || 'template'} onChange={v => update('headerAlignment', v)} style={{ width: '100%' }} options={[{value:'template',label:'跟随模板'},{value:'left',label:'左对齐'},{value:'center',label:'居中'}]} />
       </div>
     </div>
   )

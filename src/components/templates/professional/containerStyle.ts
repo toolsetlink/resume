@@ -24,11 +24,18 @@ export function templateContainerStyle(
   return {
     backgroundColor: template.colorScheme.background,
     color: template.colorScheme.text,
-    padding: `${template.spacing.contentPadding}px`,
     fontSize: `${data.globalSettings?.baseFontSize || 16}px`,
     lineHeight: String(data.globalSettings?.lineHeight || 1.6),
-    gap: `${template.spacing.itemGap}px`,
-    fontFamily: fontFamilyFor(template),
+    fontFamily: data.globalSettings?.fontFamily === 'alibaba-puhuiti'
+      ? 'AlibabaPuHuiTi-2-55-Regular, Arial, sans-serif'
+      : data.globalSettings?.fontFamily === 'sans'
+        ? "'PingFang SC', 'Microsoft YaHei', sans-serif"
+        : data.globalSettings?.fontFamily === 'serif'
+          ? "'Source Han Serif SC', 'Songti SC', serif"
+          : fontFamilyFor(template),
     ['--template-accent' as string]: template.colorScheme.primary,
+    ['--resume-page-padding' as string]: `${data.globalSettings?.pagePadding ?? template.spacing.contentPadding}px`,
+    ['--resume-section-gap' as string]: `${data.globalSettings?.sectionSpacing ?? template.spacing.itemGap}px`,
+    ['--resume-paragraph-gap' as string]: `${data.globalSettings?.paragraphSpacing ?? 8}px`,
   }
 }

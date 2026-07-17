@@ -21,6 +21,43 @@ import {
 import { MODULE_CONFIGS } from '@/shared/config/modules'
 import { STORAGE_KEYS } from '@/shared/config/constants'
 
+const sidebarSectionIds = new Set(['skills', 'education', 'certificates'])
+const sectionRegion = (sectionId: string): 'main' | 'sidebar' =>
+  sidebarSectionIds.has(sectionId) ? 'sidebar' : 'main'
+
+let latestPersistenceError: string | null = null
+const safeStorage = createJSONStorage<ResumeState>(() => ({
+  getItem: (name) => {
+    try {
+      latestPersistenceError = null
+      return localStorage.getItem(name)
+    } catch {
+      latestPersistenceError = '浏览器拒绝访问本地存储'
+      return null
+    }
+  },
+  setItem: (name, value) => {
+    try {
+      localStorage.setItem(name, value)
+      latestPersistenceError = null
+    } catch {
+      latestPersistenceError = '本地存储空间不足，修改尚未保存'
+    }
+  },
+  removeItem: (name) => {
+    try {
+      localStorage.removeItem(name)
+      latestPersistenceError = null
+    } catch {
+      latestPersistenceError = '无法清除本地存储'
+    }
+  },
+}))
+
+export function getPersistenceError() {
+  return latestPersistenceError
+}
+
 interface ResumeState {
   resumes: ResumeData[]
   activeResumeId: string | null
@@ -89,7 +126,7 @@ export const useResumeStore = create<ResumeStore>()(
         // initialResumeState 已经包含中文样例数据（李明/清华/前端工程师等），
         // 这里只覆盖 id/时间戳/标题/模板 id。
         const resume = {
-          ...initialResumeState,
+          ...structuredClone(initialResumeState),
           id: uuidv4(),
           title: '新建简历',
           createdAt: now,
@@ -170,12 +207,14 @@ export const useResumeStore = create<ResumeStore>()(
                 icon: config.icon,
                 enabled: config.enabled,
                 order: config.order,
+                region: sectionRegion(config.id),
               })
               changed = true
             }
           }
           r.menuSections.sort((a, b) => a.order - b.order)
           r.menuSections = r.menuSections.map((s, idx) => ({ ...s, order: idx }))
+          r.menuSections = r.menuSections.map((s) => ({ ...s, region: s.region || sectionRegion(s.id) }))
           const validSection = r.menuSections.some((s) => s.id === r.activeSection)
           if (!r.activeSection || !validSection) {
             r.activeSection = 'basic'
@@ -183,6 +222,10 @@ export const useResumeStore = create<ResumeStore>()(
           }
           if (r.certificatesContent === undefined) {
             r.certificatesContent = ''
+            changed = true
+          }
+          if (!r.customSectionTitles) {
+            r.customSectionTitles = {}
             changed = true
           }
           if (changed) {
@@ -464,7 +507,7 @@ export const useResumeStore = create<ResumeStore>()(
         const { resumes, activeResumeId } = get()
         if (resumes.length === 0) {
           const resume = createNewResume('我的简历')
-          Object.assign(resume, initialResumeState, {
+          Object.assign(resume, structuredClone(initialResumeState), {
             id: resume.id,
             createdAt: resume.createdAt,
             updatedAt: resume.updatedAt,
@@ -487,7 +530,28 @@ export const useResumeStore = create<ResumeStore>()(
     })),
     {
       name: STORAGE_KEYS.RESUME,
-      storage: createJSONStorage(() => localStorage),
+      version: 1,
+      migrate: (persisted) => {
+        const state = persisted as Partial<ResumeState>
+        return {
+          ...state,
+          resumes: (state.resumes || []).map((resume) => ({
+            ...resume,
+            menuSections: (resume.menuSections || []).map((section) => ({
+              ...section,
+              region: section.region || sectionRegion(section.id),
+            })),
+            customSectionTitles: resume.customSectionTitles || {},
+            globalSettings: {
+              ...initialResumeState.globalSettings,
+              ...resume.globalSettings,
+              fontFamily: resume.globalSettings?.fontFamily || 'template',
+              headerAlignment: resume.globalSettings?.headerAlignment || 'template',
+            },
+          })),
+        } as ResumeState
+      },
+      storage: safeStorage,
     }
   )
 )

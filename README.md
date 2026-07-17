@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 自由简历
 
-## Getting Started
+隐私优先的在线简历编辑器。简历数据保存在浏览器本地，支持多套模板、实时预览和浏览器打印为 PDF。
 
-First, run the development server:
+## 技术栈
+
+- Next.js 16、React 19、TypeScript
+- Zustand、Ant Design、Tailwind CSS 4、TipTap
+- Vitest、Playwright、pnpm
+
+## 本地开发
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 <http://localhost:3000>。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 检查与测试
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm check       # ESLint、TypeScript、单元测试
+pnpm test:e2e    # Playwright E2E
+pnpm build       # 生成静态站点到 out/
+```
 
-## Learn More
+## 部署
 
-To learn more about Next.js, take a look at the following resources:
+项目使用 Next.js static export，可将 `out/` 部署到任意静态文件服务器。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+仓库内的 `deploy.sh` 用于部署到 nginx：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cp .env.example .env
+# 填写 .env 中的服务器配置
+bash deploy.sh
+```
 
-## Deploy on Vercel
+## 目录
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+src/app/          页面与路由
+src/components/   首页、编辑器、预览和简历模板
+src/stores/       Zustand 本地状态
+src/shared/       类型和共享配置
+tests/unit/       单元测试
+tests/e2e/        浏览器测试
+```

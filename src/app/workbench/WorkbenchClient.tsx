@@ -28,7 +28,7 @@ export default function WorkbenchClient() {
   const setActiveResume = useResumeStore(s => s.setActiveResume)
   const updateResumeTitle = useResumeStore(s => s.updateResumeTitle)
 
-  const { isSaving, lastSavedAt } = useAutoSave()
+  const { isSaving, lastSavedAt, saveError } = useAutoSave()
   const { isExporting, exportToPdf } = usePdfExport()
 
   const [sidebarVisible, setSidebarVisible] = useState(true)
@@ -69,6 +69,7 @@ export default function WorkbenchClient() {
       <WorkbenchHeader
         isSaving={isSaving}
         lastSavedAt={lastSavedAt}
+        saveError={saveError}
         isExporting={isExporting}
         resumeTitle={activeResume?.title ?? ''}
         onTitleChange={(title) => {

@@ -31,15 +31,7 @@ fi
 : "${SERVER_PASS:?SERVER_PASS 未设置}"
 : "${SERVER_PATH:?SERVER_PATH 未设置}"
 
-# --- 构建配置（按 NEXT_DEPLOY_MODE 切换输出目录） ---
-# - server: Next.js 默认 next build，server bundle 到 .next/（需 Node 进程跑 next start）
-# - export: next.config.ts 设 output: 'export'，静态产物到 out/（纯静态，可直接 nginx 跑）
-NEXT_DEPLOY_MODE="${NEXT_DEPLOY_MODE:-server}"
-case "$NEXT_DEPLOY_MODE" in
-  server)  BUILD_DIR=".next"          ; BUILD_CMD="pnpm build" ;;
-  export)  BUILD_DIR="out"            ; BUILD_CMD="rm -rf out && pnpm build" ;;
-  *)       echo "[$(date '+%H:%M:%S')] 错误: NEXT_DEPLOY_MODE=$NEXT_DEPLOY_MODE 不支持（只支持 server / export）"; exit 1 ;;
-esac
+BUILD_DIR="out"
 
 log() {
   local msg="[$(date '+%H:%M:%S')] $1"
@@ -65,15 +57,13 @@ sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=accept-new -o ConnectTime
 }
 
 # 3. 构建
-log "构建项目 (mode=$NEXT_DEPLOY_MODE, cmd=$BUILD_CMD)..."
-# 复合命令（带 &&/||/重定向）需要走 eval 或 bash -c，
-# 因为变量作为简单命令展开时，&& 不会被解析为控制符。
-eval "$BUILD_CMD"
+log "构建静态站点..."
+pnpm build
 log "构建完成"
 
 # 4. 校验构建产物
 if [ ! -d "$BUILD_DIR" ]; then
-  log "错误: 构建产物目录 $BUILD_DIR 不存在（确认 NEXT_DEPLOY_MODE 与 next.config.ts 一致）"
+  log "错误: 构建产物目录 $BUILD_DIR 不存在"
   exit 1
 fi
 
@@ -81,18 +71,16 @@ fi
 log "准备服务器目录..."
 sshpass -p "$SERVER_PASS" ssh "$SERVER_USER@$SERVER_IP" "mkdir -p $SERVER_PATH"
 
-# 6. 为 static export 路由补齐 index.html，让 nginx 尾斜杠路径正常返回
-if [ "$NEXT_DEPLOY_MODE" = "export" ]; then
-  log "补齐静态路由 index.html（解决 nginx directory index 403）"
-  find "$BUILD_DIR" -name '*.html' -type f \
-    ! -name 'index.html' ! -name '404.html' ! -name '_not-found.html' \
-    -print0 | while IFS= read -r -d "" html; do
-    relative_path="${html#$BUILD_DIR/}"
-    route_path="${relative_path%.html}"
-    mkdir -p "$BUILD_DIR/$route_path"
-    cp "$html" "$BUILD_DIR/$route_path/index.html"
-  done
-fi
+# 6. 为静态路由补齐 index.html，让 nginx 尾斜杠路径正常返回
+log "补齐静态路由 index.html（解决 nginx directory index 403）"
+find "$BUILD_DIR" -name '*.html' -type f \
+  ! -name 'index.html' ! -name '404.html' ! -name '_not-found.html' \
+  -print0 | while IFS= read -r -d "" html; do
+  relative_path="${html#$BUILD_DIR/}"
+  route_path="${relative_path%.html}"
+  mkdir -p "$BUILD_DIR/$route_path"
+  cp "$html" "$BUILD_DIR/$route_path/index.html"
+done
 
 # 7. Rsync 增量同步到服务器
 log "同步文件到服务器 ${SERVER_IP}..."

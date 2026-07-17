@@ -25,6 +25,10 @@ export function CustomPanel() {
     () => activeResume?.customData || {},
     [activeResume?.customData]
   )
+  const customSectionTitles = useMemo(
+    () => activeResume?.customSectionTitles || {},
+    [activeResume?.customSectionTitles],
+  )
   const sectionIds = Object.keys(customData)
 
   const toggleSection = useCallback((sectionId: string) => {
@@ -50,20 +54,25 @@ export function CustomPanel() {
       [sectionId]: [] as CustomItemType[],
     }
 
-    importResume(activeResumeId, { customData: newCustomData })
+    importResume(activeResumeId, {
+      customData: newCustomData,
+      customSectionTitles: { ...customSectionTitles, [sectionId]: name },
+    })
     setNewSectionName('')
     setShowNewSectionModal(false)
     setExpandedSections((prev) => new Set(prev).add(sectionId))
-  }, [newSectionName, activeResumeId, customData, importResume])
+  }, [newSectionName, activeResumeId, customData, customSectionTitles, importResume])
 
   const handleDeleteSection = useCallback(
     (sectionId: string) => {
       if (!activeResumeId) return
       const remaining = { ...customData }
       delete remaining[sectionId]
-      importResume(activeResumeId, { customData: remaining })
+      const remainingTitles = { ...customSectionTitles }
+      delete remainingTitles[sectionId]
+      importResume(activeResumeId, { customData: remaining, customSectionTitles: remainingTitles })
     },
-    [activeResumeId, customData, importResume]
+    [activeResumeId, customData, customSectionTitles, importResume]
   )
 
   const handleAddItem = useCallback(
@@ -141,10 +150,7 @@ export function CustomPanel() {
       <div className="space-y-4">
         {sectionIds.map((sectionId) => {
           const items = customData[sectionId] || []
-          const sectionTitle =
-            items.length > 0 && items[0]
-              ? items[0].title || '未命名分区'
-              : '未命名分区'
+          const sectionTitle = customSectionTitles[sectionId] || '未命名分区'
           const isExpanded = expandedSections.has(sectionId)
 
           return (

@@ -130,7 +130,9 @@ export function BasicInfoPanel() {
               min={50}
               max={200}
               onChange={(v) => {
-                setPhotoConfig((p) => ({ ...p, width: v || 90 }))
+                const next = { ...photoConfig, width: v || 90 }
+                setPhotoConfig(next)
+                if (activeResumeId) updateBasicInfo(activeResumeId, { photoConfig: next })
               }}
               style={{ width: '100%' }}
             />
@@ -144,7 +146,9 @@ export function BasicInfoPanel() {
               min={50}
               max={200}
               onChange={(v) => {
-                setPhotoConfig((p) => ({ ...p, height: v || 120 }))
+                const next = { ...photoConfig, height: v || 120 }
+                setPhotoConfig(next)
+                if (activeResumeId) updateBasicInfo(activeResumeId, { photoConfig: next })
               }}
               style={{ width: '100%' }}
             />
@@ -173,6 +177,9 @@ export function BasicInfoPanel() {
             </Form.Item>
             <Form.Item name="age" label="年龄">
               <Input placeholder="28" />
+            </Form.Item>
+            <Form.Item name="birthDate" label="出生年月">
+              <Input placeholder="1995-03" />
             </Form.Item>
             <Form.Item name="employementStatus" label="状态">
               <Input placeholder="在职/离职/应届" />

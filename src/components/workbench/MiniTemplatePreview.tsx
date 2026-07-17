@@ -1,5 +1,6 @@
 'use client'
 
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { ResumeData } from '@/shared/types/resume'
 import type { ResumeTemplate } from '@/shared/types/template'
 import type { ComponentType } from 'react'
@@ -36,12 +37,26 @@ interface MiniTemplatePreviewProps {
 export function MiniTemplatePreview({
   templateId,
   sampleData,
-  width = 220,
+  width,
   visibleHeight = 320,
 }: MiniTemplatePreviewProps) {
   const Component = COMPONENT_BY_ID[templateId]
   const template = TEMPLATE_BY_ID[templateId]
-  const scale = width / A4_WIDTH
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [measuredWidth, setMeasuredWidth] = useState(width || 220)
+
+  useLayoutEffect(() => {
+    if (width || !containerRef.current) return
+    const observer = new ResizeObserver(([entry]) => {
+      const nextWidth = entry?.contentRect.width
+      if (nextWidth) setMeasuredWidth(nextWidth)
+    })
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [width])
+
+  const previewWidth = width || measuredWidth
+  const scale = previewWidth / A4_WIDTH
 
   if (!template || !Component) {
     return (
@@ -56,8 +71,9 @@ export function MiniTemplatePreview({
 
   return (
     <div
+      ref={containerRef}
       className="relative overflow-hidden bg-white"
-      style={{ height: visibleHeight }}
+      style={{ height: visibleHeight, width: previewWidth }}
     >
       <div
         style={{

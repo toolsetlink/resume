@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { BriefcaseBusiness, CalendarDays, Mail, MapPin, Phone } from 'lucide-react'
 import type { BasicInfo, GlobalSettings } from '@/shared/types/resume'
 import type { ResumeTemplate } from '@/shared/types/template'
 
@@ -11,7 +12,9 @@ interface BaseInfoProps {
 }
 
 export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
-  const layout = template.basic.layout || 'left'
+  const layout = globalSettings?.headerAlignment === 'left' || globalSettings?.headerAlignment === 'center'
+    ? globalSettings.headerAlignment
+    : template.basic.layout || 'left'
 
   const layoutClass = useMemo(() => {
     switch (layout) {
@@ -45,12 +48,12 @@ export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
   const nameInitial = basic.name?.charAt(0) || '?'
 
   const contactItems = useMemo(() => {
-    const items: { key: string; label: string; value: string }[] = []
-    if (basic.email) items.push({ key: 'email', label: '邮箱', value: basic.email })
-    if (basic.phone) items.push({ key: 'phone', label: '电话', value: basic.phone })
-    if (basic.location) items.push({ key: 'location', label: '所在地', value: basic.location })
-    if (basic.age) items.push({ key: 'age', label: '年龄', value: basic.age })
-    if (basic.employementStatus) items.push({ key: 'status', label: '状态', value: basic.employementStatus })
+    const items: { key: string; label: string; value: string; Icon: typeof Mail }[] = []
+    if (basic.email) items.push({ key: 'email', label: '邮箱', value: basic.email, Icon: Mail })
+    if (basic.phone) items.push({ key: 'phone', label: '电话', value: basic.phone, Icon: Phone })
+    if (basic.location) items.push({ key: 'location', label: '所在地', value: basic.location, Icon: MapPin })
+    if (basic.age) items.push({ key: 'age', label: '年龄', value: basic.age, Icon: CalendarDays })
+    if (basic.employementStatus) items.push({ key: 'status', label: '状态', value: basic.employementStatus, Icon: BriefcaseBusiness })
     return items
   }, [basic])
 
@@ -89,7 +92,7 @@ export function BaseInfo({ basic, globalSettings, template }: BaseInfoProps) {
           <ul style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 16px', marginTop: 4, justifyContent: layout === 'center' ? 'center' : layout === 'right' ? 'flex-end' : 'flex-start' }}>
             {contactItems.map(item => (
               <li key={item.key} style={{ fontSize: baseFontSize - 2, color: template.colorScheme.secondary, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                {!useIconMode && <span style={{ opacity: 0.7 }}>{item.label}:</span>}
+                {useIconMode ? <item.Icon size={14} strokeWidth={1.8} aria-hidden /> : <span style={{ opacity: 0.7 }}>{item.label}:</span>}
                 <span style={{ fontWeight: 500 }}>{item.value}</span>
               </li>
             ))}

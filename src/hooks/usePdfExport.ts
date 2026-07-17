@@ -1,14 +1,30 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { paginateIntoA4Pages } from '@/lib/pagination'
+
+async function waitForPagination(preview: HTMLElement) {
+  if (preview.dataset.paginationReady === 'true') return
+  await new Promise<void>((resolve) => {
+    const observer = new MutationObserver(() => {
+      if (preview.dataset.paginationReady === 'true') {
+        observer.disconnect()
+        resolve()
+      }
+    })
+    observer.observe(preview, { attributes: true, attributeFilter: ['data-pagination-ready'] })
+    window.setTimeout(() => {
+      observer.disconnect()
+      resolve()
+    }, 3000)
+  })
+}
 
 /**
  * PDF 导出 hook —— 直接调当前页 window.print(),由 globals.css 里的 @media print
  * 规则负责隐藏 workbench 侧栏/工具栏。
  *
- * 分页已统一在 PaginatedResumePreview 里跑(screen + PDF 共用 paginateIntoA4Pages),
- * 屏幕态的 .a4-page 卡片就是打印会输出的页。本 hook 只负责:
+ * 分页已统一在 PaginatedResumePreview 里生成；屏幕态的 .a4-page 卡片就是
+ * 打印会输出的页。本 hook 只负责:
  *   1. 防御式同步分页(用户极快点击导出时,屏幕态 200ms 防抖可能还没跑完)
  *   2. 等字体 / 图片就绪
  *   3. 改 document.title(Chrome 打印对话框"另存为 PDF"读这个作为默认文件名)
@@ -28,12 +44,9 @@ export function usePdfExport() {
     const sourceEl = document.getElementById('resume-preview')
     if (!sourceEl) throw new Error('找不到导出元素 #resume-preview')
 
-    // 1) 防御式同步分页。屏幕态通常已经分页好了,但点击导出太早(200ms 防抖
-    //    还没结束)时 DOM 可能还是 .resume-section 结构 —— 这里跑一次同步分页
-    //    确保打印输出的是最新的分页结果。
-    paginateIntoA4Pages(sourceEl)
+    await waitForPagination(sourceEl)
 
-    // 2) 等字体加载完。中文 fallback 链(PingFang / 微软雅黑)在不同 OS 上宽度不同,
+    // 1) 等字体加载完。中文 fallback 链(PingFang / 微软雅黑)在不同 OS 上宽度不同,
     //    必须在 print 前就加载完,否则 Chrome 打印引擎会用 fallback 字体撑高/缩短内容。
     if (document.fonts?.ready) {
       try {
@@ -43,7 +56,7 @@ export function usePdfExport() {
       }
     }
 
-    // 3) 等所有图片解码完。complete+naturalHeight 对 base64 图片不可靠。
+    // 2) 等所有图片解码完。complete+naturalHeight 对 base64 图片不可靠。
     const images = Array.from(sourceEl.querySelectorAll('img'))
     await Promise.all(
       images.map(async (img) => {
@@ -56,7 +69,7 @@ export function usePdfExport() {
       }),
     )
 
-    // 4) 改 document.title → Chrome 系统打印对话框"另存为 PDF"会读这个作为默认文件名。
+    // 3) 改 document.title → Chrome 系统打印对话框"另存为 PDF"会读这个作为默认文件名。
     const originalTitle = document.title
     const now = new Date()
     const yyyy = now.getFullYear()
@@ -66,7 +79,7 @@ export function usePdfExport() {
     const safeTitle = (resumeTitle || '').trim() || '简历'
     document.title = `${safeTitle}-${dateStr}`
 
-    // 5) 注册一次性 afterprint 恢复 title —— 不能在 print() 后立即同步恢复,
+    // 4) 注册一次性 afterprint 恢复 title —— 不能在 print() 后立即同步恢复,
     //    Chrome 可能在同步代码里就读取 title 作默认文件名("另存为 PDF"场景)。
     let restored = false
     const restoreTitle = () => {

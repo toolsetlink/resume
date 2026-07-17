@@ -1,4 +1,6 @@
+@import url('https://fonts.alibabadesign.com/AlibabaPuHuiTi-2/AlibabaPuHuiTi-2-55-Regular/AlibabaPuHuiTi-2-55-Regular.css');
 @import 'tailwindcss';
+/* ponytail: 使用阿里官方 CDN；需要离线导出时再随应用打包 WOFF2。 */
 
 /* ========================================
    自由简历 — 设计系统 Token
@@ -172,13 +174,136 @@ body {
 .a4-page {
   width: 210mm;
   min-height: 297mm;
-  padding: 40px;
+  padding: 0;
   background: white;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
   page-break-after: always;
   break-after: page;
   color: #1f2937;
+}
+
+.resume-template {
+  min-height: 297mm;
+  box-sizing: border-box;
+  color: inherit;
+  background: inherit;
+}
+
+.resume-template-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--resume-section-gap, 12px);
+}
+
+.resume-template-professional {
+  padding: var(--resume-page-padding, 40px);
+}
+
+.resume-template-professional > .resume-template-content {
+  gap: var(--resume-section-gap, 12px);
+}
+
+.resume-template-modern {
+  display: grid;
+  grid-template-columns: 31% 69%;
+  min-height: 297mm;
+}
+
+.resume-template-modern .resume-template-sidebar {
+  padding: 42px 26px;
+  color: #e2e8f0;
+  background: #0f172a;
+}
+
+.resume-template-modern .resume-template-sidebar h2,
+.resume-template-modern .resume-template-sidebar h1,
+.resume-template-modern .resume-template-sidebar .rich-content {
+  color: inherit !important;
+}
+
+.resume-template-modern .resume-template-sidebar h2 span:first-child {
+  background: #38bdf8 !important;
+}
+
+.resume-template-modern .resume-template-main {
+  padding: 42px var(--resume-page-padding, 42px);
+}
+
+.resume-template-modern .resume-template-header {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.resume-template-elegant {
+  padding: var(--resume-page-padding, 48px);
+  background: #fafafa;
+}
+
+.resume-template-elegant .resume-template-header {
+  padding: 10px 0 26px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #94a3b8;
+}
+
+.resume-template-elegant .elegant-base-info {
+  justify-content: center;
+}
+
+.resume-template-elegant h2 {
+  padding-bottom: 7px;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.resume-template-elegant h2 span:first-child {
+  display: none;
+}
+
+.resume-template-creative {
+  background: #ffffff;
+}
+
+.resume-template-creative > .resume-template-header {
+  padding: 38px var(--resume-page-padding, 36px) 30px;
+  color: #ffffff;
+  background: linear-gradient(115deg, #6d28d9 0%, #a855f7 48%, #ec4899 100%);
+}
+
+.resume-template-creative .creative-base-info,
+.resume-template-creative .creative-base-info h1,
+.resume-template-creative .creative-base-info p,
+.resume-template-creative .creative-base-info li {
+  color: #ffffff !important;
+}
+
+.resume-template-creative .resume-template-columns {
+  display: grid;
+  grid-template-columns: 34% 66%;
+  min-height: calc(297mm - 190px);
+}
+
+.resume-template-creative .resume-template-sidebar {
+  padding: 28px 24px;
+  color: #581c87;
+  background: #faf5ff;
+}
+
+.resume-template-creative .resume-template-sidebar h2 span:first-child {
+  background: #db2777 !important;
+}
+
+.resume-template-creative .resume-template-main {
+  padding: 28px var(--resume-page-padding, 36px);
+}
+
+.resume-template .rich-content p {
+  margin: calc(var(--resume-paragraph-gap, 8px) / 2) 0;
+}
+
+.resume-template .rich-content ul li,
+.resume-template .rich-content ol li {
+  margin-bottom: calc(var(--resume-paragraph-gap, 8px) / 2);
 }
 
 .a4-page:last-child {
@@ -202,6 +327,19 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 24px;
+}
+
+.resume-pagination-source {
+  position: absolute;
+  left: -100000px;
+  top: 0;
+  width: 794px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.resume-pagination-output {
+  display: contents;
 }
 
 /* === 工作台布局拆解（@media print） === */
@@ -283,9 +421,14 @@ body {
     align-items: stretch !important;
   }
 
+  .resume-pagination-source {
+    display: none !important;
+  }
+
   /* 6) 打印态 .a4-page 关掉阴影(纸张本身没阴影),其余已在基类统一 */
   .a4-page {
     box-shadow: none !important;
+    min-height: 297mm !important;
   }
 
   /* 7) 隐藏 Allotment 分隔条(sash + separatorBorder ::before),消除侧边垂直细线 */

@@ -8,11 +8,10 @@
 
 ```bash
 pnpm dev          # Start dev server (http://localhost:3000)
-pnpm build        # Production build
-pnpm start        # Start production server
-pnpm vitest run   # Run unit tests
-pnpm vitest run --coverage  # Tests with coverage
-pnpm exec playwright test   # Run E2E tests
+pnpm build        # Build static site to out/
+pnpm check        # Lint + typecheck + unit tests
+pnpm test:e2e     # Run E2E tests
+pnpm test -- --coverage  # Unit tests with coverage
 ```
 
 ## Project Architecture
@@ -31,7 +30,7 @@ src/
 │   ├── preview/            # ResumePreview
 │   ├── editor/             # SectionAccordion + 8 panel types
 │   └── workbench/          # Header, TemplateSwitcher, etc.
-├── hooks/                  # usePdfExport, useAutoSave, useItemSaveStatus, useResumeCases
+├── hooks/                  # usePdfExport, useAutoSave
 ├── stores/resume-store.ts  # Zustand + Immer + persist (27 actions)
 ├── shared/                 # Pure TS types and config
 ├── i18n/config.ts          # Chinese locale placeholder (no runtime i18n)

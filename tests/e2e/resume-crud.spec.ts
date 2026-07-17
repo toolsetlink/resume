@@ -1,10 +1,8 @@
 // 简历 CRUD 完整流程 E2E 测试 - 自由简历项目
 import { test, expect } from '@playwright/test'
 
-// 获取 dashboard 中简历卡片的数量
-// 每行简历有 1 个「删除」按钮（隐藏但 DOM 存在），用按钮数量计数
 async function getResumeCount(page: import('@playwright/test').Page): Promise<number> {
-  return await page.getByRole('button', { name: /删除|delete/i }).count()
+  return page.getByRole('list', { name: '简历列表' }).getByRole('listitem').count()
 }
 
 // 等待 dashboard 列表稳定
@@ -73,8 +71,6 @@ test.describe('简历 CRUD', () => {
     const duplicateBtn = page.getByRole('button', { name: /复制|duplicate/i })
     await duplicateBtn.first().click()
 
-    // 等待列表更新（pinia 持久化是异步的）
-    await page.waitForTimeout(300)
     await expect.poll(async () => await getResumeCount(page), {
       timeout: 5000,
     }).toBe(initialCount + 1)
@@ -89,8 +85,8 @@ test.describe('简历 CRUD', () => {
 
     const deleteBtn = page.getByRole('button', { name: /删除|delete/i })
     await deleteBtn.first().click()
+    await page.getByRole('button', { name: /确\s*认/ }).click()
 
-    await page.waitForTimeout(300)
     await expect.poll(async () => await getResumeCount(page), {
       timeout: 5000,
     }).toBe(initialCount - 1)
@@ -149,6 +145,7 @@ test.describe('简历 CRUD', () => {
     // 4. 删除第一份
     const delBtn = page.getByRole('button', { name: /删除|delete/i })
     await delBtn.first().click()
+    await page.getByRole('button', { name: /确\s*认/ }).click()
     await expect.poll(async () => await getResumeCount(page), {
       timeout: 5000,
     }).toBe(countAfterCreate)

@@ -18,11 +18,12 @@ export const initialGlobalSettings: GlobalSettings = {
   subheaderSize: 16,
   useIconMode: true,
   themeColor: '#000000',
-  centerSubtitle: true,
+  fontFamily: 'template',
+  headerAlignment: 'template',
 }
 
 // 中文初始简历数据（示例）
-export const initialResumeState = {
+export const initialResumeState: Omit<ResumeData, 'id' | 'createdAt' | 'updatedAt' | 'templateId'> = {
   title: '新建简历',
   basic: {
     name: '李明',
@@ -119,28 +120,29 @@ export const initialResumeState = {
     },
   ],
   menuSections: [
-    { id: 'basic', title: '基本信息', icon: '👤', enabled: true, order: 0 },
-    { id: 'skills', title: '专业技能', icon: '⚡', enabled: true, order: 1 },
-    { id: 'experience', title: '工作经验', icon: '💼', enabled: true, order: 2 },
-    { id: 'projects', title: '项目经历', icon: '🚀', enabled: true, order: 3 },
-    { id: 'education', title: '教育经历', icon: '🎓', enabled: true, order: 4 },
+    { id: 'basic', title: '基本信息', icon: '👤', enabled: true, order: 0, region: 'main' },
+    { id: 'skills', title: '专业技能', icon: '⚡', enabled: true, order: 1, region: 'sidebar' },
+    { id: 'experience', title: '工作经验', icon: '💼', enabled: true, order: 2, region: 'main' },
+    { id: 'projects', title: '项目经历', icon: '🚀', enabled: true, order: 3, region: 'main' },
+    { id: 'education', title: '教育经历', icon: '🎓', enabled: true, order: 4, region: 'sidebar' },
   ],
   certificates: [],
   customData: {},
+  customSectionTitles: {},
   activeSection: 'basic',
   globalSettings: initialGlobalSettings,
 }
 
 // 空白简历默认模块列表（全部 8 个模块，前 5 个默认开启，后 3 个默认关闭）
 export const DEFAULT_MENU_SECTIONS: MenuSection[] = [
-  { id: 'basic', title: '基本信息', icon: '👤', enabled: true, order: 0 },
-  { id: 'skills', title: '专业技能', icon: '⚡', enabled: true, order: 1 },
-  { id: 'experience', title: '工作经验', icon: '💼', enabled: true, order: 2 },
-  { id: 'projects', title: '项目经历', icon: '🚀', enabled: true, order: 3 },
-  { id: 'education', title: '教育经历', icon: '🎓', enabled: true, order: 4 },
-  { id: 'certificates', title: '证书', icon: '📜', enabled: false, order: 5 },
-  { id: 'selfEvaluation', title: '自我评价', icon: '✍️', enabled: false, order: 6 },
-  { id: 'custom', title: '自定义', icon: '⚙️', enabled: false, order: 7 },
+  { id: 'basic', title: '基本信息', icon: '👤', enabled: true, order: 0, region: 'main' },
+  { id: 'skills', title: '专业技能', icon: '⚡', enabled: true, order: 1, region: 'sidebar' },
+  { id: 'experience', title: '工作经验', icon: '💼', enabled: true, order: 2, region: 'main' },
+  { id: 'projects', title: '项目经历', icon: '🚀', enabled: true, order: 3, region: 'main' },
+  { id: 'education', title: '教育经历', icon: '🎓', enabled: true, order: 4, region: 'sidebar' },
+  { id: 'certificates', title: '证书', icon: '📜', enabled: false, order: 5, region: 'sidebar' },
+  { id: 'selfEvaluation', title: '自我评价', icon: '✍️', enabled: false, order: 6, region: 'main' },
+  { id: 'custom', title: '自定义', icon: '⚙️', enabled: false, order: 7, region: 'main' },
 ]
 
 // 空白简历（用于新建）
@@ -167,6 +169,7 @@ export const blankResumeState = {
   experience: [],
   projects: [],
   certificates: [],
+  customSectionTitles: {},
   menuSections: DEFAULT_MENU_SECTIONS,
 }
 
@@ -175,7 +178,7 @@ export function createNewResume(title: string = '新建简历'): ResumeData {
   const now = new Date().toISOString()
   // blankResumeState 中已包含 title 字段，这里显式覆盖
   return {
-    ...blankResumeState,
+    ...structuredClone(blankResumeState),
     id: crypto.randomUUID(),
     title,
     createdAt: now,

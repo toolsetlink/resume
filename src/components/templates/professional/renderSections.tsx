@@ -27,6 +27,7 @@ type SectionComponentProps = {
   projects?: Project[]
   content?: string
   customData?: Record<string, CustomItem[]>
+  customSectionTitles?: Record<string, string>
   menuSections?: MenuSection[]
   globalSettings?: GlobalSettings
   template: ResumeTemplate
@@ -68,7 +69,7 @@ function getSectionProps(sectionId: string, data: ResumeData, template: ResumeTe
     case 'skills': return { content: data.skillContent, globalSettings: gs, template }
     case 'selfEvaluation': return { content: data.selfEvaluationContent, globalSettings: gs, template }
     case 'certificates': return { content: data.certificatesContent, globalSettings: gs, template }
-    case 'custom': return { customData: data.customData, globalSettings: gs, template, menuSections: data.menuSections }
+    case 'custom': return { customData: data.customData, customSectionTitles: data.customSectionTitles, globalSettings: gs, template, menuSections: data.menuSections }
     default: return {}
   }
 }
