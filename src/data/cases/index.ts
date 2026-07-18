@@ -30,3 +30,7 @@ export const EXPERIENCE_OPTIONS: string[] = [
   '全部',
   ...Array.from(new Set(RESUME_CASES.map((c) => c.meta.experienceLevel))),
 ]
+
+export function getResumeCase(id: string): ResumeCase | undefined {
+  return RESUME_CASES.find((caseData) => caseData.meta.id === id)
+}

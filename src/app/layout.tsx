@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: '%s | 自由简历',
   },
   description:
-    '自由简历 — 免费、隐私优先的在线简历编辑器。多套专业模板、一键 PDF 导出，无需注册即可使用。',
+    '自由简历是免费、隐私优先的在线简历编辑器。多套专业模板、一键 PDF 导出，无需注册即可使用。',
   metadataBase: new URL('https://resume.toolsetlink.com'),
   openGraph: {
     siteName: '自由简历',

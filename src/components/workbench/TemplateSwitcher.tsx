@@ -42,6 +42,7 @@ export function TemplateSwitcher({ open, onOpenChange }: TemplateSwitcherProps) 
                   sampleData={sampleData}
                   width={240}
                   visibleHeight={340}
+                  ariaHidden
                 />
               ) : (
                 <div className="h-[340px] flex items-center justify-center text-[hsl(var(--text-tertiary))]">

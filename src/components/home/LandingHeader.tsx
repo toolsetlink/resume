@@ -8,9 +8,10 @@ import messages from '@/messages/zh.json'
 import { useTheme } from '@/components/theme/ThemeProvider'
 
 const NAV_LINKS = [
-  { href: '#features', label: messages.landing.nav.features },
-  { href: '#cases', label: messages.landing.nav.templates },
-  { href: '#faq', label: messages.landing.nav.faq },
+  { href: '/#features', label: messages.landing.nav.features },
+  { href: '/cases', label: '案例库' },
+  { href: '/#career-coaching', label: '求职陪跑' },
+  { href: '/#faq', label: messages.landing.nav.faq },
 ]
 
 interface LandingHeaderProps {
@@ -33,13 +34,10 @@ export function LandingHeader({ showAnchorLinks = true }: LandingHeaderProps) {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          <Link href="/dashboard" className="rounded-lg px-3 py-2 text-[13px] font-medium text-[hsl(var(--text-secondary))] transition-colors duration-200 hover:text-[hsl(var(--text-primary))]">
-            {messages.nav.dashboard}
-          </Link>
           {showAnchorLinks && NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="rounded-lg px-3 py-2 text-[13px] font-medium text-[hsl(var(--text-secondary))] transition-colors duration-200 hover:text-[hsl(var(--text-primary))]">
+            <Link key={link.href} href={link.href} className="rounded-lg px-3 py-2 text-[13px] font-medium text-[hsl(var(--text-secondary))] transition-colors duration-200 hover:text-[hsl(var(--text-primary))]">
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -54,30 +52,36 @@ export function LandingHeader({ showAnchorLinks = true }: LandingHeaderProps) {
             {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
           </Button>
 
-          <Button
-            type="text"
-            shape="circle"
-            aria-label={mobileOpen ? messages.landing.nav.closeMenu : messages.landing.nav.openMenu}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-navigation"
-            className="!rounded-md hover:!bg-[hsl(var(--bg-subtle))] md:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
+          <Link
+            href="/dashboard"
+            className="inline-flex h-9 items-center whitespace-nowrap rounded-[8px] bg-[hsl(var(--brand))] px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-[hsl(var(--brand-hover))] active:translate-y-px"
           >
-            {mobileOpen ? <X className="h-[18px] w-[18px]" /> : <Menu className="h-[18px] w-[18px]" />}
-          </Button>
+            我的简历
+          </Link>
+
+          {showAnchorLinks && (
+            <Button
+              type="text"
+              shape="circle"
+              aria-label={mobileOpen ? messages.landing.nav.closeMenu : messages.landing.nav.openMenu}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-navigation"
+              className="!rounded-md hover:!bg-[hsl(var(--bg-subtle))] md:!hidden"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X className="h-[18px] w-[18px]" /> : <Menu className="h-[18px] w-[18px]" />}
+            </Button>
+          )}
         </div>
       </div>
 
-      {mobileOpen && (
+      {showAnchorLinks && mobileOpen && (
         <div className="border-t border-[hsl(var(--border-default))]/60 bg-[hsl(var(--bg-base))]/95 backdrop-blur-xl md:hidden">
           <nav id="mobile-navigation" className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
-            <Link href="/dashboard" className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-[hsl(var(--text-secondary))] transition-colors hover:bg-[hsl(var(--bg-subtle))] hover:text-[hsl(var(--text-primary))]" onClick={() => setMobileOpen(false)}>
-              {messages.nav.dashboard}
-            </Link>
             {showAnchorLinks && NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-[hsl(var(--text-secondary))] transition-colors hover:bg-[hsl(var(--bg-subtle))] hover:text-[hsl(var(--text-primary))]" onClick={() => setMobileOpen(false)}>
+              <Link key={link.href} href={link.href} className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-[hsl(var(--text-secondary))] transition-colors hover:bg-[hsl(var(--bg-subtle))] hover:text-[hsl(var(--text-primary))]" onClick={() => setMobileOpen(false)}>
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>

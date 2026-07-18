@@ -11,8 +11,6 @@ import messages from '@/messages/zh.json'
 
 const t = messages
 
-const PREVIEW_HEIGHT = 320
-
 interface ResumeCardProps {
   resume: ResumeData
   onDuplicate: (id: string) => void
@@ -43,12 +41,13 @@ export function ResumeCard({ resume, onDuplicate, onDelete }: ResumeCardProps) {
           <MiniTemplatePreview
             templateId={resume.templateId}
             sampleData={resume}
-            visibleHeight={PREVIEW_HEIGHT}
+            cropRatio={0.5}
+            ariaHidden
           />
         ) : (
           <div
             className="flex items-center justify-center text-xs text-[hsl(var(--text-tertiary))]"
-            style={{ height: PREVIEW_HEIGHT }}
+            style={{ aspectRatio: '1.414 / 1' }}
           >
             {t.templates.unset}
           </div>

@@ -97,6 +97,18 @@ body {
   line-height: 1.5;
 }
 
+.case-rich-text ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.case-rich-text li {
+  margin-top: 0.35rem;
+  color: hsl(var(--text-secondary));
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
 ::selection {
   background-color: hsl(var(--brand) / 0.15);
   color: hsl(var(--brand));

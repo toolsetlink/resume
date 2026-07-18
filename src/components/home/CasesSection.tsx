@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import messages from '@/messages/zh.json'
 import {
@@ -11,7 +12,7 @@ import {
 } from '@/data/cases'
 import type { ResumeCase } from '@/shared/types/case'
 import { useResumeStore } from '@/stores/resume-store'
-import { MiniTemplatePreview } from '@/components/workbench/MiniTemplatePreview'
+import { CaseCard } from '@/components/cases/CaseCard'
 
 const t = messages
 
@@ -78,6 +79,16 @@ export function CasesSection() {
             ))}
           </div>
         )}
+
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/cases"
+            className="inline-flex items-center gap-1.5 rounded-[8px] border border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))] px-5 py-2.5 text-[14px] font-medium text-[hsl(var(--text-primary))] transition-colors hover:border-[hsl(var(--brand))] hover:text-[hsl(var(--brand))] active:translate-y-px"
+          >
+            查看全部案例
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
     </section>
   )
@@ -114,53 +125,5 @@ function FilterRow({ label, options, value, onChange }: FilterRowProps) {
         )
       })}
     </div>
-  )
-}
-
-interface CaseCardProps {
-  caseData: ResumeCase
-  onUse: () => void
-}
-
-function CaseCard({ caseData, onUse }: CaseCardProps) {
-  const { meta, resumeData } = caseData
-  return (
-    <div className="group flex flex-col overflow-hidden rounded-[12px] border border-[hsl(var(--border-default))]/60 bg-[hsl(var(--bg-card))] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      <MiniTemplatePreview
-        templateId={meta.templateId}
-        sampleData={resumeData}
-        width={220}
-        visibleHeight={320}
-      />
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-[16px] font-semibold text-[hsl(var(--text-primary))]">
-          {meta.title}
-        </h3>
-        <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-[hsl(var(--text-secondary))]">
-          {meta.description}
-        </p>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          <Tag>{meta.industry}</Tag>
-          <Tag>{meta.position}</Tag>
-          <Tag>{meta.experienceLevel}</Tag>
-        </div>
-        <button
-          type="button"
-          onClick={onUse}
-          className="mt-4 inline-flex items-center gap-1 self-start text-[13px] font-medium text-[hsl(var(--brand))] transition-opacity hover:opacity-80"
-        >
-          {t.landing.cases.useThis}
-          <ArrowRight className="h-3.5 w-3.5" />
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function Tag({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-md bg-[hsl(var(--bg-subtle))] px-2 py-0.5 text-[11px] font-medium text-[hsl(var(--text-secondary))]">
-      {children}
-    </span>
   )
 }

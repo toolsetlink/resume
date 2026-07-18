@@ -32,6 +32,8 @@ interface MiniTemplatePreviewProps {
   sampleData: ResumeData
   width?: number
   visibleHeight?: number
+  cropRatio?: number
+  ariaHidden?: boolean
 }
 
 export function MiniTemplatePreview({
@@ -39,6 +41,8 @@ export function MiniTemplatePreview({
   sampleData,
   width,
   visibleHeight = 320,
+  cropRatio,
+  ariaHidden,
 }: MiniTemplatePreviewProps) {
   const Component = COMPONENT_BY_ID[templateId]
   const template = TEMPLATE_BY_ID[templateId]
@@ -47,16 +51,22 @@ export function MiniTemplatePreview({
 
   useLayoutEffect(() => {
     if (width || !containerRef.current) return
-    const observer = new ResizeObserver(([entry]) => {
-      const nextWidth = entry?.contentRect.width
+
+    const measure = () => {
+      const nextWidth = containerRef.current?.getBoundingClientRect().width
       if (nextWidth) setMeasuredWidth(nextWidth)
-    })
-    observer.observe(containerRef.current)
-    return () => observer.disconnect()
+    }
+
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
   }, [width])
 
   const previewWidth = width || measuredWidth
   const scale = previewWidth / A4_WIDTH
+  const previewHeight = cropRatio
+    ? A4_HEIGHT * scale * cropRatio
+    : visibleHeight
 
   if (!template || !Component) {
     return (
@@ -72,8 +82,9 @@ export function MiniTemplatePreview({
   return (
     <div
       ref={containerRef}
+      aria-hidden={ariaHidden}
       className="relative overflow-hidden bg-white"
-      style={{ height: visibleHeight, width: previewWidth }}
+      style={{ height: previewHeight, width: width ?? '100%' }}
     >
       <div
         style={{

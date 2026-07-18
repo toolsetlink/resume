@@ -1,13 +1,13 @@
 import type { MetadataRoute } from 'next'
+import { RESUME_CASES } from '@/data/cases'
 
 const SITE_URL = 'https://resume.toolsetlink.com'
-const slugs = ['professional-resume', 'modern-resume', 'elegant-resume', 'creative-resume']
 
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const templateUrls = slugs.map((slug) => ({
-    url: `${SITE_URL}/templates/${slug}`,
+  const caseUrls = RESUME_CASES.map(({ meta }) => ({
+    url: `${SITE_URL}/cases/${meta.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     { url: SITE_URL, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 1 },
-    ...templateUrls,
+    { url: `${SITE_URL}/cases`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
+    ...caseUrls,
   ]
 }
