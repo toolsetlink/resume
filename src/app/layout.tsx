@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
-import { ThemeProvider } from '@/components/theme/ThemeProvider'
+import { ThemeProvider, ThemeScript } from '@/components/theme/ThemeProvider'
 import { htmlLang } from '@/i18n/config'
 import '@/styles/globals.css'
 
@@ -36,13 +36,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang={htmlLang} className="h-full antialiased" suppressHydrationWarning>
-      <body className="min-h-full flex flex-col">
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){try{var t=localStorage.getItem('ziyou-resume-theme');if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();",
-          }}
-        />
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider>
           <AntdRegistry>
             <ConfigProvider>

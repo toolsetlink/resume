@@ -104,4 +104,24 @@ describe('paginateTemplate', () => {
     expect(pages[1]?.textContent).toContain('某科技公司')
     expect(pages[1]?.textContent).toContain('2024 - 至今')
   })
+
+  it('renders personal information only on the first page', () => {
+    measureAtoms(600)
+    const template = document.createElement('div')
+    template.className = 'resume-template'
+    template.innerHTML = `
+      <header class="resume-template-header">个人信息</header>
+      <main data-pagination-flow="main">
+        <div data-pagination-unit>第一段</div>
+        <div data-pagination-unit>第二段</div>
+      </main>
+    `
+    document.body.appendChild(template)
+
+    const pages = paginateTemplate(template)
+
+    expect(pages).toHaveLength(2)
+    expect(pages[0]?.textContent).toContain('个人信息')
+    expect(pages[1]?.textContent).not.toContain('个人信息')
+  })
 })

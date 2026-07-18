@@ -66,8 +66,10 @@ function flowName(flow: HTMLElement) {
   return flow.dataset.paginationFlow || 'main'
 }
 
-function cloneTemplate(source: HTMLElement, selections: Map<string, Set<string>>) {
+function cloneTemplate(source: HTMLElement, selections: Map<string, Set<string>>, pageIndex: number) {
   const template = source.cloneNode(true) as HTMLElement
+
+  if (pageIndex > 0) template.querySelector('.resume-template-header')?.remove()
 
   function pruneBranch(branch: HTMLElement): boolean {
     if (branch.hasAttribute(ATOM_ATTRIBUTE)) return true
@@ -102,12 +104,12 @@ function cloneTemplate(source: HTMLElement, selections: Map<string, Set<string>>
   return template
 }
 
-function fitsOnPage(source: HTMLElement, name: string, keys: string[]) {
+function fitsOnPage(source: HTMLElement, name: string, keys: string[], pageIndex: number) {
   const host = createA4Page()
   host.style.position = 'absolute'
   host.style.visibility = 'hidden'
   host.style.pointerEvents = 'none'
-  host.appendChild(cloneTemplate(source, new Map([[name, new Set(keys)]])))
+  host.appendChild(cloneTemplate(source, new Map([[name, new Set(keys)]]), pageIndex))
   source.parentElement?.appendChild(host)
   const content = host.firstElementChild as HTMLElement | null
   const contentTop = content?.getBoundingClientRect().top || 0
@@ -133,7 +135,7 @@ function packFlow(source: HTMLElement, flow: HTMLElement) {
 
   for (const atom of atoms) {
     const key = atom.getAttribute(ATOM_ATTRIBUTE) || ''
-    if (page.length && !fitsOnPage(source, flowName(flow), [...page, key])) {
+    if (page.length && !fitsOnPage(source, flowName(flow), [...page, key], pages.length)) {
       const previous = atoms.find((candidate) => candidate.getAttribute(ATOM_ATTRIBUTE) === page.at(-1))
       if (previous?.tagName === 'H2') {
         const title = page.pop()!
@@ -154,7 +156,7 @@ function packFlow(source: HTMLElement, flow: HTMLElement) {
 
 /**
  * 将标记为 data-pagination-flow / data-pagination-unit 的模板分页。
- * 每页克隆完整模板骨架，只替换内容流，双栏不会被扁平化。
+ * 每页克隆模板骨架并替换内容流；续页移除个人信息页眉，双栏不会被扁平化。
  */
 export function paginateTemplate(sourceTemplate: HTMLElement): HTMLElement[] {
   const sourceFlows = Array.from(sourceTemplate.querySelectorAll<HTMLElement>('[data-pagination-flow]'))
@@ -164,7 +166,7 @@ export function paginateTemplate(sourceTemplate: HTMLElement): HTMLElement[] {
   const pages = Array.from({ length: pageCount }, (_, pageIndex) => {
     const selections = new Map(flows.map((flow) => [flow.name, new Set(flow.pages[pageIndex] || [])]))
     const page = createA4Page()
-    page.appendChild(cloneTemplate(sourceTemplate, selections))
+    page.appendChild(cloneTemplate(sourceTemplate, selections, pageIndex))
     return page
   })
 

@@ -17,6 +17,19 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 export const THEME_STORAGE_KEY = 'ziyou-resume-theme'
 export const DEFAULT_THEME = 'light'
 
+export function ThemeScript() {
+  return (
+    <script
+      type={typeof window === 'undefined' ? 'text/javascript' : 'text/plain'}
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{
+        __html:
+          "(function(){try{var t=localStorage.getItem('ziyou-resume-theme');if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();",
+      }}
+    />
+  )
+}
+
 function applyThemeToHtml(theme: string): void {
   if (typeof document === 'undefined') return
   const root = document.documentElement

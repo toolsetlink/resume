@@ -83,6 +83,11 @@ test.describe('模板视觉回归', () => {
     await switchTemplate(page, 'modern')
     await expect(page.locator('#resume-preview ' + TEMPLATE_ROOT_SELECTOR.modern).first()).toBeVisible()
     await expectPreviewContainsSourceContent(page)
+    const sidebarColors = await page.locator(TEMPLATE_ROOT_SELECTOR.modern + ' .resume-template-sidebar').first().evaluate((sidebar) => ({
+      background: getComputedStyle(sidebar).backgroundColor,
+      color: getComputedStyle(sidebar).color,
+    }))
+    expect(sidebarColors).toEqual({ background: 'rgb(241, 245, 249)', color: 'rgb(51, 65, 85)' })
   })
 
   test('elegant 模板包含关键 DOM 元素', async ({ page }) => {
@@ -90,6 +95,12 @@ test.describe('模板视觉回归', () => {
     await switchTemplate(page, 'elegant')
     await expect(page.locator('#resume-preview ' + TEMPLATE_ROOT_SELECTOR.elegant).first()).toBeVisible()
     await expectPreviewContainsSourceContent(page)
+    const centers = await page.locator(TEMPLATE_ROOT_SELECTOR.elegant + ' .elegant-base-info').first().evaluate((info) => {
+      const outer = info.getBoundingClientRect()
+      const content = info.children[0]?.getBoundingClientRect()
+      return { outer: outer.left + outer.width / 2, content: content ? content.left + content.width / 2 : 0 }
+    })
+    expect(Math.abs(centers.outer - centers.content)).toBeLessThanOrEqual(1)
   })
 
   test('creative 模板包含关键 DOM 元素', async ({ page }) => {
@@ -97,6 +108,7 @@ test.describe('模板视觉回归', () => {
     await switchTemplate(page, 'creative')
     await expect(page.locator('#resume-preview ' + TEMPLATE_ROOT_SELECTOR.creative).first()).toBeVisible()
     await expectPreviewContainsSourceContent(page)
+    await expect(page.locator('#resume-preview .resume-pagination-output > .a4-page')).toHaveCount(1)
   })
 
   test('分页预览在打印态保持同一份完整内容', async ({ page }) => {

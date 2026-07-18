@@ -212,8 +212,8 @@ body {
 
 .resume-template-modern .resume-template-sidebar {
   padding: 42px 26px;
-  color: #e2e8f0;
-  background: #0f172a;
+  color: #334155;
+  background: #f1f5f9;
 }
 
 .resume-template-modern .resume-template-sidebar h2,
@@ -247,10 +247,6 @@ body {
   border-bottom: 1px solid #94a3b8;
 }
 
-.resume-template-elegant .elegant-base-info {
-  justify-content: center;
-}
-
 .resume-template-elegant h2 {
   padding-bottom: 7px;
   border-bottom: 1px solid #cbd5e1;
@@ -261,6 +257,8 @@ body {
 }
 
 .resume-template-creative {
+  display: grid;
+  grid-template-rows: auto 1fr;
   background: #ffffff;
 }
 
@@ -280,7 +278,7 @@ body {
 .resume-template-creative .resume-template-columns {
   display: grid;
   grid-template-columns: 34% 66%;
-  min-height: calc(297mm - 190px);
+  min-height: 0;
 }
 
 .resume-template-creative .resume-template-sidebar {
