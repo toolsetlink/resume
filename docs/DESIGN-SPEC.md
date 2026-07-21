@@ -16,7 +16,7 @@
 
 ## 二、色彩体系
 
-### 2.1 明色模式（Light）
+### 2.1 固定明色主题（Light）
 
 ```
 Neutral 背景 — 冷灰基调（工具感）
@@ -45,26 +45,6 @@ Status
   --success:        hsl(160 55% 40%)   #2E9E6E
   --warning:        hsl(35 85% 50%)    #E88B1E
   --danger:         hsl(0 65% 50%)     #D13030
-```
-
-### 2.2 暗色模式（Dark）
-
-```
---bg-base:       hsl(225 16% 8%)     #0F1012
---bg-card:       hsl(225 14% 12%)    #18191D
---bg-canvas:     hsl(40 10% 12%)     #1F1D19
---bg-canvas-paper: #FFFFFF（保持白纸）
-
---text-primary:   hsl(225 14% 92%)   #E6E8ED
---text-secondary: hsl(225 10% 60%)   #91959C
---text-tertiary:  hsl(225 8% 40%)    #5E6066
-
---border-default: hsl(225 12% 22%)   #303238
---border-hover:   hsl(225 10% 32%)   #484A50
-
---brand:          hsl(235 65% 60%)   #5A6BFF
---brand-hover:    hsl(235 60% 52%)   #3D4EE0
---brand-light:    hsl(235 40% 18%)   #1E1F3A
 ```
 
 ---
@@ -219,7 +199,7 @@ Drawer:  header: border-b border-default, body: p-6
 
 ```
 Header:   h-14 sticky top-0 bg-base/80 backdrop-blur-sm
-Logo:     文字+简单图标，底部平面图标
+Logo:     “开放页面”图形标 + 中文字标，Header 高 32px，Footer 高 28px
 CTA:      平面风格，边框式或填充式，无渐变背景
 Section:  间距 py-24 sm:py-32
 宽度:     max-w-7xl px-4 sm:px-6 lg:px-8
@@ -289,5 +269,4 @@ Phase 3 — 页面层（逐个页面重写）
 Phase 4 — 打磨
   10. Splitpanes 样式
   11. 动效统一
-  12. 暗色模式检查
 ```

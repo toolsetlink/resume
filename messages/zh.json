@@ -95,10 +95,6 @@
     }
   },
   "settings": {
-    "theme": "主题",
-    "light": "浅色",
-    "dark": "深色",
-    "system": "跟随系统",
     "font": "字体",
     "themeColor": "主题色"
   },
@@ -113,8 +109,6 @@
       "templates": "案例",
       "faq": "FAQ",
       "start": "开始使用",
-      "switchToLight": "切换到浅色模式",
-      "switchToDark": "切换到深色模式",
       "openMenu": "打开菜单",
       "closeMenu": "关闭菜单"
     },

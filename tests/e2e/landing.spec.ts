@@ -18,7 +18,7 @@ test.describe('Landing Page', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('/')
 
-    await expect(page.getByRole('button', { name: '切换到深色模式' })).toBeVisible()
+    await expect(page.locator('header img[alt="自由简历"]')).toBeVisible()
 
     const openMenuButton = page.getByRole('button', { name: '打开菜单' })
     await expect(openMenuButton).toHaveAttribute('aria-expanded', 'false')

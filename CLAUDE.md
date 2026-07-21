@@ -19,7 +19,7 @@ pnpm test -- --coverage  # Unit tests with coverage
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── layout.tsx          # Root layout: AntdRegistry + ThemeProvider
+│   ├── layout.tsx          # Root layout: AntdRegistry + ConfigProvider
 │   ├── page.tsx            # Chinese landing page (SSR with generateMetadata)
 │   ├── robots.ts / sitemap.ts
 │   ├── dashboard/          # Client-only pages

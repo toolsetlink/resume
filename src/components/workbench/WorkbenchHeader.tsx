@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Button, Tooltip } from 'antd'
 import { ArrowLeft, PanelLeft, FileDown, LayoutTemplate, Palette, SlidersHorizontal } from 'lucide-react'
 import { ResumeTitleEditor } from './ResumeTitleEditor'
@@ -53,7 +54,13 @@ export function WorkbenchHeader({ isSaving, lastSavedAt, saveError, isExporting,
         <Tooltip title="切换侧栏">
           <Button type="text" size="small" onClick={onToggleSidebar} icon={<PanelLeft className="w-4 h-4" />} aria-label="切换侧栏" />
         </Tooltip>
-        <span className="text-sm font-semibold text-[hsl(var(--text-primary))] shrink-0 hidden sm:inline">自由简历</span>
+        <Image
+          src="/logo-lockup.png"
+          alt="自由简历"
+          width={104}
+          height={24}
+          className="hidden h-6 w-auto shrink-0 sm:block"
+        />
         {resumeTitle !== undefined && onTitleChange && (
           <>
             <span className="text-xs text-[hsl(var(--text-tertiary))] shrink-0 hidden sm:inline">·</span>

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
-import { ThemeProvider, ThemeScript } from '@/components/theme/ThemeProvider'
 import { htmlLang } from '@/i18n/config'
 import '@/styles/globals.css'
 
@@ -26,7 +25,10 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: '自由简历' },
   formatDetection: { telephone: false },
   manifest: '/manifest.json',
-  icons: { icon: '/icon.svg', apple: '/icon.svg' },
+  icons: {
+    icon: [{ url: '/logo-mark.png', type: 'image/png' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
 }
 
 export default function RootLayout({
@@ -35,18 +37,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang={htmlLang} className="h-full antialiased" suppressHydrationWarning>
-      <head>
-        <ThemeScript />
-      </head>
-      <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <ThemeProvider>
-          <AntdRegistry>
-            <ConfigProvider>
-              {children}
-            </ConfigProvider>
-          </AntdRegistry>
-        </ThemeProvider>
+    <html lang={htmlLang} className="h-full antialiased">
+      <body className="min-h-full flex flex-col">
+        <AntdRegistry>
+          <ConfigProvider>
+            {children}
+          </ConfigProvider>
+        </AntdRegistry>
       </body>
     </html>
   )

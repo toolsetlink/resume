@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from 'antd'
-import { FileText, Sun, Moon, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import messages from '@/messages/zh.json'
-import { useTheme } from '@/components/theme/ThemeProvider'
 
 const NAV_LINKS = [
   { href: '/#features', label: messages.landing.nav.features },
@@ -19,18 +19,20 @@ interface LandingHeaderProps {
 }
 
 export function LandingHeader({ showAnchorLinks = true }: LandingHeaderProps) {
-  const { theme, setTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const isDark = theme === 'dark'
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[hsl(var(--border-default))]/60 bg-[hsl(var(--bg-base))]/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex items-center gap-2">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[hsl(var(--brand))] text-[hsl(var(--text-inverse))] shadow-sm transition-transform duration-300 group-hover:scale-105" style={{ boxShadow: '0 2px 8px -2px hsl(var(--brand) / 0.5)' }}>
-            <FileText className="h-[18px] w-[18px]" />
-          </span>
-          <span className="flex h-8 items-center text-[17px] font-semibold leading-none text-[hsl(var(--text-primary))]">{messages.common.appName}</span>
+        <Link href="/" className="flex items-center" aria-label={messages.common.appName}>
+          <Image
+            src="/logo-lockup.png"
+            alt={messages.common.appName}
+            width={139}
+            height={32}
+            priority
+            className="h-8 w-auto"
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -42,16 +44,6 @@ export function LandingHeader({ showAnchorLinks = true }: LandingHeaderProps) {
         </nav>
 
         <div className="flex items-center gap-1">
-          <Button
-            type="text"
-            shape="circle"
-            aria-label={isDark ? messages.landing.nav.switchToLight : messages.landing.nav.switchToDark}
-            className="!rounded-md hover:!bg-[hsl(var(--bg-subtle))]"
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-          >
-            {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
-          </Button>
-
           <Link
             href="/dashboard"
             className="inline-flex h-9 items-center whitespace-nowrap rounded-[8px] bg-[hsl(var(--brand))] px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-[hsl(var(--brand-hover))] active:translate-y-px"

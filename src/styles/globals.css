@@ -50,33 +50,6 @@
     'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 }
 
-.dark {
-  --bg-base: 225 16% 8%;
-  --bg-card: 225 14% 12%;
-  --bg-subtle: 225 12% 16%;
-  --bg-canvas: 225 10% 14%;
-  --bg-canvas-paper: 225 14% 16%;
-
-  --text-primary: 0 0% 93%;
-  --text-secondary: 225 8% 62%;
-  --text-tertiary: 225 6% 46%;
-  --text-inverse: 225 14% 18%;
-
-  --border-default: 225 12% 22%;
-  --border-hover: 225 10% 32%;
-
-  --brand: 235 65% 60%;
-  --brand-hover: 235 60% 52%;
-  --brand-light: 235 40% 12%;
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.18);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.20);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.24);
-  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.28);
-
-  --ant-color-primary: hsl(235 65% 60%);
-}
-
 *,
 *::before,
 *::after {

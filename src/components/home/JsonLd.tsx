@@ -11,7 +11,7 @@ export function JsonLd() {
     alternateName: 'ZiYou Resume',
     url: SITE_URL,
     description: '隐私优先的在线简历编辑器，支持多模板与 PDF 导出',
-    logo: `${SITE_URL}/icon.svg`,
+    logo: `${SITE_URL}/logo-mark.png`,
   }
 
   const websiteSchema = {
