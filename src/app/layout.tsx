@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
+import { Analytics } from '@vercel/analytics/next'
 import { htmlLang } from '@/i18n/config'
 import '@/styles/globals.css'
 
@@ -44,6 +45,7 @@ export default function RootLayout({
             {children}
           </ConfigProvider>
         </AntdRegistry>
+        <Analytics />
       </body>
     </html>
   )
