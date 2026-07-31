@@ -45,7 +45,7 @@ export default function RootLayout({
             {children}
           </ConfigProvider>
         </AntdRegistry>
-        <Script id="baidu-tongji" strategy="afterInteractive">
+        <Script id="baidu-tongji" strategy="beforeInteractive">
           {`var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement("script");
