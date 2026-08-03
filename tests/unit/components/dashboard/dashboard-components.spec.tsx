@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
+import dayjs from 'dayjs'
 import type { ResumeData } from '@/shared/types/resume'
 
 const pushMock = vi.fn()
@@ -132,7 +133,7 @@ describe('ResumeCard', () => {
     const resume = makeResume({ updatedAt: '2026-07-14T03:30:00.000Z' })
     render(<ResumeCard resume={resume} onDuplicate={vi.fn()} onDelete={vi.fn()} />)
 
-    expect(screen.getByText(/2026-07-14 11:30/)).toBeInTheDocument()
+    expect(screen.getByText(dayjs(resume.updatedAt).format('YYYY-MM-DD HH:mm'))).toBeInTheDocument()
   })
 })
 
