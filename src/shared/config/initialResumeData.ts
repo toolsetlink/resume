@@ -157,6 +157,7 @@ export const blankResumeState = {
     phone: '',
     location: '',
     birthDate: '',
+    age: '',
     employementStatus: '',
     photo: '',
     customFields: [],

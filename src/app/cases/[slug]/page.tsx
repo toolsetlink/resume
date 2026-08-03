@@ -33,8 +33,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    keywords: [
+      `${caseData.meta.position}简历`,
+      `${caseData.meta.position}简历案例`,
+      `${caseData.meta.experienceLevel}${caseData.meta.position}简历`,
+      '中文简历模板',
+    ],
     alternates: { canonical: url },
-    openGraph: { title: `${title} | 自由简历`, description, url, type: 'article' },
+    robots: { index: true, follow: true },
+    openGraph: {
+      title: `${title} | 自由简历`,
+      description,
+      url,
+      type: 'article',
+      locale: 'zh_CN',
+    },
+    twitter: { title: `${title} | 自由简历`, description },
   }
 }
 
@@ -45,6 +59,10 @@ export default async function CaseDetailPage({ params }: PageProps) {
   if (!caseData) notFound()
 
   const { meta, resumeData } = caseData
+  const guideOverview = caseData.guide?.overview ?? [
+    `这份案例把与${meta.position}直接相关的职责、项目和结果放在前面，方便招聘者快速判断岗位匹配度。`,
+    '写自己的版本时，保留结构即可。公司名称、业务背景、成果数据和技能关键词都应替换为真实内容。',
+  ]
   const relatedCases = RESUME_CASES
     .filter(({ meta: relatedMeta }) => relatedMeta.id !== meta.id)
     .sort((a, b) => Number(b.meta.industry === meta.industry) - Number(a.meta.industry === meta.industry))
@@ -71,6 +89,8 @@ export default async function CaseDetailPage({ params }: PageProps) {
     headline: `${meta.title}案例与写作指南`,
     description: meta.description,
     mainEntityOfPage: `${SITE_URL}/cases/${meta.id}`,
+    isPartOf: { '@type': 'CollectionPage', name: '简历案例库', url: `${SITE_URL}/cases` },
+    about: [meta.industry, meta.position, meta.experienceLevel],
     inLanguage: 'zh-CN',
     author: { '@type': 'Organization', name: '自由简历' },
     publisher: { '@type': 'Organization', name: '自由简历', url: SITE_URL },
@@ -127,6 +147,9 @@ export default async function CaseDetailPage({ params }: PageProps) {
                 <p className="mt-5 max-w-2xl text-[18px] leading-relaxed text-[hsl(var(--text-secondary))]">
                   {meta.description}。下面展示完整简历，并拆解适合复用的内容结构。
                 </p>
+                <p className="mt-3 text-[13px] text-[hsl(var(--text-tertiary))]">
+                  案例内容已做脱敏或示例化处理，仅供结构与表达参考。
+                </p>
                 <div className="mt-7">
                   <CaseUseButton caseData={caseData} />
                 </div>
@@ -135,8 +158,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
               <section className="mt-14">
                 <h2 className="text-2xl font-bold text-[hsl(var(--text-primary))]">这份案例怎么写</h2>
                 <div className="mt-5 space-y-4 text-[15px] leading-7 text-[hsl(var(--text-secondary))]">
-                  <p>这份案例把与{meta.position}直接相关的职责、项目和结果放在前面，方便招聘者快速判断岗位匹配度。</p>
-                  <p>写自己的版本时，保留结构即可。公司名称、业务背景、成果数据和技能关键词都应替换为真实内容。</p>
+                  {guideOverview.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                 </div>
               </section>
 
@@ -162,8 +184,20 @@ export default async function CaseDetailPage({ params }: PageProps) {
                 <section className="mt-12">
                   <h2 className="text-2xl font-bold text-[hsl(var(--text-primary))]">项目经历怎么取舍</h2>
                   <p className="mt-5 text-[15px] leading-7 text-[hsl(var(--text-secondary))]">
-                    优先选择能证明岗位能力的项目，说明自己负责的部分、采用的方法和最终结果。项目数量不需要多，相关性更重要。
+                    {caseData.guide?.projectSelection ?? '优先选择能证明岗位能力的项目，说明自己负责的部分、采用的方法和最终结果。项目数量不需要多，相关性更重要。'}
                   </p>
+                  <div className="mt-5 space-y-6">
+                    {resumeData.projects.map((project) => (
+                      <div key={project.id} className="rounded-[12px] border border-[hsl(var(--border-default))] bg-[hsl(var(--bg-card))] p-5">
+                        <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                          <h3 className="font-semibold text-[hsl(var(--text-primary))]">{project.name}</h3>
+                          <span className="text-[12px] text-[hsl(var(--text-tertiary))]">{project.date}</span>
+                        </div>
+                        <p className="mt-1 text-[13px] text-[hsl(var(--text-secondary))]">{project.role}</p>
+                        <div className="case-rich-text mt-4" dangerouslySetInnerHTML={{ __html: project.description }} />
+                      </div>
+                    ))}
+                  </div>
                 </section>
               )}
 

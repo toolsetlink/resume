@@ -15,7 +15,13 @@ export interface ResumeCaseManifestEntry extends ResumeCaseMeta {
   path: string
 }
 
+export interface ResumeCaseGuide {
+  overview: string[]
+  projectSelection: string
+}
+
 export interface ResumeCase {
   meta: ResumeCaseMeta
   resumeData: ResumeData
+  guide?: ResumeCaseGuide
 }
