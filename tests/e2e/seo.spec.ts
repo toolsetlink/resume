@@ -81,12 +81,13 @@ test.describe('sitemap 可访问', () => {
 })
 
 test.describe('robots.txt 可访问', () => {
-  test('robots.txt 返回 200 且包含 Disallow', async ({ request }) => {
+  test('robots.txt 返回 200 并允许爬虫访问', async ({ request }) => {
     const response = await request.get('/robots.txt')
     expect(response.status()).toBe(200)
 
     const body = await response.text()
-    expect(body).toContain('Disallow')
+    expect(body).toContain('Allow: /')
+    expect(body).toContain('Sitemap: https://resume.toolsetlink.com/sitemap.xml')
   })
 })
 
