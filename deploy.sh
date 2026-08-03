@@ -89,6 +89,9 @@ sshpass -p "$SERVER_PASS" rsync -avz --delete --checksum \
   "$BUILD_DIR/" \
   "${SERVER_USER}@${SERVER_IP}:${SERVER_PATH}/"
 
+# Linux 区分大小写：标准 SEO 路径用 robots.txt，同时保留历史兼容路径。
+sshpass -p "$SERVER_PASS" ssh "$SERVER_USER@$SERVER_IP" "cp $SERVER_PATH/robots.txt $SERVER_PATH/Robots.txt"
+
 # 8. 完成
 FILE_COUNT=$(find "$BUILD_DIR" -type f | wc -l | tr -d ' ')
 log "部署完成！共同步 ${FILE_COUNT} 个文件"
