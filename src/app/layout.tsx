@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
 import { htmlLang } from '@/i18n/config'
@@ -45,15 +44,19 @@ export default function RootLayout({
             {children}
           </ConfigProvider>
         </AntdRegistry>
-        <Script id="baidu-tongji" strategy="beforeInteractive">
-          {`var _hmt = _hmt || [];
+        {/* 百度统计:必须用原生内联 script 让代码原样出现在静态 HTML 中,
+            百度安装检查只做静态匹配,next/script 的 __next_s 队列包装无法被识别 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement("script");
   hm.src = "https://hm.baidu.com/hm.js?17c0a6a7b2a014a8d72ecef455f02d89";
   var s = document.getElementsByTagName("script")[0];
   s.parentNode.insertBefore(hm, s);
-})();`}
-        </Script>
+})();`,
+          }}
+        />
       </body>
     </html>
   )
